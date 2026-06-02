@@ -98,7 +98,7 @@ def plot_Ne_vs_mass(df):
     Plots the relationship between the electron density of the accreted gas and its total mass.
     '''
     plt.scatter(df['Ne_med'], df['M_tot'], alpha=0.5)
-    plt.xlabel('Electron Density (cm^-3)')
+    plt.xlabel('Electron Density (free electrons per baryon)')
     plt.ylabel('Total Mass (M_sun)')
     plt.title('Electron Density vs Total Mass of Accreted Gas')
     plt.xscale('log')
