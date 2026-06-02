@@ -92,7 +92,19 @@ def plot_dispersion_vs_mass(df):
     plt.title('Velocity Dispersion vs Total Mass of Accreted Gas')
     plt.xscale('log')
     plt.yscale('log')
+
+        # Fit a linear model to the log-log data to find the power-law relationship
+    log_sig_3D = np.log(df['sig_3D'])
+    log_M_tot = np.log(df['M_tot'])
+
+    model = LinearRegression()
+    model.fit(log_sig_3D.values.reshape(-1, 1), log_M_tot.values)
+    x_fit = np.linspace(log_sig_3D.min(), log_sig_3D.max(), 100)
+    y_fit = model.predict(x_fit.reshape(-1, 1))
+    plt.plot(np.exp(x_fit), np.exp(y_fit), color='red', label=f'Linear Fit - power law = {model.coef_[0]:.2f}', linestyle='--')
+    plt.legend()
     plt.show()
+
 
 
 def plot_Ne_vs_mass(df):
@@ -114,6 +126,7 @@ def plot_star_locations(df):
     '''
 
     df = df[np.log(df['M_tot']) > 0]  # Filter out small stars to see the distribution of more massive stars more clearly
+
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection='3d')
     sc = ax.scatter(df['x_cm_1'], df['x_cm_2'], df['x_cm_3'], c=np.log(df['M_tot']), cmap='viridis', alpha=0.5)
@@ -124,9 +137,80 @@ def plot_star_locations(df):
     plt.title('3D Positions of Accreted Gas Particles Colored by Total Mass')
     plt.show()
 
-#plot_magnetic_energy_vs_mass(df)
-#plot_position_vs_mass(df)
-#plot_dispersion_vs_mass(df)
-#plot_Ne_vs_mass(df)
-#plot_correlation_heatmap(df)
-plot_star_locations(df)
+
+def plot_temperature_vs_ne(df):
+    '''
+    Plots the relationship between the temperature of the accreted gas and its electron density.
+    '''
+    plt.scatter(df['T_med'], df['Ne_med'], alpha=0.5)
+    plt.xlabel('Temperature (K)')
+    plt.ylabel('Electron Density (free electrons per baryon)')
+    plt.title('Temperature vs Electron Density of Accreted Gas')
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.show()
+
+
+def plot_specific_energies_vs_mass(df):
+    '''
+    Plots the relationship between the specific energy of the accreted gas and its total mass.
+    '''
+    specific_kinetic = df['E_kin'] / df['M_tot']
+    specific_gravitational = df['E_grav'] / df['M_tot']
+    specific_internal = df['E_int'] / df['M_tot']
+    specific_magnetic = df['E_mag'] / df['M_tot']
+
+    # define subplots
+    fig = plt.figure(figsize=(12, 10))
+    ax1 = fig.add_subplot(221)
+
+    #plot kinetic energy vs mass
+    ax1.scatter(specific_kinetic, df['M_tot'], alpha=0.5)
+    ax1.set_xlabel('Specific Kinetic Energy (erg/M_sun)')
+    ax1.set_ylabel('Total Mass (M_sun)')
+    ax1.set_title('Specific Kinetic Energy vs Total Mass of Accreted Gas')
+    ax1.set_xscale('log')
+    ax1.set_yscale('log')
+    
+    #plot gravitational energy vs mass (magnitude due to negative sign)
+    ax2 = fig.add_subplot(222)
+    ax2.scatter(-specific_gravitational, df['M_tot'], alpha=0.5)
+    ax2.set_xlabel('Specific Gravitational Energy (erg/M_sun)')
+    ax2.set_ylabel('Total Mass (M_sun)')
+    ax2.set_title('Specific Gravitational Energy vs Total Mass of Accreted Gas')
+    ax2.set_xscale('log')
+    ax2.set_yscale('log')
+
+    #plot internal energy vs mass
+    ax3 = fig.add_subplot(223)
+    ax3.scatter(specific_internal, df['M_tot'], alpha=0.5)
+    ax3.set_xlabel('Specific Internal Energy (erg/M_sun)')
+    ax3.set_ylabel('Total Mass (M_sun)')
+    ax3.set_title('Specific Internal Energy vs Total Mass of Accreted Gas')
+    ax3.set_xscale('log')
+    ax3.set_yscale('log')
+
+    #plot magnetic energy vs mass
+    ax4 = fig.add_subplot(224)
+    ax4.scatter(specific_magnetic, df['M_tot'], alpha=0.5)
+    ax4.set_xlabel('Specific Magnetic Energy (erg/M_sun)')
+    ax4.set_ylabel('Total Mass (M_sun)')
+    ax4.set_title('Specific Magnetic Energy vs Total Mass of Accreted Gas') 
+    ax4.set_xscale('log')
+    ax4.set_yscale('log')
+
+    plt.savefig('specific_energies_vs_mass.pdf', dpi=300, bbox_inches='tight')
+
+    plt.show()
+
+
+if __name__ == "__main__":
+
+    #plot_magnetic_energy_vs_mass(df)
+    #plot_position_vs_mass(df)
+    #plot_dispersion_vs_mass(df)
+    #plot_Ne_vs_mass(df)
+    #plot_correlation_heatmap(df)
+    #plot_temperature_vs_ne(df)
+    plot_specific_energies_vs_mass(df)
+    #plot_star_locations(df)
