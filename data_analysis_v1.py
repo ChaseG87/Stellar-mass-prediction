@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from sklearn.linear_model import LinearRegression
 from seaborn import heatmap
 import numpy as np
@@ -31,13 +32,14 @@ def plot_correlation_heatmap(df):
     Plots a heatmap of the correlation matrix for the properties of the accreted gas.
     '''
 
-    chosen_columns = ['M_tot', 'E_mag', 'R_eff', 'sig_3D', 'T', 'T_med', 'T_16', 'T_84',
-                       'distance_from_center', 'B', 'Ne', 'rho', 'Ne_med']
+    chosen_columns = ['M_tot', 'E_mag', 'E_kin', 'E_int', 'R_eff', 'sig_3D', 'T',
+                         'distance_from_center', 'Ne', 'rho', 'Ne_med']
 
     correlation_matrix = np.log(df[chosen_columns]).corr()
     plt.figure(figsize=(10, 8))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
     plt.title('Correlation Heatmap of Accreted Gas Properties')
+    plt.savefig('gas_correlation_heatmap.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -106,8 +108,25 @@ def plot_Ne_vs_mass(df):
     plt.show()
 
 
+def plot_star_locations(df):
+    '''
+    Plots the 3D positions of the accreted gas particles, colored by their total mass.
+    '''
+
+    df = df[np.log(df['M_tot']) > 0]  # Filter out small stars to see the distribution of more massive stars more clearly
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
+    sc = ax.scatter(df['x_cm_1'], df['x_cm_2'], df['x_cm_3'], c=np.log(df['M_tot']), cmap='viridis', alpha=0.5)
+    plt.colorbar(sc, label='Total Mass (M_sun) [log scale]')
+    ax.set_xlabel('X Position (pc)')
+    ax.set_ylabel('Y Position (pc)')
+    ax.set_zlabel('Z Position (pc)')
+    plt.title('3D Positions of Accreted Gas Particles Colored by Total Mass')
+    plt.show()
+
 #plot_magnetic_energy_vs_mass(df)
 #plot_position_vs_mass(df)
 #plot_dispersion_vs_mass(df)
-plot_Ne_vs_mass(df)
-plot_correlation_heatmap(df)
+#plot_Ne_vs_mass(df)
+#plot_correlation_heatmap(df)
+plot_star_locations(df)
