@@ -125,11 +125,11 @@ def plot_star_locations(df):
     Plots the 3D positions of the accreted gas particles, colored by their total mass.
     '''
 
-    df = df[np.log(df['M_tot']) > 0]  # Filter out small stars to see the distribution of more massive stars more clearly
+    #df = df[np.log(df['M_tot']) > 0]  # Filter out small stars to see the distribution of more massive stars more clearly
 
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection='3d')
-    sc = ax.scatter(df['x_cm_1'], df['x_cm_2'], df['x_cm_3'], c=np.log(df['M_tot']), cmap='viridis', alpha=0.5)
+    sc = ax.scatter(df['x_cm_1'], df['x_cm_2'], df['x_cm_3'], s=3, c=np.log(df['M_tot']), cmap='viridis', alpha=0.5)
     plt.colorbar(sc, label='Total Mass (M_sun) [log scale]')
     ax.set_xlabel('X Position (pc)')
     ax.set_ylabel('Y Position (pc)')
@@ -204,6 +204,50 @@ def plot_specific_energies_vs_mass(df):
     plt.show()
 
 
+def plot_strong_correlation(df):
+    '''
+    Plots the relationship between two properties of the accreted gas that show a strong correlation in the heatmap.
+    '''
+
+    # Calculate specific kinetic and magnetic energies
+    df['sp_kin'] = df['E_kin'] / df['M_tot']
+    df['sp_mag'] = df['E_mag'] / df['M_tot']
+
+    # Generate and plot the correlation heatmap for found strong correlations
+    correlation_matrix = np.log(df[['M_tot','sp_kin', 'sp_mag', 'sig_3D', 'Ne', 'Ne_med']]).corr()
+    plt.figure(figsize=(10, 8))
+    heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+    plt.title('Correlation Heatmap of Accreted Gas Properties')
+    plt.show()
+
+
+def plot_velocity_correlation(df):
+    '''
+    Plots the relationship between the velocity dispersion of the accreted gas and its specific kinetic energy.
+    '''
+
+    # Generate and plot the correlation heatmap for found strong correlations
+    correlation_matrix = np.log(df[['M_tot', 'sig_3D', 'v_cm_1', 'v_cm_2', 'v_cm_3', 'L_vec_1', 'L_vec_2', 'L_vec_3']]).corr()
+    plt.figure(figsize=(10, 8))
+    heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+    plt.title('Correlation Heatmap of Accreted Gas Properties')
+    plt.show()
+
+
+def morphology_correlation(df):
+    '''
+    Plots the relationship between the morphology of the accreted gas and its total mass.
+    '''
+
+    df['stretch1'] = df['R_p_1'] / df['R_p_2']
+
+    correlation_matrix = np.log(df[['M_tot', 'R_eff', 'stretch1', 'R_p_1', 'R_p_2', 'rho']]).corr()
+    plt.figure(figsize=(10, 8))
+    heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+    plt.title('Correlation Heatmap of Accreted Gas Properties')
+    plt.show()
+
+
 if __name__ == "__main__":
 
     #plot_magnetic_energy_vs_mass(df)
@@ -211,6 +255,9 @@ if __name__ == "__main__":
     #plot_dispersion_vs_mass(df)
     #plot_Ne_vs_mass(df)
     #plot_correlation_heatmap(df)
+    #plot_strong_correlation(df)
     #plot_temperature_vs_ne(df)
-    plot_specific_energies_vs_mass(df)
-    #plot_star_locations(df)
+    #plot_specific_energies_vs_mass(df)
+    #plot_velocity_correlation(df)
+    #morphology_correlation(df) 
+    plot_star_locations(df)
