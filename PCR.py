@@ -27,7 +27,7 @@ def perform_pca(df, n_components=3):
             'B', 'B_med', 'B_84', 'B_16', 'rho', 'rho_med', 'rho_84', 'rho_16']  
     
     # Take the logarithm of the data to handle wide ranges and reduce skewness
-    log_data = np.log(df[features])
+    log_data = np.log10(df[features])
 
     # Standardize the data (mean=0, variance=1)
     standardized_data = (log_data - log_data.mean()) / log_data.std()
@@ -52,7 +52,7 @@ def perform_pca(df, n_components=3):
 
     # 2D scatter plot of the first two principal components colored by total mass
     plt.figure(figsize=(8, 5))
-    plt.scatter(transformed_data[:, 0], transformed_data[:, 1], c=np.log(df['M_tot']), cmap='viridis', alpha=0.7)
+    plt.scatter(transformed_data[:, 0], transformed_data[:, 1], c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
     plt.colorbar(label='Total Mass (M_sun) [log scale]')
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
@@ -63,7 +63,7 @@ def perform_pca(df, n_components=3):
     # 3D scatter plot of the first three principal components colored by total mass
     plt.figure(figsize=(10, 8))
     ax = plt.axes(projection='3d')
-    sc = ax.scatter(transformed_data[:, 0], transformed_data[:, 1], transformed_data[:, 2], c=np.log(df['M_tot']), cmap='viridis', alpha=0.7)
+    sc = ax.scatter(transformed_data[:, 0], transformed_data[:, 1], transformed_data[:, 2], c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
     plt.colorbar(sc, label='Total Mass (M_sun) [log scale]')
     ax.set_xlabel('Principal Component 1')
     ax.set_ylabel('Principal Component 2')
@@ -85,7 +85,7 @@ def regression_analysis(transformed_data):
     - predictions: numpy array of shape (n_samples,) containing the predicted values.
     '''
 
-    target = np.log(df['M_tot'])  # target variable (total mass of accreted gas)
+    target = np.log10(df['M_tot'])  # target variable (total mass of accreted gas)
     model = LinearRegression()
     model.fit(transformed_data, target)
     predictions = model.predict(transformed_data)
@@ -103,9 +103,9 @@ def blind_regression_analysis(df):
                  'B', 'B_med', 'B_84', 'B_16', 'rho', 'rho_med', 'rho_84', 'rho_16']
     
     # Take the logarithm of the data to handle wide ranges and reduce skewness
-    log_data = np.log(df[features])
+    log_data = np.log10(df[features])
 
-    target = np.log(df['M_tot'])  # target variable (total mass of accreted gas)
+    target = np.log10(df['M_tot'])  # target variable (total mass of accreted gas)
     model = LinearRegression()
 
     model.fit(log_data, target)

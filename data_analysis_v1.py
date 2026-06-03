@@ -35,7 +35,7 @@ def plot_correlation_heatmap(df):
     chosen_columns = ['M_tot', 'E_mag', 'E_kin', 'E_int', 'R_eff', 'sig_3D', 'T',
                          'distance_from_center', 'Ne', 'rho', 'Ne_med']
 
-    correlation_matrix = np.log(df[chosen_columns]).corr()
+    correlation_matrix = np.log10(df[chosen_columns]).corr()
     plt.figure(figsize=(10, 8))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
     plt.title('Correlation Heatmap of Accreted Gas Properties')
@@ -57,8 +57,8 @@ def plot_magnetic_energy_vs_mass(df):
     plt.title('Magnetic Energy vs Total Mass of Accreted Gas')
 
     # Fit a linear model to the log-log data to find the power-law relationship
-    log_E_mag = np.log(df['E_mag'])
-    log_M_tot = np.log(df['M_tot'])
+    log_E_mag = np.log10(df['E_mag'])
+    log_M_tot = np.log10(df['M_tot'])
 
     model = LinearRegression()
     model.fit(log_E_mag.values.reshape(-1, 1), log_M_tot.values)
@@ -94,8 +94,8 @@ def plot_dispersion_vs_mass(df):
     plt.yscale('log')
 
         # Fit a linear model to the log-log data to find the power-law relationship
-    log_sig_3D = np.log(df['sig_3D'])
-    log_M_tot = np.log(df['M_tot'])
+    log_sig_3D = np.log10(df['sig_3D'])
+    log_M_tot = np.log10(df['M_tot'])
 
     model = LinearRegression()
     model.fit(log_sig_3D.values.reshape(-1, 1), log_M_tot.values)
@@ -125,11 +125,11 @@ def plot_star_locations(df):
     Plots the 3D positions of the accreted gas particles, colored by their total mass.
     '''
 
-    #df = df[np.log(df['M_tot']) > 0]  # Filter out small stars to see the distribution of more massive stars more clearly
+    #df = df[np.log10(df['M_tot']) > 0]  # Filter out small stars to see the distribution of more massive stars more clearly
 
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection='3d')
-    sc = ax.scatter(df['x_cm_1'], df['x_cm_2'], df['x_cm_3'], s=3, c=np.log(df['M_tot']), cmap='viridis', alpha=0.5)
+    sc = ax.scatter(df['x_cm_1'], df['x_cm_2'], df['x_cm_3'], s=3, c=np.log10(df['M_tot']), cmap='viridis', alpha=0.5)
     plt.colorbar(sc, label='Total Mass (M_sun) [log scale]')
     ax.set_xlabel('X Position (pc)')
     ax.set_ylabel('Y Position (pc)')
@@ -214,7 +214,7 @@ def plot_strong_correlation(df):
     df['sp_mag'] = df['E_mag'] / df['M_tot']
 
     # Generate and plot the correlation heatmap for found strong correlations
-    correlation_matrix = np.log(df[['M_tot','sp_kin', 'sp_mag', 'sig_3D', 'Ne', 'Ne_med']]).corr()
+    correlation_matrix = np.log10(df[['M_tot','sp_kin', 'sp_mag', 'sig_3D', 'Ne', 'Ne_med']]).corr()
     plt.figure(figsize=(10, 8))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
     plt.title('Correlation Heatmap of Accreted Gas Properties')
@@ -227,7 +227,7 @@ def plot_velocity_correlation(df):
     '''
 
     # Generate and plot the correlation heatmap for found strong correlations
-    correlation_matrix = np.log(df[['M_tot', 'sig_3D', 'v_cm_1', 'v_cm_2', 'v_cm_3', 'L_vec_1', 'L_vec_2', 'L_vec_3']]).corr()
+    correlation_matrix = np.log10(df[['M_tot', 'sig_3D', 'v_cm_1', 'v_cm_2', 'v_cm_3', 'L_vec_1', 'L_vec_2', 'L_vec_3']]).corr()
     plt.figure(figsize=(10, 8))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
     plt.title('Correlation Heatmap of Accreted Gas Properties')
@@ -241,7 +241,7 @@ def morphology_correlation(df):
 
     df['stretch1'] = df['R_p_1'] / df['R_p_2']
 
-    correlation_matrix = np.log(df[['M_tot', 'R_eff', 'stretch1', 'R_p_1', 'R_p_2', 'rho']]).corr()
+    correlation_matrix = np.log10(df[['M_tot', 'R_eff', 'stretch1', 'R_p_1', 'R_p_2', 'rho']]).corr()
     plt.figure(figsize=(10, 8))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
     plt.title('Correlation Heatmap of Accreted Gas Properties')

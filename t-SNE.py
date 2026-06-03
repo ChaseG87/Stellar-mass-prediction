@@ -28,7 +28,7 @@ def perform_2D_tsne(df, features):
     - X_tsne: numpy array of shape (n_samples, 2) containing the t-SNE-transformed data.
     '''
 
-    X = np.log(df[features])
+    X = np.log10(df[features])
 
     # Standardize features (Crucial: t-SNE relies on Euclidean distances)
     scaler = StandardScaler()
@@ -44,7 +44,7 @@ def perform_2D_tsne(df, features):
 
     # Plot t-SNE results
     plt.figure(figsize=(10, 8))
-    scatter = plt.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], c=np.log(df['M_tot']), cmap='viridis', alpha=0.7)
+    scatter = plt.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
     plt.colorbar(scatter, label='Total Mass (M_sun) [log scale]')
     plt.title('t-SNE Visualization of Pre-Stellar Gas Properties (features: Ne, T, B, rho)')
     plt.xlabel('t-SNE 1')
@@ -68,7 +68,7 @@ def perform_3D_tsne(df, features):
     - X_tsne: numpy array of shape (n_samples, 3) containing the t-SNE-transformed data.
     '''
 
-    X = np.log(df[features])
+    X = np.log10(df[features])
 
     # Standardize features
     scaler = StandardScaler()
@@ -84,7 +84,7 @@ def perform_3D_tsne(df, features):
     # Plot t-SNE results in 3D
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection='3d')
-    scatter = ax.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], df_tsne['t-SNE 3'], c=np.log(df['M_tot']), cmap='viridis', alpha=0.7)
+    scatter = ax.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], df_tsne['t-SNE 3'], c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
     plt.colorbar(scatter, label='Total Mass (M_sun) [log scale]')
     ax.set_title('3D t-SNE Visualization of Pre-Stellar Gas Properties (features: Ne, T, B, rho)')
     ax.set_xlabel('t-SNE 1')
@@ -97,7 +97,6 @@ def perform_3D_tsne(df, features):
 
 
 def main():
-
 
     perform_2D_tsne(df, features)
     perform_3D_tsne(df, features)
