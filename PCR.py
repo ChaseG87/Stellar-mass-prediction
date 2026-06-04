@@ -4,15 +4,19 @@ from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
+import argparse
+import sys
+
 
 df = pd.read_parquet('accreted_gas_properties_pre_stellar.pq')
 
-def perform_pca(df, n_components=3):
+def perform_pca(df, three_d=False, n_components=3):
     '''
     Performs Principal Component Analysis (PCA) on the given DataFrame and plots the results.
     
     Parameters:
     - df: pandas DataFrame containing the data to be analyzed.
+    - three_d: boolean indicating whether to perform 3D analysis. If False, performs 2D analysis (default is False).
     - n_components: number of principal components to compute (default is 3).
     
     Returns:
@@ -52,24 +56,25 @@ def perform_pca(df, n_components=3):
 
     # 2D scatter plot of the first two principal components colored by total mass
     plt.figure(figsize=(8, 5))
-    plt.scatter(transformed_data[:, 0], transformed_data[:, 1], c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
-    plt.colorbar(label='Total Mass (M_sun) [log scale]')
+    plt.scatter(transformed_data[:, 0], transformed_data[:, 1], s=7, c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
+    plt.colorbar(label=r'Total Mass ($M_\odot$) [log scale]')
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
-    plt.title('PCA Visualization of Pre-Stellar Gas Properties (features: T, Ne, B, rho)')
+    plt.title('PCA of Pre-Stellar Gas Property Distributions (features: T, Ne, B, rho)')
     plt.savefig('pca_visualization.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
-    # 3D scatter plot of the first three principal components colored by total mass
-    plt.figure(figsize=(10, 8))
-    ax = plt.axes(projection='3d')
-    sc = ax.scatter(transformed_data[:, 0], transformed_data[:, 1], transformed_data[:, 2], c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
-    plt.colorbar(sc, label='Total Mass (M_sun) [log scale]')
-    ax.set_xlabel('Principal Component 1')
-    ax.set_ylabel('Principal Component 2')
-    ax.set_zlabel('Principal Component 3')
-    plt.title('3D PCA Visualization of Pre-Stellar Gas Properties (features: T, Ne, B, rho)')
-    plt.show()
+    if three_d:
+        # 3D scatter plot of the first three principal components colored by total mass
+        plt.figure(figsize=(10, 8))
+        ax = plt.axes(projection='3d')
+        sc = ax.scatter(transformed_data[:, 0], transformed_data[:, 1], transformed_data[:, 2], s=10, c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
+        plt.colorbar(sc, label=r'Total Mass ($M_\odot$) [log scale]')
+        ax.set_xlabel('Principal Component 1')
+        ax.set_ylabel('Principal Component 2')
+        ax.set_zlabel('Principal Component 3')
+        plt.title('3D PCA Visualization of Pre-Stellar Gas Properties (features: T, Ne, B, rho)')
+        plt.show()
     
     return pca, transformed_data
 
@@ -99,8 +104,8 @@ def regression_analysis(transformed_data):
 
 def blind_regression_analysis(df):
 
-    features = [ 'Ne', 'Ne_med', 'Ne_84', 'Ne_16',
-                 'B', 'B_med', 'B_84', 'B_16', 'rho', 'rho_med', 'rho_84', 'rho_16']
+    features = [ 'T', 'T_med', 'T_84', 'T_16', 'Ne', 'Ne_med', 'Ne_84', 'Ne_16',
+                 'B', 'B_med', 'B_84', 'B_16']
     
     # Take the logarithm of the data to handle wide ranges and reduce skewness
     log_data = np.log10(df[features])
@@ -118,12 +123,20 @@ def blind_regression_analysis(df):
     plt.show()
 
 def main():
-    # Perform PCA on the DataFrame and plot the results
-    pca, transformed_data = perform_pca(df, n_components=3)
-    # Perform regression analysis using the PCA-transformed data
+    argparser = argparse.ArgumentParser(description='Perform PCA analysis and correlation heatmap on pre-stellar gas properties.')
+    argparser.add_argument('--pca_3d', '-3d', action='store_true', help='Perform 3D PCA analysis and visualization.')
+    argparser.add_argument('--blind_regression', '-br', action='store_true', help='Perform blind regression analysis.')
+    args = argparser.parse_args()
+
+    if args.pca_3d:
+        pca, transformed_data = perform_pca(df, three_d=True, n_components=3)
+    else:
+        pca, transformed_data = perform_pca(df, three_d=False, n_components=3)
+
     regression_analysis(transformed_data)
-    # Perform blind regression analysis using the original data
-    blind_regression_analysis(df)
+
+    if args.blind_regression:
+        blind_regression_analysis(df)
 
 
 if __name__ == "__main__":

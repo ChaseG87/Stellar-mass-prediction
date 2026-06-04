@@ -4,6 +4,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from sklearn.linear_model import LinearRegression
 from seaborn import heatmap
 import numpy as np
+import sys
+import argparse
 
 """
 Investigation of the properties of the accreted gas at the snapshot before star formation.
@@ -14,6 +16,7 @@ Namespace Dependencies:
 - scikit-learn
 - numpy
 - seaborn
+- argparse
 - pyarrow/fastparquet (for reading parquet files)
 """
 
@@ -47,24 +50,24 @@ def plot_magnetic_energy_vs_mass(df):
     '''
     Plots the relationship between magnetic energy and total mass of accreted gas on a log-log scale.
     '''
+    df['sp_mag'] = df['E_mag'] / df['M_tot']
+
 
     # Plot scatter of comparision
-    plt.scatter(df['E_mag'], df['M_tot'], alpha=0.5)
-    plt.xlabel('Magnetic Energy (erg)')
-    plt.ylabel('Total Mass (M_sun)')
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.title('Magnetic Energy vs Total Mass of Accreted Gas')
+    plt.scatter(np.log10(df['sp_mag']), np.log10(df['M_tot']), alpha=0.5)
+    plt.xlabel('Specific Magnetic Energy')
+    plt.ylabel(r'Total Mass ($M_\odot$)')
+    plt.title('Specific Magnetic Energy vs Total Mass of Accreted Gas')
 
     # Fit a linear model to the log-log data to find the power-law relationship
-    log_E_mag = np.log10(df['E_mag'])
+    log_sp_mag = np.log10(df['sp_mag'])
     log_M_tot = np.log10(df['M_tot'])
 
     model = LinearRegression()
-    model.fit(log_E_mag.values.reshape(-1, 1), log_M_tot.values)
-    x_fit = np.linspace(log_E_mag.min(), log_E_mag.max(), 100)
+    model.fit(log_sp_mag.values.reshape(-1, 1), log_M_tot.values)
+    x_fit = np.linspace(log_sp_mag.min(), log_sp_mag.max(), 100)
     y_fit = model.predict(x_fit.reshape(-1, 1))
-    plt.plot(np.exp(x_fit), np.exp(y_fit), color='red', label=f'Linear Fit - power law = {model.coef_[0]:.2f}', linestyle='--')
+    plt.plot(x_fit, y_fit, color='red', label=f'Linear Fit - power law = {model.coef_[0]:.2f}', linestyle='--')
     plt.legend()
     plt.show()
 
@@ -111,7 +114,7 @@ def plot_Ne_vs_mass(df):
     '''
     Plots the relationship between the electron density of the accreted gas and its total mass.
     '''
-    plt.scatter(df['Ne_med'], df['M_tot'], alpha=0.5)
+    plt.scatter(df['Ne'], df['M_tot'], alpha=0.5)
     plt.xlabel('Electron Density (free electrons per baryon)')
     plt.ylabel('Total Mass (M_sun)')
     plt.title('Electron Density vs Total Mass of Accreted Gas')
@@ -230,7 +233,7 @@ def plot_velocity_correlation(df):
     correlation_matrix = np.log10(df[['M_tot', 'sig_3D', 'v_cm_1', 'v_cm_2', 'v_cm_3', 'L_vec_1', 'L_vec_2', 'L_vec_3']]).corr()
     plt.figure(figsize=(10, 8))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-    plt.title('Correlation Heatmap of Accreted Gas Properties')
+    plt.title('Correlation Heatmap of velocities and mass')
     plt.show()
 
 
@@ -240,24 +243,57 @@ def morphology_correlation(df):
     '''
 
     df['stretch1'] = df['R_p_1'] / df['R_p_2']
+    df['stretch2'] = df['R_p_3'] / df['R_p_2']
 
-    correlation_matrix = np.log10(df[['M_tot', 'R_eff', 'stretch1', 'R_p_1', 'R_p_2', 'rho']]).corr()
+
+    correlation_matrix = np.log10(df[['M_tot', 'R_eff', 'stretch1', 'stretch2','R_p_1', 'R_p_2', 'rho']]).corr()
     plt.figure(figsize=(10, 8))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-    plt.title('Correlation Heatmap of Accreted Gas Properties')
+    plt.title('Correlation Heatmap of Morphology')
     plt.show()
 
 
 if __name__ == "__main__":
 
-    #plot_magnetic_energy_vs_mass(df)
-    #plot_position_vs_mass(df)
-    #plot_dispersion_vs_mass(df)
-    #plot_Ne_vs_mass(df)
-    #plot_correlation_heatmap(df)
-    #plot_strong_correlation(df)
-    #plot_temperature_vs_ne(df)
-    #plot_specific_energies_vs_mass(df)
-    #plot_velocity_correlation(df)
-    #morphology_correlation(df) 
-    plot_star_locations(df)
+    # Parser options for different analyses
+    parser = argparse.ArgumentParser(description='Perform data analysis on accreted gas properties.')
+    parser.add_argument('--heatmap', "-hm", action='store_true', help='Plot correlation heatmap')
+    parser.add_argument('--magnetic_energy', "-me", action='store_true', help='Plot magnetic energy vs mass')
+    parser.add_argument('--position', "-pos", action='store_true', help='Plot position vs mass')
+    parser.add_argument('--dispersion', "-disp", action='store_true', help='Plot velocity dispersion vs mass')
+    parser.add_argument('--electron_density', "-ne", action='store_true', help='Plot electron density vs mass')
+    parser.add_argument('--star_locations', "-sl", action='store_true', help='Plot 3D positions of accreted gas particles colored by total mass')
+    parser.add_argument('--temperature_vs_ne', "-temp", action='store_true', help='Plot temperature vs electron density')
+    parser.add_argument('--specific_energies', "-se", action='store_true', help='Plot specific energies vs mass')
+    parser.add_argument('--strong_correlation', "-sc", action='store_true', help='Plot properties with strong correlation')
+    parser.add_argument('--velocity_correlation', "-vc", action='store_true', help='Plot velocity properties correlation')
+    parser.add_argument('--morphology_correlation', "-mc", action='store_true', help='Plot morphology properties correlation')
+    args = parser.parse_args()
+
+    # if statements for each analysis option
+    if args.heatmap:
+        plot_correlation_heatmap(df)
+    if args.magnetic_energy:
+        plot_magnetic_energy_vs_mass(df)
+    if args.position:
+        plot_position_vs_mass(df)
+    if args.dispersion:
+        plot_dispersion_vs_mass(df)
+    if args.electron_density:
+        plot_Ne_vs_mass(df)
+    if args.star_locations:
+        plot_star_locations(df)
+    if args.temperature_vs_ne:
+        plot_temperature_vs_ne(df)
+    if args.specific_energies:
+        plot_specific_energies_vs_mass(df)
+    if args.strong_correlation:
+        plot_strong_correlation(df)
+    if args.velocity_correlation:
+        plot_velocity_correlation(df)
+    if args.morphology_correlation:
+        morphology_correlation(df)
+
+    # If no arguments provided, print a message    
+    if sys.argv[1:] == []:
+        print("No analysis option provided. Use --help for available options.")

@@ -3,7 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from mpl_toolkits.mplot3d import Axes3D
+from seaborn import heatmap
 from sklearn.manifold import TSNE
+import sys
+import argparse
 
 
 # Load your pre-stellar gas data
@@ -12,8 +15,8 @@ df = pd.read_parquet('accreted_gas_properties_pre_stellar.pq')
 # Select input features 
 
 
-features = ['Ne', 'T', 'T_med', 'T_84', 'T_16', 'Ne_med', 'Ne_84', 'Ne_16'
-            , 'B', 'B_med', 'B_84', 'B_16', 'rho', 'rho_med', 'rho_84', 'rho_16']  
+features = ['Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'T', 'T_med', 'T_84', 'T_16',
+            'B', 'B_med', 'B_84', 'B_16', 'rho', 'rho_med', 'rho_84', 'rho_16']  
 
 def perform_2D_tsne(df, features):
     '''
@@ -44,9 +47,9 @@ def perform_2D_tsne(df, features):
 
     # Plot t-SNE results
     plt.figure(figsize=(10, 8))
-    scatter = plt.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
-    plt.colorbar(scatter, label='Total Mass (M_sun) [log scale]')
-    plt.title('t-SNE Visualization of Pre-Stellar Gas Properties (features: Ne, T, B, rho)')
+    scatter = plt.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], s=10, c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
+    plt.colorbar(scatter, label=r'Total Mass ($M_\odot$) [log scale]')
+    plt.title('t-SNE of Pre-Stellar Gas Property Distributions (features: Ne, T, B, rho)')
     plt.xlabel('t-SNE 1')
     plt.ylabel('t-SNE 2')
     plt.savefig('tsne_visualization.pdf', dpi=300, bbox_inches='tight')
@@ -85,8 +88,8 @@ def perform_3D_tsne(df, features):
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection='3d')
     scatter = ax.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], df_tsne['t-SNE 3'], c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
-    plt.colorbar(scatter, label='Total Mass (M_sun) [log scale]')
-    ax.set_title('3D t-SNE Visualization of Pre-Stellar Gas Properties (features: Ne, T, B, rho)')
+    plt.colorbar(scatter, label=r'Total Mass ($M_\odot$) [log scale]')
+    ax.set_title('3D t-SNE of Pre-Stellar Gas Property Distributions (features: Ne, T, B, rho)')
     ax.set_xlabel('t-SNE 1')
     ax.set_ylabel('t-SNE 2')
     ax.set_zlabel('t-SNE 3')
@@ -96,10 +99,33 @@ def perform_3D_tsne(df, features):
     return tsne, X_tsne
 
 
-def main():
+def correlation_heatmap(df, features):
+    '''
+    Generates a correlation matrix of properties of interest.
+    '''
 
-    perform_2D_tsne(df, features)
-    perform_3D_tsne(df, features)
+    correlation_matrix = np.log10(df[features]).corr()
+    fig = plt.figure(figsize=(10, 8))
+    heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+    plt.title('Heatmap of intrensic property distributions')
+    plt.show()
+
+
+def main():
+    argparser = argparse.ArgumentParser(description='Perform t-SNE analysis and correlation heatmap on pre-stellar gas properties.')
+    argparser.add_argument('--tsne_2d', '-2d', action='store_true', help='Perform 2D t-SNE analysis and visualization.')
+    argparser.add_argument('--tsne_3d', '-3d', action='store_true', help='Perform 3D t-SNE analysis and visualization.')
+    argparser.add_argument('--heatmap', '-hm', action='store_true', help='Generate a correlation heatmap of the features.')
+    args = argparser.parse_args()
+
+    if args.tsne_2d:
+        perform_2D_tsne(df, features)
+    if args.tsne_3d:
+        perform_3D_tsne(df, features)
+    if args.heatmap:
+        correlation_heatmap(df, features)
+    if sys.argv[1:] == []:
+        print("No analysis option provided. Use --help for available options.")
 
 
 if __name__ == "__main__":
