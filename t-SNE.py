@@ -9,14 +9,13 @@ import sys
 import argparse
 
 
-# Load your pre-stellar gas data
+# Load pre-stellar gas data
 df = pd.read_parquet('accreted_gas_properties_pre_stellar.pq')
 
 # Select input features 
-
-
 features = ['Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'T', 'T_med', 'T_84', 'T_16',
             'B', 'B_med', 'B_84', 'B_16', 'rho', 'rho_med', 'rho_84', 'rho_16']  
+
 
 def perform_2D_tsne(df, features):
     '''
@@ -49,7 +48,7 @@ def perform_2D_tsne(df, features):
     plt.figure(figsize=(10, 8))
     scatter = plt.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], s=10, c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
     plt.colorbar(scatter, label=r'Total Mass ($M_\odot$) [log scale]')
-    plt.title('t-SNE of Pre-Stellar Gas Property Distributions (features: Ne, T, B, rho)')
+    plt.title(r't-SNE of Pre-Stellar Gas Property Distributions (features: $X_e$, T, B, $\rho$)')
     plt.xlabel('t-SNE 1')
     plt.ylabel('t-SNE 2')
     plt.savefig('tsne_visualization.pdf', dpi=300, bbox_inches='tight')
@@ -89,7 +88,7 @@ def perform_3D_tsne(df, features):
     ax = fig.add_subplot(111, projection='3d')
     scatter = ax.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], df_tsne['t-SNE 3'], c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
     plt.colorbar(scatter, label=r'Total Mass ($M_\odot$) [log scale]')
-    ax.set_title('3D t-SNE of Pre-Stellar Gas Property Distributions (features: Ne, T, B, rho)')
+    ax.set_title(r'3D t-SNE of Pre-Stellar Gas Property Distributions (features: $X_e$, T, B, $\rho$)')
     ax.set_xlabel('t-SNE 1')
     ax.set_ylabel('t-SNE 2')
     ax.set_zlabel('t-SNE 3')
