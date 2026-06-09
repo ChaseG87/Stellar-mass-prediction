@@ -253,7 +253,7 @@ def morphology_correlation(df):
     plt.show()
 
 
-def piecewise_sp_eng_fit(df, energy_type='kin'):
+def piecewise_sp_eng_fit(df, energy_type='mag'):
     
     if energy_type not in ['kin', 'mag']:
         raise ValueError("energy_type must either be kinetic, \"kin\", or magnetic, \"mag\".")
@@ -296,6 +296,7 @@ def piecewise_sp_eng_fit(df, energy_type='kin'):
     plt.xscale('log')
     plt.yscale('log')
     print(f'large_slope = {model_large.coef_[0]}\nsmall_slope = {model_small.coef_[0]}')
+    print(f"r2 values\nsmall: {small_r2}\nlarge: {large_r2}")
     plt.title(f"Specific energy vs total mass piecewise fit")
 
     plt.show()
