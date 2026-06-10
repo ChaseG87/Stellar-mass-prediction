@@ -211,6 +211,7 @@ def plot_specific_energies_vs_mass(df):
     kin_xs = np.linspace(min(np.log10(df['sp_kin'])), max(np.log10(df['sp_kin'])), 100)
     kin_ys = kin_model.predict(kin_xs.reshape(-1, 1))
     ax1.plot(10**kin_xs, 10**kin_ys, linestyle='--', c='r', label=f'fit $r^2$ = {kin_score:.2f}')
+    ax1.legend()
 
     
     #plot gravitational energy vs mass (magnitude due to negative sign)
@@ -248,6 +249,7 @@ def plot_specific_energies_vs_mass(df):
     mag_xs = np.linspace(min(np.log10(df['sp_mag'])), max(np.log10(df['sp_mag'])), 100)
     mag_ys = mag_model.predict(mag_xs.reshape(-1, 1))
     ax4.plot(10**mag_xs, 10**mag_ys, linestyle='--', c='r', label=f'fit $r^2$ = {mag_score:.2f}')
+    ax4.legend()
 
     plt.savefig('specific_energies_vs_mass.pdf', dpi=300, bbox_inches='tight')
 
