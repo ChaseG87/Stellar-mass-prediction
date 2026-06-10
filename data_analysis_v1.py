@@ -25,9 +25,19 @@ df = pd.read_parquet('accreted_gas_properties_pre_stellar.pq')
 
 # add distance from center metric to the DataFrame
 df['distance_from_center'] = np.sqrt((df['x_cm_1']-50)**2 + (df['x_cm_2']-50)**2 + (df['x_cm_3']-50)**2)
+df['sp_kin'] = df['E_kin']/df['M_tot']
+df['sp_mag'] = df['E_mag']/df['M_tot']
+df['sp_int'] = df['E_int']/df['M_tot']
+df['L_magnitude'] = np.sqrt(df['L_vec_1']**2 + df['L_vec_2']**2 + df['L_vec_3']**2)
 
 # Investigation of data structure and properties
+
+# Reset index to acccess snap
+df = df.reset_index()
+
+#print("Active Columns:", list(df.columns))
 #print(df.head().T)
+
 #print(df.shape)
 
 def plot_correlation_heatmap(df):
@@ -35,14 +45,34 @@ def plot_correlation_heatmap(df):
     Plots a heatmap of the correlation matrix for the properties of the accreted gas.
     '''
 
-    chosen_columns = ['M_tot', 'E_mag', 'E_kin', 'E_int', 'R_eff', 'sig_3D', 'T',
-                         'L_vec_1', 'L_vec_2', 'L_vec_3']
+    chosen_log_columns = ['M_tot', 'sp_mag', 'sp_kin', 'sp_int', 'R_eff', 'sig_3D', 'T',
+                         'Ne', 'B', 'rho', 'L_magnitude', 'distance_from_center']
 
-    correlation_matrix = np.log10(df[chosen_columns]).corr()
+    df_log = np.log10(df[chosen_log_columns])
+    df_log['snap'] = df['snap']
+
+    correlation_matrix = df_log.corr()
     plt.figure(figsize=(10, 8))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-    plt.title('Correlation Heatmap of Accreted Gas Properties')
+    plt.title('Correlation Heatmap of Accreted Gas Properties (all log except snap)')
     plt.savefig('gas_correlation_heatmap.pdf', dpi=300, bbox_inches='tight')
+    plt.show()
+
+
+def plot_intrensic_gas_heatmap(df):
+    '''
+    Plots a heatmap of the correlation matrix for the distribution of intrensic gas properties and mass.
+    '''
+        
+
+    chosen_columns = ['M_tot', 'T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
+                     'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std'] 
+
+    correlation_matrix = np.log10(df[chosen_columns]).corr()
+    plt.figure(figsize=(12, 10))
+    heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+    plt.title('Correlation Heatmap of Intrensic Gas Properties')
+    plt.savefig('intrensic_prop_correlation_heatmap.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -296,7 +326,7 @@ def piecewise_sp_eng_fit(df, energy_type='mag'):
     plt.xscale('log')
     plt.yscale('log')
     print(f'large_slope = {model_large.coef_[0]}\nsmall_slope = {model_small.coef_[0]}')
-    print(f"r2 values\nsmall: {small_r2}\nlarge: {large_r2}")
+    print(f"\nr2 values:\nsmall: {small_r2}\nlarge: {large_r2}")
     plt.title(f"Specific energy vs total mass piecewise fit")
 
     plt.show()
@@ -307,7 +337,7 @@ def radians_vs_mass(df):
     Compares the "angular velocity" to mass of a star
     '''
     # create the "angular velocity" statistic
-    df['ang'] = np.sqrt(df['L_vec_1']**2 + df['L_vec_2']**2 + df['L_vec_3']**2)/(df['M_tot'] * df['R_eff'])
+    df['ang'] = np.sqrt(df['L_vec_1']**2 + df['L_vec_2']**2 + df['L_vec_3']**2)/(df['R_eff'])
 
     # plot "radians per second" vs mass
     plt.scatter(df['ang'], df['M_tot'], s=10, alpha=0.7)
@@ -325,8 +355,9 @@ def radians_vs_mass(df):
     # plot linear fit
     predline_xs = np.linspace(min(df['ang']), max(df['ang']), 100)
     predline_ys = 10**model.predict(np.log10(predline_xs).reshape(-1, 1))
-    plt.plot(predline_xs, predline_ys, label=f'Linear fit r2 = {r2_score}', linestyle='--', c='r')
+    plt.plot(predline_xs, predline_ys, label=f'Linear fit, $r^2$ = {r2_score:.2f}', linestyle='--', c='r')
     plt.legend()
+    print('Power-law slope of the fit:', model.coef_[0])
 
     plt.show()
 
@@ -335,6 +366,7 @@ if __name__ == "__main__":
     # Parser options for different analyses
     parser = argparse.ArgumentParser(description='Perform data analysis on accreted gas properties.')
     parser.add_argument('--heatmap', "-hm", action='store_true', help='Plot correlation heatmap')
+    parser.add_argument('--heatmap_intrensic', "-hmint", action='store_true', help='Plot intrensic correlation heatmap')
     parser.add_argument('--magnetic_energy', "-me", action='store_true', help='Plot magnetic energy vs mass')
     parser.add_argument('--position', "-pos", action='store_true', help='Plot position vs mass')
     parser.add_argument('--dispersion', "-disp", action='store_true', help='Plot velocity dispersion vs mass')
@@ -352,6 +384,8 @@ if __name__ == "__main__":
     # if statements for each analysis option
     if args.heatmap:
         plot_correlation_heatmap(df)
+    if args.heatmap_intrensic:
+        plot_intrensic_gas_heatmap(df)
     if args.magnetic_energy:
         plot_magnetic_energy_vs_mass(df)
     if args.position:
