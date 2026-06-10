@@ -187,35 +187,45 @@ def plot_specific_energies_vs_mass(df):
     '''
     Plots the relationship between the specific energy of the accreted gas and its total mass.
     '''
-    specific_kinetic = df['E_kin'] / df['M_tot']
-    specific_gravitational = df['E_grav'] / df['M_tot']
-    specific_internal = df['E_int'] / df['M_tot']
-    specific_magnetic = df['E_mag'] / df['M_tot']
+    df['sp_kin'] = df['E_kin'] / df['M_tot']
+    df['sp_grav'] = df['E_grav'] / df['M_tot']
+    df['sp_int'] = df['E_int'] / df['M_tot']
+    df['sp_mag'] = df['E_mag'] / df['M_tot']
 
     # define subplots
     fig = plt.figure(figsize=(12, 10))
     ax1 = fig.add_subplot(221)
 
     #plot kinetic energy vs mass
-    ax1.scatter(specific_kinetic, df['M_tot'], alpha=0.5)
+    ax1.scatter(df['sp_kin'], df['M_tot'], alpha=0.5, s=15)
     ax1.set_xlabel(r'Specific Kinetic Energy (energy/$M_\odot$)')
     ax1.set_ylabel(r'Total Mass ($M_\odot$)')
     ax1.set_title('Specific Kinetic Energy vs Total Mass of Accreted Gas')
     ax1.set_xscale('log')
     ax1.set_yscale('log')
+
+    # plot kin linear model
+    kin_model = LinearRegression()
+    kin_model.fit(np.log10(df['sp_kin']).values.reshape(-1, 1), np.log10(df['M_tot']).values)
+    kin_score = kin_model.score(np.log10(df['sp_kin']).values.reshape(-1, 1), np.log10(df['M_tot']).values)
+    kin_xs = np.linspace(min(np.log10(df['sp_kin'])), max(np.log10(df['sp_kin'])), 100)
+    kin_ys = kin_model.predict(kin_xs.reshape(-1, 1))
+    ax1.plot(10**kin_xs, 10**kin_ys, linestyle='--', c='r', label=f'fit $r^2$ = {kin_score:.2f}')
+
     
     #plot gravitational energy vs mass (magnitude due to negative sign)
     ax2 = fig.add_subplot(222)
-    ax2.scatter(-specific_gravitational, df['M_tot'], alpha=0.5)
+    ax2.scatter(-df['sp_grav'], df['M_tot'], alpha=0.5, s=15)
     ax2.set_xlabel(r'Specific Gravitational Energy (energy/$M_\odot$)')
     ax2.set_ylabel(r'Total Mass ($M_\odot$)')
     ax2.set_title('Specific Gravitational Energy vs Total Mass of Accreted Gas')
     ax2.set_xscale('log')
     ax2.set_yscale('log')
 
+
     #plot internal energy vs mass
     ax3 = fig.add_subplot(223)
-    ax3.scatter(specific_internal, df['M_tot'], alpha=0.5)
+    ax3.scatter(df['sp_int'], df['M_tot'], alpha=0.5, s=15)
     ax3.set_xlabel(r'Specific Internal Energy (energy/$M_\odot$)')
     ax3.set_ylabel(r'Total Mass ($M_\odot$)')
     ax3.set_title('Specific Internal Energy vs Total Mass of Accreted Gas')
@@ -224,12 +234,20 @@ def plot_specific_energies_vs_mass(df):
 
     #plot magnetic energy vs mass
     ax4 = fig.add_subplot(224)
-    ax4.scatter(specific_magnetic, df['M_tot'], alpha=0.5)
+    ax4.scatter(df['sp_mag'], df['M_tot'], alpha=0.5, s=15)
     ax4.set_xlabel(r'Specific Magnetic Energy (energy/$M_\odot$)')
     ax4.set_ylabel(r'Total Mass ($M_\odot$)')
     ax4.set_title('Specific Magnetic Energy vs Total Mass of Accreted Gas') 
     ax4.set_xscale('log')
     ax4.set_yscale('log')
+
+    # plot magnetic linear model
+    mag_model = LinearRegression()
+    mag_model.fit(np.log10(df['sp_mag']).values.reshape(-1, 1), np.log10(df['M_tot']).values)
+    mag_score = mag_model.score(np.log10(df['sp_mag']).values.reshape(-1, 1), np.log10(df['M_tot']).values)
+    mag_xs = np.linspace(min(np.log10(df['sp_mag'])), max(np.log10(df['sp_mag'])), 100)
+    mag_ys = mag_model.predict(mag_xs.reshape(-1, 1))
+    ax4.plot(10**mag_xs, 10**mag_ys, linestyle='--', c='r', label=f'fit $r^2$ = {mag_score:.2f}')
 
     plt.savefig('specific_energies_vs_mass.pdf', dpi=300, bbox_inches='tight')
 
