@@ -47,7 +47,6 @@ def plot_correlation_heatmap(df):
 
     chosen_log_columns = ['M_tot', 'sp_mag', 'sp_kin', 'sp_int', 'R_eff', 'sig_3D', 'T',
                          'Ne', 'B', 'rho', 'L_magnitude', 'distance_from_center']
-
     df_log = np.log10(df[chosen_log_columns])
     df_log['snap'] = df['snap']
 
@@ -59,7 +58,7 @@ def plot_correlation_heatmap(df):
     plt.show()
 
 
-def plot_intrensic_gas_heatmap(df):
+def plot_intrinsic_gas_heatmap(df):
     '''
     Plots a heatmap of the correlation matrix for the distribution of intrensic gas properties and mass.
     '''
@@ -71,8 +70,8 @@ def plot_intrensic_gas_heatmap(df):
     correlation_matrix = np.log10(df[chosen_columns]).corr()
     plt.figure(figsize=(12, 10))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-    plt.title('Correlation Heatmap of Intrensic Gas Properties')
-    plt.savefig('intrensic_prop_correlation_heatmap.pdf', dpi=300, bbox_inches='tight')
+    plt.title('Correlation Heatmap of Intrinsic Gas Properties')
+    plt.savefig('intrinsic_prop_correlation_heatmap.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -366,7 +365,7 @@ if __name__ == "__main__":
     # Parser options for different analyses
     parser = argparse.ArgumentParser(description='Perform data analysis on accreted gas properties.')
     parser.add_argument('--heatmap', "-hm", action='store_true', help='Plot correlation heatmap')
-    parser.add_argument('--heatmap_intrensic', "-hmint", action='store_true', help='Plot intrensic correlation heatmap')
+    parser.add_argument('--heatmap_intrinsic', "-hmint", action='store_true', help='Plot intrensic correlation heatmap')
     parser.add_argument('--magnetic_energy', "-me", action='store_true', help='Plot magnetic energy vs mass')
     parser.add_argument('--position', "-pos", action='store_true', help='Plot position vs mass')
     parser.add_argument('--dispersion', "-disp", action='store_true', help='Plot velocity dispersion vs mass')
@@ -384,8 +383,8 @@ if __name__ == "__main__":
     # if statements for each analysis option
     if args.heatmap:
         plot_correlation_heatmap(df)
-    if args.heatmap_intrensic:
-        plot_intrensic_gas_heatmap(df)
+    if args.heatmap_intrinsic:
+        plot_intrinsic_gas_heatmap(df)
     if args.magnetic_energy:
         plot_magnetic_energy_vs_mass(df)
     if args.position:
