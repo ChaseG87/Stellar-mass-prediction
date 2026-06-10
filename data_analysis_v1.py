@@ -302,6 +302,34 @@ def piecewise_sp_eng_fit(df, energy_type='mag'):
     plt.show()
 
 
+def radians_vs_mass(df):
+    '''
+    Compares the "angular velocity" to mass of a star
+    '''
+    # create the "angular velocity" statistic
+    df['ang'] = np.sqrt(df['L_vec_1']**2 + df['L_vec_2']**2 + df['L_vec_3']**2)/(df['M_tot'] * df['R_eff'])
+
+    # plot "radians per second" vs mass
+    plt.scatter(df['ang'], df['M_tot'], s=10, alpha=0.7)
+    plt.xlabel(r'Magnitude of angular momentum divided by $M_{tot}$ and $R_{eff}$')
+    plt.ylabel(r'Mass ($M_\odot$)')
+    plt.title('\"Angular Velocity\" vs Mass')
+    plt.xscale('log')
+    plt.yscale('log')
+
+    # fit linear model
+    model = LinearRegression()
+    model.fit(np.log10(df['ang']).values.reshape(-1, 1), np.log10(df['M_tot']).values)
+    r2_score = model.score(np.log10(df['ang']).values.reshape(-1, 1), np.log10(df['M_tot']).values)
+
+    # plot linear fit
+    predline_xs = np.linspace(min(df['ang']), max(df['ang']), 100)
+    predline_ys = 10**model.predict(np.log10(predline_xs).reshape(-1, 1))
+    plt.plot(predline_xs, predline_ys, label=f'Linear fit r2 = {r2_score}', linestyle='--', c='r')
+    plt.legend()
+
+    plt.show()
+
 if __name__ == "__main__":
 
     # Parser options for different analyses
@@ -318,6 +346,7 @@ if __name__ == "__main__":
     parser.add_argument('--velocity_correlation', "-vc", action='store_true', help='Plot velocity properties correlation')
     parser.add_argument('--morphology_correlation', "-mc", action='store_true', help='Plot morphology properties correlation')
     parser.add_argument('--piecewise_energy_fit', '-pw', action='store_true', help='Plot piecewise fit of specific energy')
+    parser.add_argument('--radians_ps', '-rad', action='store_true', help='Plot approx angular velocity vs mass')
     args = parser.parse_args()
 
     # if statements for each analysis option
@@ -345,7 +374,8 @@ if __name__ == "__main__":
         morphology_correlation(df)
     if args.piecewise_energy_fit:
         piecewise_sp_eng_fit(df)
-
+    if args.radians_ps:
+        radians_vs_mass(df)
     # If no arguments provided, print a message    
     if sys.argv[1:] == []:
         print("No analysis option provided. Use --help for available options.")
