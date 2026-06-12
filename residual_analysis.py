@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 import seaborn as sns
 from seaborn import heatmap
+from data_analysis_v2 import linear_fit, piecewise_fit, polynomial_fit, log_normal_power_law
 
 
 # Load pre-stellar gas data
@@ -13,33 +14,44 @@ df['sp_kin'] = df['E_kin'] / df['M_tot']
 df['sp_mag'] = df['E_mag'] / df['M_tot']
 
 
-def get_residuals(df, feature):
+def get_residuals(df, feature, model):
     '''
     Computes the residuals of a linear regression model predicting total mass from a specified feature.
     
     Parameters:
     - df: pandas DataFrame containing the data to be analyzed.
     - feature: string name of the column in the DataFrame to be used as the predictor variable.
+    - model: string name of the model to be evaluated.
     
     Returns:
     - residuals: numpy array containing the residuals of the linear regression model.
     '''
     
-    X = np.log10(df[[feature]])  # Predictor variable (log-transformed)
-    y = np.log10(df['M_tot'])     # Target variable (log-transformed)
+    # dummy axis
+    fig = plt.figure(figsize=(12, 10))
+    ax = fig.add_subplot(111)
+
+    if model == 'linear':
+        x, residuals = linear_fit(df, feature, ax)
+        plt.close()
+        return residuals
+    if model == 'piecewise':
+        x, residuals = piecewise_fit(df, feature, ax)
+        plt.close()
+        return residuals
+    if model == 'polynomial':
+        x, residuals = polynomial_fit(df, feature, ax)
+        plt.close()
+        return residuals
+    if model == 'lognormpower':
+        x, residuals = log_normal_power_law(df, feature,ax)
+        plt.close()
+        return residuals
     
-    # Fit linear regression model
-    model = LinearRegression()
-    model.fit(X, y)
     
-    # Predict values and compute residuals
-    y_pred = model.predict(X)
-    residuals = y - y_pred
-    
-    return residuals
 
 
-def plot_residuals(df, feature):
+def plot_residuals(df, feature, model='linear'):
     '''
     Plots the residuals of a linear regression model predicting total mass from a specified feature.
     
@@ -48,7 +60,7 @@ def plot_residuals(df, feature):
     - feature: string name of the column in the DataFrame to be used as the predictor variable.
     '''
     
-    residuals = get_residuals(df, feature)
+    residuals = get_residuals(df, feature, model)
     
     plt.figure(figsize=(8, 5))
     plt.scatter(np.log10(df[feature]), residuals, alpha=0.5)
@@ -58,7 +70,7 @@ def plot_residuals(df, feature):
     plt.show()
 
 
-def plot_residual_correlation(df, res_feature, feature):
+def plot_residual_correlation(df, res_feature, feature, model='linear'):
     '''
     Plots the correlation between residuals of a linear regression model and other features.
     
@@ -68,7 +80,7 @@ def plot_residual_correlation(df, res_feature, feature):
     - feature: string name of the column in the DataFrame to be plotted against the residuals.
     '''
     
-    residuals = get_residuals(df, res_feature)
+    residuals = get_residuals(df, res_feature, model)
 
     model = LinearRegression()
 
@@ -83,7 +95,7 @@ def plot_residual_correlation(df, res_feature, feature):
     plt.show()
 
 
-def residual_regression_analysis(df, res_feature, features):
+def residual_regression_analysis(df, res_feature, features, model):
     '''
     Performs regression analysis on the residuals of a linear regression model and another feature.
     
@@ -97,7 +109,7 @@ def residual_regression_analysis(df, res_feature, features):
     - predictions: numpy array of shape (n_samples,) containing the predicted values of the residuals based on the specified feature.
     '''
     
-    residuals = get_residuals(df, res_feature)
+    residuals = get_residuals(df, res_feature, model='linear')
     
     X = np.log10(df[features])  # Predictor
     y = residuals                 # Target variable (residuals)
@@ -131,13 +143,13 @@ def cross_correlation_scatter(df, features):
     plt.show()
 
 
-def residual_heatmap(df):
+def residual_heatmap(df, model):
 
     # allow snap to be accessed
     df = df.reset_index()
 
-    df['kin_res'] = get_residuals(df, 'sp_kin')
-    df['mag_res'] = get_residuals(df, 'sp_mag')
+    df['kin_res'] = get_residuals(df, 'sp_kin', model)
+    df['mag_res'] = get_residuals(df, 'sp_mag', model)
 
     chosen_log_labels = ['M_tot', 'T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
                      'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std'] 
@@ -149,8 +161,8 @@ def residual_heatmap(df):
     correlation_matrix = df_log.corr()
     plt.figure(figsize=(15, 12))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-    plt.title('Correlation Heatmap of Residuals, Mass, and Intrinsic Properties')
-    plt.savefig('residual_correlation_heatmap.pdf', dpi=300, bbox_inches='tight')
+    plt.title('Correlation Heatmap of Residuals, Mass, and Intrinsic Properties, model = ' + model)
+    plt.savefig('figures/residual_correlation_heatmaps/' + model + '_heatmap.pdf', dpi=300, bbox_inches='tight')
     plt.show()
     
 
@@ -179,4 +191,7 @@ def residual_heatmap(df):
 
 #cross_correlation_scatter(df, ['sp_kin', 'sp_mag', 'T', 'Ne', 'B'])
 
-residual_heatmap(df)
+residual_heatmap(df, model='linear')
+residual_heatmap(df, model='polynomial')
+residual_heatmap(df, model='piecewise')
+residual_heatmap(df, model='lognormpower')
