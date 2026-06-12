@@ -7,6 +7,7 @@ import pwlf
 import numpy as np
 import sys
 import argparse
+import scipy.stats as stats
 from scipy.optimize import minimize
 
 '''
@@ -91,7 +92,7 @@ class LogNormalPowerLawFitter:
         return 10**Y_fit_log
 
 
-def linear_fit(df, feature):
+def linear_fit(df, feature, axis):
     '''
     Fits a linear model of a given feature to the total mass M_tot
     '''
@@ -106,27 +107,26 @@ def linear_fit(df, feature):
     r2 = model.score(X, y)
 
     #plot scatter
-    plt.scatter(X, y, s=10, alpha=0.7)
+    axis.scatter(X, y, s=10, alpha=0.7)
 
     # plot model fit
     xs = np.linspace(min(np.log10(df[feature])), max(np.log10(df[feature])), 50)
     ys = model.predict(xs.reshape(-1, 1))
-    plt.plot(xs, ys, c='r', linestyle='--', label=f'$r^2$ = {r2:.2f}')
+    axis.plot(xs, ys, c='r', linestyle='--', label=f'$r^2$ = {r2:.2f}')
 
     # labels and titles
-    plt.legend()
-    plt.title(f'Linear fit of {feature} vs M_tot')
-    plt.xlabel(f'{feature}')
-    plt.ylabel(r'M_tot ($M_\odot$)')
+    axis.legend()
+    axis.set_title(f'Linear fit of {feature} vs M_tot')
+    axis.set_xlabel(r'$\log_{10}$' + feature)
+    axis.set_ylabel(r'$\log_{10}$ M_tot ($M_\odot$)')
 
-    plt.show()
 
     residuals = model.predict(X) - y
 
     return X, residuals
 
 
-def piecewise_fit(df, feature, n=2):
+def piecewise_fit(df, feature, axis, n=2):
     '''
     Fits a piecewise power-law of a given feature to M_tot with n breakpoints
     '''
@@ -141,27 +141,26 @@ def piecewise_fit(df, feature, n=2):
     model.fit(n)
 
     #plot scatter
-    plt.scatter(X, y, s=10, alpha=0.7)
+    axis.scatter(X, y, s=10, alpha=0.7)
     
 
     # plot model fit
     xs = np.linspace(min(np.log10(df[feature])), max(np.log10(df[feature])), 50)
     ys = model.predict(xs)
-    plt.plot(xs, ys, c='r', linestyle='--')
+    axis.plot(xs, ys, c='r', linestyle='--')
 
     #labels and titles
-    plt.title(f'Piecewise fit, n={n}, {feature} vs M_tot')
-    plt.xlabel(f'{feature}')
-    plt.ylabel(r'M_tot ($M_\odot$)')
+    axis.set_title(f'Piecewise fit, n={n}, {feature} vs M_tot')
+    axis.set_xlabel(r'$\log_{10}$' + feature)
+    axis.set_ylabel(r'$\log_{10}$ M_tot ($M_\odot$)')
 
-    plt.show()
 
     residuals = model.predict(X) - y
 
     return X, residuals
 
 
-def polynomial_fit(df, feature, n=2):
+def polynomial_fit(df, feature, axis, n=2):
     '''
     Fits a polynomial model of degree n for given feature to the total mass M_tot
     '''
@@ -176,27 +175,25 @@ def polynomial_fit(df, feature, n=2):
     r2 = poly_model.score(X, y)
 
     #plot scatter
-    plt.scatter(X, y, s=10, alpha=0.7)
+    axis.scatter(X, y, s=10, alpha=0.7)
 
     # plot model fit
     xs = np.linspace(min(np.log10(df[feature])), max(np.log10(df[feature])), 50)
     ys = poly_model.predict(xs.reshape(-1, 1))
-    plt.plot(xs, ys, c='r', linestyle='--', label=f'$r^2$ = {r2:.2f}')
+    axis.plot(xs, ys, c='r', linestyle='--', label=f'$r^2$ = {r2:.2f}')
 
     # labels and titles
-    plt.legend()
-    plt.title(f'Linear fit of {feature} vs M_tot')
-    plt.xlabel(f'{feature}')
-    plt.ylabel(r'M_tot ($M_\odot$)')
-
-    plt.show()
+    axis.legend()
+    axis.set_title(f'Polynomial fit of {feature} vs M_tot')
+    axis.set_xlabel(r'$\log_{10}$' + feature)
+    axis.set_ylabel(r'$\log_{10}$ M_tot ($M_\odot$)')
 
     residuals = poly_model.predict(X) - y
 
     return X, residuals
 
 
-def log_normal_power_law(df, feature):
+def log_normal_power_law(df, feature, axis):
     # raw values
     x_raw = df[feature].values
     y_raw = df['M_tot'].values
@@ -210,22 +207,20 @@ def log_normal_power_law(df, feature):
     y_plot = fitter.predict(x_plot)
 
     # render the Figure in Log-Log Space
-    plt.figure(figsize=(8, 5))
-    plt.scatter(np.log10(x_raw), np.log10(y_raw), s=10, alpha=0.7)
-    plt.plot(np.log10(x_plot), np.log10(y_plot), color='r', linestyle='--', 
+    axis.scatter(np.log10(x_raw), np.log10(y_raw), s=10, alpha=0.7)
+    axis.plot(np.log10(x_plot), np.log10(y_plot), color='r', linestyle='--', 
              label=f"Spliced Model (Slope = {fitter.m:.2f})")
 
     # plot vertical visual marker indicating exactly where the smooth splice happened
-    plt.axvline(fitter.Xb, color="black", linestyle=":", alpha=0.7, 
+    axis.axvline(fitter.Xb, color="black", linestyle=":", alpha=0.7, 
                 label=f"Transition Window (10^{fitter.Xb:.1f})")
 
     # labels and title
-    plt.xlabel(r"$\log_{10}$ " + feature)
-    plt.ylabel(r"$\log_{10}$ M_tot ($M_\odot$)")
-    plt.title("Power-Law Mixture Fit")
-    plt.legend()
-    plt.savefig(f'figures/log_normal_power_law_{feature}_fit.pdf', dpi=300)
-    plt.show()
+    axis.set_xlabel(r"$\log_{10}$ " + feature)
+    axis.set_ylabel(r"$\log_{10}$ M_tot ($M_\odot$)")
+    axis.set_title("Log-Normal Power-Law Mixture Fit of " + feature + " vs M_tot")
+    axis.legend()
+
 
     residuals = np.log10(fitter.predict(x_raw)) - np.log10(y_raw)
 
@@ -239,13 +234,101 @@ def chi_squared_comparison(df, feature):
     pass
 
 
+def gaussian_residuals_check(x, residuals, title, axis):
 
-linear_fit(df, 'sp_kin')
+    # plot histogram of residuals
+    axis.hist(residuals, bins=30, density=True)
 
-piecewise_fit(df, 'sp_kin', n=2)
+    # calculate ideal gaussian fit
+    mu = np.mean(residuals)
+    sigma = np.std(residuals)
+    x_axis = np.linspace(min(residuals), max(residuals), 100)
+    gaussian_pdf = stats.norm.pdf(x_axis, loc=mu, scale=sigma)
 
-polynomial_fit(df, 'sp_kin', n=2)
+    # plot gaussian pdf
+    axis.plot(x_axis, gaussian_pdf, alpha=0.5, c='r', label="Gaussian fit")
+    axis.set_title(title)
+    axis.legend()
 
-log_normal_power_law(df, 'sp_kin')
+
+def residuals_scatter(x, residuals, title, axis):
+
+    axis.set_title(f'{title} against X space')
+    axis.scatter(x, residuals, s=10, alpha=0.7)
+    
+
+
+
+def residual_comparision(energy):
+
+
+    # plot how fits of each method
+    fig = plt.figure(figsize=(12, 10))
+    ax1 = fig.add_subplot(221)
+    ax2 = fig.add_subplot(222)
+    ax3 = fig.add_subplot(223)
+    ax4 = fig.add_subplot(224)
+
+    x, linear_res  = linear_fit(df, energy, ax1)
+    x, pw_res = piecewise_fit(df, energy, ax2, n=2)
+    x, poly_res = polynomial_fit(df, energy, ax3, n=5)
+    x, log_normal_res = log_normal_power_law(df, energy, ax4)
+
+
+    plt.tight_layout()
+    plt.savefig("figures/" + energy + "/" + energy + "_regression_plots.pdf", dpi=300)
+    plt.show()
+
+    # plot fits of the four regression methods
+
+
+
+    # plot how gaussian residuals are
+    fig = plt.figure(figsize=(12, 10))
+    ax1 = fig.add_subplot(221)
+    ax2 = fig.add_subplot(222)
+    ax3 = fig.add_subplot(223)
+    ax4 = fig.add_subplot(224)
+
+    gaussian_residuals_check(x, linear_res, "Linear Regression", ax1)
+    gaussian_residuals_check(x, pw_res, "Piecewise Regression", ax2)
+    gaussian_residuals_check(x, poly_res, "Polynomial Regression", ax3)
+    gaussian_residuals_check(x, log_normal_res, "Log Normal Power Law Regression", ax4)
+
+    plt.suptitle("Distribution of Residuals for different fits, " + energy)
+
+    plt.tight_layout()
+    plt.savefig("figures/" + energy + "/" + energy + "_residuals_distribution.pdf", dpi=300)
+    plt.show()
+
+
+    # plot scatter plots of residuals for each fit
+    fig = plt.figure(figsize=(12, 10))
+    ax1 = fig.add_subplot(221)
+    ax2 = fig.add_subplot(222)
+    ax3 = fig.add_subplot(223)
+    ax4 = fig.add_subplot(224)
+
+    residuals_scatter(x, linear_res, "Linear Regression", ax1)
+    residuals_scatter(x, pw_res, "Piecewise Regression", ax2)
+    residuals_scatter(x, poly_res, "Polynomial Regression", ax3)
+    residuals_scatter(x, log_normal_res, "Log Normal Power Law Regression", ax4)
+
+    plt.suptitle("Scatterplots of Residuals vs input, " + energy)
+
+    plt.tight_layout()
+    plt.savefig("figures/" + energy + "/" + energy + "_residuals_vs_X.pdf", dpi=300)
+    plt.show()
+
+
+def residual_sigma_correlation(df, residuals):
+    pass
+
+if __name__ == "__main__":
+
+    residual_comparision('sp_kin')
+
+    residual_comparision('sp_mag')
+
 
 
