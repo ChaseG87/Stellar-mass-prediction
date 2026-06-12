@@ -121,7 +121,7 @@ def linear_fit(df, feature, axis):
     axis.set_ylabel(r'$\log_{10}$ M_tot ($M_\odot$)')
 
 
-    residuals = model.predict(X) - y
+    residuals = y - model.predict(X)
 
     return X, residuals
 
@@ -155,7 +155,7 @@ def piecewise_fit(df, feature, axis, n=2):
     axis.set_ylabel(r'$\log_{10}$ M_tot ($M_\odot$)')
 
 
-    residuals = model.predict(X) - y
+    residuals = y - model.predict(X)
 
     return X, residuals
 
@@ -188,7 +188,7 @@ def polynomial_fit(df, feature, axis, n=2):
     axis.set_xlabel(r'$\log_{10}$' + feature)
     axis.set_ylabel(r'$\log_{10}$ M_tot ($M_\odot$)')
 
-    residuals = poly_model.predict(X) - y
+    residuals = y - poly_model.predict(X)
 
     return X, residuals
 
@@ -221,14 +221,14 @@ def log_normal_power_law(df, feature, axis):
     axis.set_title("Log-Normal Power-Law Mixture Fit of " + feature + " vs M_tot")
     axis.legend()
 
-
-    residuals = np.log10(fitter.predict(x_raw)) - np.log10(y_raw)
+    # define residuals
+    residuals = np.log10(y_raw) - np.log10(fitter.predict(x_raw))
 
     return np.log10(x_raw), residuals
 
 
 def chi_squared_comparison(df, feature):
-    # can only compare linear models with linear parameters (no log_normal_power_law)
+    # can only compare linear models with linear parameters (no log_normal_power_law or piecewise)
 
 
     pass
@@ -257,8 +257,6 @@ def residuals_scatter(x, residuals, title, axis):
     axis.scatter(x, residuals, s=10, alpha=0.7)
     
 
-
-
 def residual_comparision(energy):
 
 
@@ -278,9 +276,6 @@ def residual_comparision(energy):
     plt.tight_layout()
     plt.savefig("figures/" + energy + "/" + energy + "_regression_plots.pdf", dpi=300)
     plt.show()
-
-    # plot fits of the four regression methods
-
 
 
     # plot how gaussian residuals are
