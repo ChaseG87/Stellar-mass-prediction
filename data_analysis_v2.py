@@ -316,14 +316,78 @@ def residual_comparision(energy):
     plt.show()
 
 
-def residual_sigma_correlation(df, residuals):
-    pass
+def mass_sliding_window(df, feature, window_num=10):
+
+    # define DataFrame of interest
+    df_log = np.log10(df[[feature, 'M_tot']])
+    # define windows from window size in feature space
+    window_grid = np.linspace(df_log[feature].min(), df_log[feature].max(), window_num)
+
+    means = []
+    stds = []
+
+    # loop through windows
+    for i in range(window_num - 1):
+
+        # mask out values in the current window
+        mask = (df_log[feature] >= window_grid[i]) & (df_log[feature] <= window_grid[i+1])
+
+        sample = df_log['M_tot'][mask]
+
+        # Calculate the means and standard deviations of the sample
+        mean = np.mean(sample)
+        std = np.std(sample)
+
+        means.append(mean)
+        stds.append(std)
+
+    means = np.array(means)
+    stds = np.array(stds)
+
+    fig = plt.figure(figsize=(10,10))
+    ax1 = fig.add_subplot(211)
+    ax2 = fig.add_subplot(212)
+
+    xs = window_grid[:-1] + 0.5 * (window_grid[1] - window_grid[0])
+
+    ax1.set_title("Mean mass vs " + feature)
+    ax1.set_xlabel(feature)
+    ax1.set_ylabel(r'Mean $\log_{10}$ Mass ($M_\odot$)')
+    ax1.scatter(df_log[feature], df_log['M_tot'], alpha=0.3, c='gray')
+    ax1.plot(xs, means+stds, c='crimson', linestyle='--')
+    ax1.plot(xs, means-stds, c='crimson', linestyle='--')
+    ax1.plot(xs, means, c='r')
+    
+
+    ax2.set_title('Standard Deviation of mass vs ' + feature)
+    ax2.set_xlabel(feature)
+    ax2.set_ylabel(r'Std $\log_{10}$ Mass ($M_\odot$)')
+    ax2.plot(xs, stds, c='r')
+
+    plt.suptitle("Sliding Window of Means and Std of Mass vs " + feature)
+    plt.tight_layout()
+    plt.savefig('figures/' + feature + '/' + feature + '_sliding_window.pdf', dpi=300)
+    plt.show()
+
+
+
+    # 1. extract points
+    # 2. calculate mean, std and skew of mass
+    
+    # plot std vs mass
+
+    # plot skew vs mass
+
+
 
 if __name__ == "__main__":
 
-    residual_comparision('sp_kin')
+    #residual_comparision('sp_kin')
 
-    residual_comparision('sp_mag')
+    #residual_comparision('sp_mag')
 
+    mass_sliding_window(df, 'sp_kin')
+
+    mass_sliding_window(df, 'sp_mag')
 
 
