@@ -291,7 +291,7 @@ class GreedyModelConstructor:
         return model.predict(input)
     
 
-    def visualize(self):
+    def visualize(self, preds):
         '''
         Visualizes the prediction model
         '''
@@ -307,14 +307,14 @@ class GreedyModelConstructor:
 
 
         # plot scatter of actual vs predicted
-        plt.scatter(y, pred, alpha=0.5)
+        plt.scatter(y, pred, alpha=0.5, s = 10)
 
         # plot perfect prediction line
         plt.plot(y, y, c='r')
-        plt.title(f"Predicted vs Actual of Greedy Model $R^2 =$ {r2:.2f}, num_preds = 10")
+        plt.title(f"Predicted vs Actual of Greedy Model $R^2 =$ {r2:.2f}, num_preds = {preds}")
         plt.xlabel('Ground Truth Mass')
         plt.ylabel('Predicted Mass')
-        #plt.savefig('figures/greedy_figures/greedy_pred10.pdf', dpi=300)
+        plt.savefig(f'figures/greedy_figures/greedy_pred{preds}.pdf', dpi=300)
         
         plt.show()
 
@@ -324,11 +324,13 @@ if __name__ == '__main__':
     # initialize predictor
     model = GreedyModelConstructor(df)
 
+    num_pred = 10
+
     # select features
-    model.construct_predictor(log_features=log_features, lin_features=lin_features, method='defined', num_preds=10)
+    model.construct_predictor(log_features=log_features, lin_features=lin_features, method='defined', num_preds=num_pred)
 
     # visualize model
-    model.visualize()
+    model.visualize(preds=num_pred)
 
     print(f'Model Trained logorithmically on: {model.predictors_log}\n Model Trained Linearly on: {model.predictors_lin}')
 
