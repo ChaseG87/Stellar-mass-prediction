@@ -253,7 +253,8 @@ class GreedyModelConstructor:
         plt.title(f"Predicted vs Actual of Greedy Model $R^2 =$ {r2:.2f}, num_preds = {preds}")
         plt.xlabel('Ground Truth Mass')
         plt.ylabel('Predicted Mass')
-        plt.savefig(f'figures/greedy_figures/greedy_pred{preds}.pdf', dpi=300)
+        if __name__ == "__main__":
+            plt.savefig(f'figures/greedy_figures/greedy_pred{preds}.pdf', dpi=300)
         
         plt.show()
 
@@ -299,7 +300,7 @@ class LassoAidedModelConstructor:
         self.model.fit(X_fin, self.target)
 
 
-    def visualize(self):
+    def visualize(self, title=None):
         '''
         Visualizes the prediction vs ground truth of the LASSO aided reduced linear model
         '''
@@ -312,11 +313,15 @@ class LassoAidedModelConstructor:
 
         # plot fitted model against scatter
         plt.scatter(self.target, pred, alpha=0.5, s= 10)
-        plt.title(f'LASSO Aided Model Ground Truth vs Pred, $R^2 = {r2:.2f}$, features = {len(X[0])}')
+        if title == None:
+            plt.title(f'LASSO Aided Model Ground Truth vs Pred, $R^2 = {r2:.2f}$, features = {len(X[0])}')
+        else:
+            plt.title(title)
         plt.xlabel('Ground Truth (mass)')
         plt.ylabel('Predicted Mass')
         plt.plot(y, y, c='r')
-        plt.savefig('figures/lasso_tuned_8.pdf', dpi=300)
+        if __name__ == "__main__":
+            plt.savefig('figures/lasso_tuned_8.pdf', dpi=300)
         plt.show()
 
 

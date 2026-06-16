@@ -3,6 +3,8 @@ import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from mpl_toolkits.mplot3d import Axes3D
+from internal_gas_model import LassoAidedModelConstructor
+from internal_gas_model import GreedyModelConstructor
 import matplotlib.pyplot as plt
 import argparse
 import sys
@@ -48,7 +50,7 @@ def perform_pca(df, three_d=False, n_components=3):
     plt.xlabel('Principal Components')
     plt.title('Explained Variance Ratio by Principal Components')
     plt.xticks(range(1, n_components + 1))
-    plt.savefig('figures/PCA/components_ratios.pdf', dpi=300)
+    #plt.savefig('figures/PCA/components_ratios.pdf', dpi=300)
     plt.show()
 
     # Plot the cumulative explained variance
@@ -56,7 +58,7 @@ def perform_pca(df, three_d=False, n_components=3):
     plt.plot(range(1, n_components + 1), np.cumsum(pca.explained_variance_ratio_), marker='o', linestyle='--')
     plt.ylabel('Cumulative Explained Variance')
     plt.xticks(range(1, n_components + 1))
-    plt.savefig('figures/PCA/cumulative_variance.pdf', dpi=300)
+    #plt.savefig('figures/PCA/cumulative_variance.pdf', dpi=300)
     plt.show()
 
     # 2D scatter plot of the first two principal components colored by total mass
@@ -66,7 +68,7 @@ def perform_pca(df, three_d=False, n_components=3):
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
     plt.title('PCA of Pre-Stellar Gas Property Distributions (features: T, Ne, B, rho)')
-    plt.savefig('pca_visualization.pdf', dpi=300, bbox_inches='tight')
+    #plt.savefig('pca_visualization.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
     if three_d:
@@ -104,15 +106,44 @@ def regression_analysis(transformed_data):
     plt.ylabel('Predicted Total Mass (M_sun)')
     R_squared = model.score(transformed_data, target)
     plt.title(f'PCA Regression Data R²: {R_squared:.2f}, Components = {len(transformed_data[0])}')
-    plt.savefig('figures/PCA/pca_8_components.pdf', dpi=300)
     plt.plot(target, target, c='r')
+    #plt.savefig('figures/PCA/pca_8_components.pdf', dpi=300)
     plt.show()
+
+
+def lasso_pca_regression(transformed_data, alpha):
+    # define components and df_pca
+    components = ['comp' + str(i+1) for i in range(len(transformed_data[0]))]
+    df_pca = pd.DataFrame(transformed_data, columns=components)
+    df_pca['M_tot'] = df['M_tot']
+
+    # initialize model and fit
+    model = LassoAidedModelConstructor(df_pca, alpha=alpha)
+    model.train(components)
+
+    # visualize model results
+    model.visualize(title=f'PCA LASSO Aided Linear Regression, $R^2 = 0.85$, components = 8')
+
+
+def greedy_pca_regression(transformed_data, n_preds=8):
+
+    # define components and df_pca
+    components = ['comp' + str(i+1) for i in range(len(transformed_data[0]))]
+    df_pca = pd.DataFrame(transformed_data, columns=components)
+    df_pca['M_tot'] = df['M_tot']
+
+    # initialize model and fit
+    model = GreedyModelConstructor(df_pca)
+    model.construct_predictor(components)
+
+    # visualize model results
+    model.visualize(preds=n_preds)
 
 
 def blind_regression_analysis(df):
 
     features = ['T', 'T_med', 'T_84', 'T_16', 'T_std', 'Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'Ne_std',
-            'B', 'B_med', 'B_84', 'B_16', 'B_std', 'rho', 'rho_med', 'rho_84', 'rho_16', 'rho_std'] 
+            'B', 'B_med', 'B_84', 'B_16', 'B_std', 'rho', 'rho_med', 'rho_84', 'rho_16', 'rho_std', 'snap'] 
     
     # Take the logarithm of the data to handle wide ranges and reduce skewness
     log_data = np.log10(df[features])
@@ -129,17 +160,21 @@ def blind_regression_analysis(df):
     plt.title(f'Blind Regression Analysis R²: {R_squared:.2f}')
     plt.show()
 
+
 def main():
     argparser = argparse.ArgumentParser(description='Perform PCA analysis and correlation heatmap on pre-stellar gas properties.')
     argparser.add_argument('--pca_3d', '-3d', action='store_true', help='Perform 3D PCA analysis and visualization.')
     argparser.add_argument('--blind_regression', '-br', action='store_true', help='Perform blind regression analysis.')
+    argparser.add_argument('--n_components', '-n_comp', type=int, default=3)
     args = argparser.parse_args()
 
     if args.pca_3d:
-        pca, transformed_data = perform_pca(df, three_d=True, n_components=8)
+        pca, transformed_data = perform_pca(df, three_d=True, n_components=args.n_components)
     else:
-        pca, transformed_data = perform_pca(df, three_d=False, n_components=8)
+        pca, transformed_data = perform_pca(df, three_d=False, n_components=args.n_components)
 
+    greedy_pca_regression(transformed_data)
+    lasso_pca_regression(transformed_data, alpha=0.0095)
     regression_analysis(transformed_data)
 
     if args.blind_regression:
