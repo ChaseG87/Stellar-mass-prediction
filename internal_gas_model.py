@@ -321,40 +321,61 @@ class GreedyModelConstructor:
         plt.show()
 
 
-class LassoModelConstructor:
+class LassoAidedModelConstructor:
     '''
-    Constructs a LASSO model predicting the mass stars given input features
+    Constructs a LASSO model to choose the reduced features for predicting the mass stars given input features
+    and generates a linear model of the selected features.
     '''
 
     def __init__(self, df, alpha=0.01):
+        '''
+        initializes the LassoModelConstuctor
+
+        df: DataFrame with feature and mass data
+        alpha: float - L1 normalization coefficient
+        '''
+        # initialize Lasso model
         self.model = Lasso(alpha=alpha)
+
+        # save df and target
         self.df_input = df
         self.target = np.log10(df['M_tot'].values)
     
-    def train(self, log_features, lin_features=None):
+    def train(self, log_features):
+        '''
+        Trains a linear regression with reduced features chosen by LASSO L1 regularization
 
+        log_features: features modeled in log log space wrt mass
+        '''
+
+        # fit the Lasso model
         X = np.log10(self.df_input[log_features]).values
-
-        if lin_features != None:
-            lin_features = self.df_input[lin_features].values
-            pass
         self.model.fit(X, self.target)
+
+        # select only features that survived the pruning
         self.key_features = [log_features[i] for i in range(len(self.model.coef_)) if abs(self.model.coef_[i]) > 0.00001]
         print(self.key_features)
 
+        # fit a linear regression to the pruned features
         X_fin = np.log10(self.df_input[self.key_features]).values
         self.model = LinearRegression()
-
         self.model.fit(X_fin, self.target)
 
+
     def visualize(self):
+        '''
+        Visualizes the prediction vs ground truth of the LASSO aided reduced linear model
+        '''
+
+        # score fitted model
         X = np.log10(self.df_input[self.key_features]).values
         y = self.target
         pred = self.model.predict(X)
         r2 = self.model.score(X, y)
 
+        # plot fitted model against scatter
         plt.scatter(self.target, pred, alpha=0.5, s= 10)
-        plt.title(f'LASSO Model Ground Truth vs Pred, $R^2 = {r2:.2f}$')
+        plt.title(f'LASSO Aided Model Ground Truth vs Pred, $R^2 = {r2:.2f}$, features = {len(X[0])}')
         plt.xlabel('Ground Truth (mass)')
         plt.ylabel('Predicted Mass')
         plt.plot(y, y, c='r')
@@ -398,7 +419,7 @@ if __name__ == '__main__':
 
     if args.lasso:
         # evaluate lasso model
-        lasso = LassoModelConstructor(df=df, alpha=args.alpha)
+        lasso = LassoAidedModelConstructor(df=df, alpha=args.alpha)
 
         lasso.train(log_features=log_features)
 
