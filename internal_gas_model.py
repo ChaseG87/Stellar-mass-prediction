@@ -13,11 +13,12 @@ df = df.reset_index()
 
 
 # define features to be investigated
-log_features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
+features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
             'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'snap'] 
 
-lin_features = ['snap']
 
+# pre-process taking the log of features
+df[features] = np.log10(df[features])
 
 
 class GreedyModelConstructor:
@@ -31,37 +32,30 @@ class GreedyModelConstructor:
         '''
         self.df_input = df
         self.target = df['M_tot'].values
-        self.predictors_log = []
-        self.predictors_lin = []
         self.ordered_predictors = []
 
 
-    def create_heatmap(self, df, log_features, lin_features=None):
+    def create_heatmap(self, df, features):
         '''
         df: DataFrame containing data of features to be turned into a heatmap
-        log_features: list of strings of features to be visualized in the heatmap in log space
-        lin_features: list of strings of features to be visualized in the heatmap in linear space
+        features: list of strings of features to be visualized in the heatmap
+
 
         produces a heatmap of chosen features from a DataFrame df.
         '''
     
-
-        df_log = np.log10(df[log_features])
-
-        if lin_features != None:
-            df_log[lin_features] = df[lin_features]
-
-        correlation_matrix = df_log.corr()
+        # create correlation matrix
+        correlation_matrix = self.df_input.corr()
         plt.figure(figsize=(15, 12))
         heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
         plt.title('Correlation Heatmap')
         plt.show()
 
 
-    def choose_first_input(self, log_features, lin_features=None):
+    def choose_first_input(self, features):
         '''
-        log_features: list of strings of features to be evaluated in log space to be evaluated
-        lin_features: list of strings of features to be evaluated in lin space to be evalutated
+        features: list of strings of features to be evaluated
+
 
         returns: tuple of type (str, str, float) with the first string being the type of fit and the second being the feature
         and the final being the r2 score of the fit
@@ -73,24 +67,9 @@ class GreedyModelConstructor:
         # initialize highest r2
         best_r2 = 0
 
-        # loop through log_features to find best option
-        for feature in log_features:
-
-            # define input
-            input = np.log10(X[feature]).values.reshape(-1, 1)
-
-            # fit linear regression model
-            model = LinearRegression()
-            model.fit(input, y)
-            r2 = model.score(input, y)
-
-            if r2 > best_r2:
-                best_feature = feature
-                best_r2 = r2
-
 
         # loop through lin_features to find best option
-        for feature in lin_features:
+        for feature in features:
 
             # define input
             input = X[feature].values.reshape(-1, 1)
@@ -109,23 +88,9 @@ class GreedyModelConstructor:
         self.ordered_predictors.append(best_feature)   
 
 
-        if best_feature in log_features:
-            return ('log', best_feature, best_r2)
+
+        return (best_feature, best_r2)
         
-        if best_feature in lin_features:
-            return ('lin', best_feature, best_r2)
-        
-
-    def clean_X_helper(self):
-        feature_arrays = []
-
-        X_log = np.log10(self.df_input[self.predictors_log]).values
-        feature_arrays.append(X_log)
-
-        X_lin = self.df_input[self.predictors_lin].values
-        feature_arrays.append(X_lin)
-
-        return np.hstack(feature_arrays)
         
 
     def get_residuals(self):
@@ -134,7 +99,7 @@ class GreedyModelConstructor:
         '''
 
         # clean X and y data to fit it
-        X = self.clean_X_helper()
+        X = self.df_input[self.ordered_predictors].values
         y = self.target
 
         # fit current linear model 
@@ -144,13 +109,12 @@ class GreedyModelConstructor:
         return y - model.predict(X)
 
     
-    def additional_predictor(self, log_features, lin_features=None, heatmap=True):
+    def additional_predictor(self, features, lin_features=None, heatmap=True):
         '''
         Chooses the next parameter to add to the predictor using the residuals
         of the current prediction model.
 
-        log_features: list of strings of features to be evaluated in log space
-        lin_features: list of strings of features to be evaluaed in lin space
+        features: list of strings of features to be evaluated
         heatmap: bool if set to true plots a heatmap of the correlations
 
         returns: tuple of (str, str, float), (type of fit, chosen feature, r2 value)
@@ -161,13 +125,11 @@ class GreedyModelConstructor:
         y = residuals
 
         # exclude current predictors from being added as the new predictor
-        log_features = [i for i in log_features if i not in self.predictors_log]
-        lin_features = [i for i in lin_features if i not in self.predictors_lin]
+        features = [i for i in features if i not in self.ordered_predictors]
 
 
         # define X space
-        X = self.df_input[log_features].copy()
-        X[lin_features] = self.df_input[lin_features]
+        X = self.df_input[features].copy()
         X['residuals'] = residuals
 
 
@@ -176,17 +138,17 @@ class GreedyModelConstructor:
 
         # create heatmap of options for new perdictor if heatmap is set to True
         if heatmap:
-            features = log_features.copy()
+            features = features.copy()
             features.append('residuals')
 
-            self.create_heatmap(X, log_features=features, lin_features=lin_features)
+            self.create_heatmap(X, features=features, lin_features=lin_features)
 
 
-        # loop through log_features to find best option
-        for feature in log_features:
+        # loop through features to find best option
+        for feature in features:
 
             # define input
-            input = np.log10(self.df_input[feature]).values.reshape(-1, 1)
+            input = self.df_input[feature].values.reshape(-1, 1)
 
             # fit linear regression model
             model = LinearRegression()
@@ -197,32 +159,15 @@ class GreedyModelConstructor:
                 best_feature = feature
                 best_r2 = r2
         
-
-        # loop through lin_features to find best option
-        for feature in lin_features:
-
-            # define input
-            input = X[feature].values.reshape(-1, 1)
-
-            # fit linear regression model
-            model = LinearRegression()
-            model.fit(input, y)
-            r2 = model.score(input, y)
-
-            if r2 > best_r2:
-                best_feature = feature
-                best_r2 = r2
 
         self.ordered_predictors.append(best_feature)
             
-        if best_feature in log_features:
-            return ('log', best_feature, best_r2)
+
+        return (best_feature, best_r2)
         
-        if best_feature in lin_features:
-            return ('lin', best_feature, best_r2)
 
 
-    def construct_predictor(self, log_features, lin_features=None, heatmap=False, method='defined', num_preds = 3, threshold=0.02):
+    def construct_predictor(self, features, heatmap=False, method='defined', num_preds = 3, threshold=0.02):
         '''
         method: string defining how the predictor is build with two options;
         'defined' continues for a set number of predictors,
@@ -237,30 +182,22 @@ class GreedyModelConstructor:
         r2s = []
 
         # make the first choice of the features
-        feature_tuple = self.choose_first_input(log_features, lin_features=lin_features)
+        feature_tuple = self.choose_first_input(features)
             
-        if feature_tuple[0] == 'log':
-            self.predictors_log.append(feature_tuple[1])
+        self.ordered_predictors.append(feature_tuple[0])
 
-        if feature_tuple[0] =='lin':
-            self.predictors_lin.append(feature_tuple[1])
-
-        r2s.append(feature_tuple[2])
+        r2s.append(feature_tuple[1])
 
 
         # if the method is defined the addition to the model aquired num_preds predictors
         if method == 'defined':
             # loop through to add additional features based on residuals of the current model
             for _ in range(num_preds - 1):
-                feature_tuple = self.additional_predictor(log_features, lin_features=lin_features, heatmap=heatmap)
+                feature_tuple = self.additional_predictor(features, heatmap=heatmap)
 
-                if feature_tuple[0] == 'log':
-                    self.predictors_log.append(feature_tuple[1])
+                self.ordered_predictors.append(feature_tuple[0])
 
-                if feature_tuple[0] =='lin':
-                    self.predictors_lin.append(feature_tuple[1])
-
-                r2s.append(feature_tuple[2])
+                r2s.append(feature_tuple[1])
 
         # if the method is threshold the addition to the model stops when the threshold is greater to the improvement to the model
         if method == 'threshold':
@@ -280,7 +217,7 @@ class GreedyModelConstructor:
         '''
 
         # create model with GreedyModelConstructor object's properties
-        X = self.clean_X_helper()
+        X = self.df_input[self.ordered_predictors].values
         y = np.log10(self.target)
 
         # fit current linear model 
@@ -299,7 +236,7 @@ class GreedyModelConstructor:
         '''
 
         # get X and y for scatter and prediction
-        X = self.clean_X_helper()
+        X = self.df_input[self.ordered_predictors].values
         y = np.log10(self.target)
 
 
@@ -341,23 +278,23 @@ class LassoAidedModelConstructor:
         self.df_input = df
         self.target = np.log10(df['M_tot'].values)
     
-    def train(self, log_features):
+    def train(self, features):
         '''
         Trains a linear regression with reduced features chosen by LASSO L1 regularization
 
-        log_features: features modeled in log log space wrt mass
+        features: features modeled in log log space wrt mass
         '''
 
         # fit the Lasso model
-        X = np.log10(self.df_input[log_features]).values
+        X = self.df_input[features].values
         self.model.fit(X, self.target)
 
         # select only features that survived the pruning
-        self.key_features = [log_features[i] for i in range(len(self.model.coef_)) if abs(self.model.coef_[i]) > 0.00001]
+        self.key_features = [features[i] for i in range(len(self.model.coef_)) if abs(self.model.coef_[i]) > 0.00001]
         print(self.key_features)
 
         # fit a linear regression to the pruned features
-        X_fin = np.log10(self.df_input[self.key_features]).values
+        X_fin = self.df_input[self.key_features].values
         self.model = LinearRegression()
         self.model.fit(X_fin, self.target)
 
@@ -368,7 +305,7 @@ class LassoAidedModelConstructor:
         '''
 
         # score fitted model
-        X = np.log10(self.df_input[self.key_features]).values
+        X = self.df_input[self.key_features].values
         y = self.target
         pred = self.model.predict(X)
         r2 = self.model.score(X, y)
@@ -403,12 +340,10 @@ if __name__ == '__main__':
 
         # select features
 
-        model.construct_predictor(log_features=log_features, heatmap=args.heatmaps, lin_features=lin_features, method='defined', num_preds=num_pred)
+        model.construct_predictor(features=features, heatmap=args.heatmaps, method='defined', num_preds=num_pred)
 
         # visualize model
         model.visualize(preds=num_pred)
-
-        print(f'Model Trained logorithmically on: {model.predictors_log}\n Model Trained Linearly on: {model.predictors_lin}')
 
         print(f'\nPredictors in order of strength: {model.ordered_predictors}')
 
@@ -421,7 +356,7 @@ if __name__ == '__main__':
         # evaluate lasso model
         lasso = LassoAidedModelConstructor(df=df, alpha=args.alpha)
 
-        lasso.train(log_features=log_features)
+        lasso.train(features=features)
 
         # visualize model
         lasso.visualize()
