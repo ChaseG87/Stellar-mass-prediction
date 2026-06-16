@@ -9,6 +9,7 @@ import sys
 
 
 df = pd.read_parquet('accreted_gas_properties_pre_stellar.pq')
+df = df.reset_index()
 
 def perform_pca(df, three_d=False, n_components=3):
     '''
@@ -27,8 +28,8 @@ def perform_pca(df, three_d=False, n_components=3):
     df['sp_kin'] = df['E_kin'] / df['M_tot']
     df['sp_mag'] = df['E_mag'] / df['M_tot']
 
-    features = [ 'T', 'T_med', 'T_84', 'T_16', 'Ne', 'Ne_med', 'Ne_84', 'Ne_16',
-            'B', 'B_med', 'B_84', 'B_16', 'rho', 'rho_med', 'rho_84', 'rho_16']  
+    features = [ 'T', 'T_med', 'T_84', 'T_16', 'T_std', 'Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'Ne_std',
+            'B', 'B_med', 'B_84', 'B_16', 'B_std', 'rho', 'rho_med', 'rho_84', 'rho_16', 'rho_std', 'snap']  
     
     # Take the logarithm of the data to handle wide ranges and reduce skewness
     log_data = np.log10(df[features])
@@ -46,12 +47,16 @@ def perform_pca(df, three_d=False, n_components=3):
     plt.ylabel('Explained Variance Ratio')
     plt.xlabel('Principal Components')
     plt.title('Explained Variance Ratio by Principal Components')
+    plt.xticks(range(1, n_components + 1))
+    plt.savefig('figures/PCA/components_ratios.pdf', dpi=300)
     plt.show()
 
     # Plot the cumulative explained variance
     plt.figure(figsize=(8, 5))
     plt.plot(range(1, n_components + 1), np.cumsum(pca.explained_variance_ratio_), marker='o', linestyle='--')
     plt.ylabel('Cumulative Explained Variance')
+    plt.xticks(range(1, n_components + 1))
+    plt.savefig('figures/PCA/cumulative_variance.pdf', dpi=300)
     plt.show()
 
     # 2D scatter plot of the first two principal components colored by total mass
@@ -94,18 +99,20 @@ def regression_analysis(transformed_data):
     model = LinearRegression()
     model.fit(transformed_data, target)
     predictions = model.predict(transformed_data)
-    plt.plot(target, predictions, 'o')
+    plt.scatter(target, predictions, s = 10, alpha = 0.5)
     plt.xlabel('Actual Total Mass (M_sun)')
     plt.ylabel('Predicted Total Mass (M_sun)')
     R_squared = model.score(transformed_data, target)
-    plt.title(f'Regression Analysis using PCA-Transformed Data R²: {R_squared:.2f}')
+    plt.title(f'PCA Regression Data R²: {R_squared:.2f}, Components = {len(transformed_data[0])}')
+    plt.savefig('figures/PCA/pca_8_components.pdf', dpi=300)
+    plt.plot(target, target, c='r')
     plt.show()
 
 
 def blind_regression_analysis(df):
 
-    features = [ 'T', 'T_med', 'T_84', 'T_16', 'Ne', 'Ne_med', 'Ne_84', 'Ne_16',
-                 'B', 'B_med', 'B_84', 'B_16']
+    features = ['T', 'T_med', 'T_84', 'T_16', 'T_std', 'Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'Ne_std',
+            'B', 'B_med', 'B_84', 'B_16', 'B_std', 'rho', 'rho_med', 'rho_84', 'rho_16', 'rho_std'] 
     
     # Take the logarithm of the data to handle wide ranges and reduce skewness
     log_data = np.log10(df[features])
@@ -129,9 +136,9 @@ def main():
     args = argparser.parse_args()
 
     if args.pca_3d:
-        pca, transformed_data = perform_pca(df, three_d=True, n_components=3)
+        pca, transformed_data = perform_pca(df, three_d=True, n_components=8)
     else:
-        pca, transformed_data = perform_pca(df, three_d=False, n_components=3)
+        pca, transformed_data = perform_pca(df, three_d=False, n_components=8)
 
     regression_analysis(transformed_data)
 
