@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 from seaborn import heatmap
 from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Lasso
+import argparse
 
 
 # initialize dataframe
@@ -12,7 +14,7 @@ df = df.reset_index()
 
 # define features to be investigated
 log_features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
-            'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std'] 
+            'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'snap'] 
 
 lin_features = ['snap']
 
@@ -220,7 +222,7 @@ class GreedyModelConstructor:
             return ('lin', best_feature, best_r2)
 
 
-    def construct_predictor(self, log_features, lin_features=None, method='defined', num_preds = 3, threshold=0.02):
+    def construct_predictor(self, log_features, lin_features=None, heatmap=False, method='defined', num_preds = 3, threshold=0.02):
         '''
         method: string defining how the predictor is build with two options;
         'defined' continues for a set number of predictors,
@@ -250,7 +252,7 @@ class GreedyModelConstructor:
         if method == 'defined':
             # loop through to add additional features based on residuals of the current model
             for _ in range(num_preds - 1):
-                feature_tuple = self.additional_predictor(log_features, lin_features=lin_features)
+                feature_tuple = self.additional_predictor(log_features, lin_features=lin_features, heatmap=heatmap)
 
                 if feature_tuple[0] == 'log':
                     self.predictors_log.append(feature_tuple[1])
@@ -319,22 +321,89 @@ class GreedyModelConstructor:
         plt.show()
 
 
+class LassoModelConstructor:
+    '''
+    Constructs a LASSO model predicting the mass stars given input features
+    '''
+
+    def __init__(self, df, alpha=0.01):
+        self.model = Lasso(alpha=alpha)
+        self.df_input = df
+        self.target = np.log10(df['M_tot'].values)
+    
+    def train(self, log_features, lin_features=None):
+
+        X = np.log10(self.df_input[log_features]).values
+
+        if lin_features != None:
+            lin_features = self.df_input[lin_features].values
+            pass
+        self.model.fit(X, self.target)
+        self.key_features = [log_features[i] for i in range(len(self.model.coef_)) if abs(self.model.coef_[i]) > 0.00001]
+        print(self.key_features)
+
+        X_fin = np.log10(self.df_input[self.key_features]).values
+        self.model = LinearRegression()
+
+        self.model.fit(X_fin, self.target)
+
+    def visualize(self):
+        X = np.log10(self.df_input[self.key_features]).values
+        y = self.target
+        pred = self.model.predict(X)
+        r2 = self.model.score(X, y)
+
+        plt.scatter(self.target, pred, alpha=0.5, s= 10)
+        plt.title(f'LASSO Model Ground Truth vs Pred, $R^2 = {r2:.2f}$')
+        plt.xlabel('Ground Truth (mass)')
+        plt.ylabel('Predicted Mass')
+        plt.plot(y, y, c='r')
+        plt.savefig('figures/lasso_tuned_8.pdf', dpi=300)
+        plt.show()
+
+
+
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Perform Greedy Linear Model based on Covariance with Residuals.')
+    parser.add_argument('--defined', "-def", help='Runs Greedy Model with determined provided amount of features')
+    parser.add_argument('--heatmaps', '-hm', action='store_true', help='Shows intermittent heatmaps if called')
+    parser.add_argument('--threshold', '-thr', help='Runs Greedy Model until threshold of R^2 increase is not achieved')
+    parser.add_argument('--lasso', '-l', action='store_true', help='Run the LASSO model')
+    parser.add_argument('-alpha', '-a', default=0.01, help='Coefficient for normalization in the LASSO model')
+    args = parser.parse_args()
 
     # initialize predictor
     model = GreedyModelConstructor(df)
 
-    num_pred = 10
+    if args.defined:
+        
+        num_pred = int(args.defined)
 
-    # select features
-    model.construct_predictor(log_features=log_features, lin_features=lin_features, method='defined', num_preds=num_pred)
+        # select features
 
-    # visualize model
-    model.visualize(preds=num_pred)
+        model.construct_predictor(log_features=log_features, heatmap=args.heatmaps, lin_features=lin_features, method='defined', num_preds=num_pred)
 
-    print(f'Model Trained logorithmically on: {model.predictors_log}\n Model Trained Linearly on: {model.predictors_lin}')
+        # visualize model
+        model.visualize(preds=num_pred)
 
-    print(f'\nPredictors in order of strength: {model.ordered_predictors}')
+        print(f'Model Trained logorithmically on: {model.predictors_log}\n Model Trained Linearly on: {model.predictors_lin}')
+
+        print(f'\nPredictors in order of strength: {model.ordered_predictors}')
+
+
+    if args.threshold:
+
+        pass
+
+    if args.lasso:
+        # evaluate lasso model
+        lasso = LassoModelConstructor(df=df, alpha=args.alpha)
+
+        lasso.train(log_features=log_features)
+
+        # visualize model
+        lasso.visualize()
 
 # need to code the threshold method
 # need to find and resolve runtime error in log10
