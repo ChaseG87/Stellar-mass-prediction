@@ -171,15 +171,11 @@ class GreedyModelConstructor:
         
 
 
-    def train(self, features, heatmap=False, method='defined', num_preds = 8, threshold=0.02):
+    def train(self, features, heatmap=False, num_preds = 8):
         '''
-        method: string defining how the predictor is build with two options;
-        'defined' continues for a set number of predictors,
-        'threshold' continues until the model stops improving r2 by a threshold.
+        features: list of features on which the model will be trained on.
 
-        num_preds: integer that defines how many operations if defined is the method.
-
-        threshold: float that determines the r2 increase requirement until the model stops.
+        num_preds: integer that defines how many operations of the greedy algorithm will be run.
         '''
 
         # initialize list to track r2s of each additional 
@@ -193,22 +189,14 @@ class GreedyModelConstructor:
         r2s.append(feature_tuple[1])
 
 
-        # if the method is defined the addition to the model aquired num_preds predictors
-        if method == 'defined':
-            # loop through to add additional features based on residuals of the current model
-            for _ in range(num_preds - 1):
-                feature_tuple = self.additional_predictor(features, heatmap=heatmap)
 
-                self.ordered_predictors.append(feature_tuple[0])
+        # loop through to add additional features based on residuals of the current model
+        for _ in range(num_preds - 1):
+            feature_tuple = self.additional_predictor(features, heatmap=heatmap)
 
-                r2s.append(feature_tuple[1])
+            self.ordered_predictors.append(feature_tuple[0])
 
-        # if the method is threshold the addition to the model stops when the threshold is greater to the improvement to the model
-        if method == 'threshold':
-            r2_increase = 1
-
-            while r2_increase > threshold:
-                pass
+            r2s.append(feature_tuple[1])
         
     
     def predict(self, input, return_model= False):
@@ -340,9 +328,8 @@ class LassoAidedModelConstructor:
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Perform Greedy Linear Model based on Covariance with Residuals.')
-    parser.add_argument('--defined', "-def", help='Runs Greedy Model with determined provided amount of features')
+    parser.add_argument('--greedy', "-gr", help='Runs Greedy Model with determined provided amount of features')
     parser.add_argument('--heatmaps', '-hm', action='store_true', help='Shows intermittent heatmaps if called')
-    parser.add_argument('--threshold', '-thr', help='Runs Greedy Model until threshold of R^2 increase is not achieved')
     parser.add_argument('--lasso', '-l', action='store_true', help='Run the LASSO model')
     parser.add_argument('-alpha', '-a', default=0.01, type=float, help='Coefficient for normalization in the LASSO model')
     args = parser.parse_args()
@@ -350,13 +337,13 @@ if __name__ == '__main__':
     # initialize predictor
     model = GreedyModelConstructor(df)
 
-    if args.defined:
+    if args.greedy:
         
-        num_pred = int(args.defined)
+        num_pred = int(args.greedy)
 
         # select features
 
-        model.train(features=features, heatmap=args.heatmaps, method='defined', num_preds=num_pred)
+        model.train(features=features, heatmap=args.heatmaps, num_preds=num_pred)
 
         # visualize model
         model.visualize(preds=num_pred, df=df_test)
@@ -364,10 +351,6 @@ if __name__ == '__main__':
 
         print(f'Greedy predictors in order of strength: {model.ordered_predictors}')
 
-
-    if args.threshold:
-
-        pass
 
     if args.lasso:
         # evaluate lasso model
