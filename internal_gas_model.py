@@ -49,10 +49,11 @@ class GreedyModelConstructor:
         '''
     
         # create correlation matrix
-        correlation_matrix = df[features].corr()
-        plt.figure(figsize=(15, 12))
+        correlation_matrix = df[features].corr().iloc[-2:, :]
+        plt.figure(figsize=(15, 3))
         heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
         plt.title('Correlation Heatmap')
+        plt.tight_layout()
         plt.show()
 
 
@@ -131,6 +132,7 @@ class GreedyModelConstructor:
         # define X space
         X = self.df_input[features].copy()
         X['residuals'] = residuals
+        X['M_tot'] = self.target
 
 
         # initialize r2
@@ -140,12 +142,13 @@ class GreedyModelConstructor:
         if heatmap:
             features = features.copy()
             features.append('residuals')
+            features.append('M_tot')
 
             self.create_heatmap(X, features=features)
 
-        
-        # remove residuals from features
-        features.pop()
+            # remove residuals and mass from features
+            features.pop()
+            features.pop()
 
 
         # loop through features to find best option
@@ -168,7 +171,7 @@ class GreedyModelConstructor:
         
 
 
-    def construct_predictor(self, features, heatmap=False, method='defined', num_preds = 8, threshold=0.02):
+    def train(self, features, heatmap=False, method='defined', num_preds = 8, threshold=0.02):
         '''
         method: string defining how the predictor is build with two options;
         'defined' continues for a set number of predictors,
@@ -353,7 +356,7 @@ if __name__ == '__main__':
 
         # select features
 
-        model.construct_predictor(features=features, heatmap=args.heatmaps, method='defined', num_preds=num_pred)
+        model.train(features=features, heatmap=args.heatmaps, method='defined', num_preds=num_pred)
 
         # visualize model
         model.visualize(preds=num_pred, df=df_test)
@@ -376,7 +379,7 @@ if __name__ == '__main__':
         lasso.visualize(df=df_test)
 
 # need to code the threshold method
-# need to find and resolve runtime error in log10
+
 
 
 
