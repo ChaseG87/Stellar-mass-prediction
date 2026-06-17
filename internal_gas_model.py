@@ -7,9 +7,12 @@ from sklearn.linear_model import Lasso
 import argparse
 
 
-# initialize dataframe
-df = pd.read_parquet("accreted_gas_properties_pre_stellar.pq")
-df = df.reset_index()
+# load train data
+df = pd.read_parquet('accreted_gas_properties_pre_stellar.pq').reset_index()
+
+# load test data
+df_test = pd.read_parquet('accreted_gas_properties_pre_stellar_test.pq').reset_index()
+
 
 
 # define features to be investigated
@@ -19,6 +22,7 @@ features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_
 
 # pre-process taking the log of features
 df[features] = np.log10(df[features])
+df_test[features] = np.log10(df_test[features])
 
 
 class GreedyModelConstructor:
@@ -45,7 +49,7 @@ class GreedyModelConstructor:
         '''
     
         # create correlation matrix
-        correlation_matrix = self.df_input.corr()
+        correlation_matrix = df[features].corr()
         plt.figure(figsize=(15, 12))
         heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
         plt.title('Correlation Heatmap')
@@ -84,10 +88,6 @@ class GreedyModelConstructor:
                 best_r2 = r2
 
 
-        # return a tuple with the information of the best feature 
-        self.ordered_predictors.append(best_feature)   
-
-
 
         return (best_feature, best_r2)
         
@@ -109,7 +109,7 @@ class GreedyModelConstructor:
         return y - model.predict(X)
 
     
-    def additional_predictor(self, features, lin_features=None, heatmap=True):
+    def additional_predictor(self, features, heatmap=True):
         '''
         Chooses the next parameter to add to the predictor using the residuals
         of the current prediction model.
@@ -141,7 +141,11 @@ class GreedyModelConstructor:
             features = features.copy()
             features.append('residuals')
 
-            self.create_heatmap(X, features=features, lin_features=lin_features)
+            self.create_heatmap(X, features=features)
+
+        
+        # remove residuals from features
+        features.pop()
 
 
         # loop through features to find best option
@@ -158,16 +162,13 @@ class GreedyModelConstructor:
             if r2 > best_r2:
                 best_feature = feature
                 best_r2 = r2
-        
-
-        self.ordered_predictors.append(best_feature)
             
 
         return (best_feature, best_r2)
         
 
 
-    def construct_predictor(self, features, heatmap=False, method='defined', num_preds = 3, threshold=0.02):
+    def construct_predictor(self, features, heatmap=False, method='defined', num_preds = 8, threshold=0.02):
         '''
         method: string defining how the predictor is build with two options;
         'defined' continues for a set number of predictors,
@@ -230,20 +231,22 @@ class GreedyModelConstructor:
         return model.predict(input)
     
 
-    def visualize(self, preds):
+    def visualize(self, preds, df=None):
         '''
         Visualizes the prediction model
         '''
 
         # get X and y for scatter and prediction
-        X = self.df_input[self.ordered_predictors].values
-        y = np.log10(self.target)
-
+        if type(df) != type(pd.DataFrame()):
+            X = self.df_input[self.ordered_predictors].values
+            y = np.log10(self.target)
+        else:
+            X = df[self.ordered_predictors].values
+            y = np.log10(df['M_tot'])
 
         pred, model = self.predict(X, return_model='True')
 
         r2 = model.score(X, y)
-
 
         # plot scatter of actual vs predicted
         plt.scatter(y, pred, alpha=0.5, s = 10)
@@ -253,7 +256,7 @@ class GreedyModelConstructor:
         plt.title(f"Predicted vs Actual of Greedy Model $R^2 =$ {r2:.2f}, num_preds = {preds}")
         plt.xlabel('Ground Truth Mass')
         plt.ylabel('Predicted Mass')
-        if __name__ == "__main__":
+        if __name__ == "__main__" and type(df) == None:
             plt.savefig(f'figures/greedy_figures/greedy_pred{preds}.pdf', dpi=300)
         
         plt.show()
@@ -292,7 +295,7 @@ class LassoAidedModelConstructor:
 
         # select only features that survived the pruning
         self.key_features = [features[i] for i in range(len(self.model.coef_)) if abs(self.model.coef_[i]) > 0.00001]
-        print(self.key_features)
+        print(f'Lasso features {self.key_features}')
 
         # fit a linear regression to the pruned features
         X_fin = self.df_input[self.key_features].values
@@ -300,19 +303,24 @@ class LassoAidedModelConstructor:
         self.model.fit(X_fin, self.target)
 
 
-    def visualize(self, title=None):
+    def visualize(self, df=None, title=None):
         '''
         Visualizes the prediction vs ground truth of the LASSO aided reduced linear model
         '''
 
         # score fitted model
-        X = self.df_input[self.key_features].values
-        y = self.target
+        if type(df) == None:
+            X = self.df_input[self.key_features].values
+            y = self.target
+        else:
+            X = df[self.key_features].values
+            y = np.log10(df['M_tot'])
+
         pred = self.model.predict(X)
         r2 = self.model.score(X, y)
 
         # plot fitted model against scatter
-        plt.scatter(self.target, pred, alpha=0.5, s= 10)
+        plt.scatter(y, pred, alpha=0.5, s= 10)
         if title == None:
             plt.title(f'LASSO Aided Model Ground Truth vs Pred, $R^2 = {r2:.2f}$, features = {len(X[0])}')
         else:
@@ -320,7 +328,7 @@ class LassoAidedModelConstructor:
         plt.xlabel('Ground Truth (mass)')
         plt.ylabel('Predicted Mass')
         plt.plot(y, y, c='r')
-        if __name__ == "__main__":
+        if __name__ == "__main__" and type(df) == None:
             plt.savefig('figures/lasso_tuned_8.pdf', dpi=300)
         plt.show()
 
@@ -333,7 +341,7 @@ if __name__ == '__main__':
     parser.add_argument('--heatmaps', '-hm', action='store_true', help='Shows intermittent heatmaps if called')
     parser.add_argument('--threshold', '-thr', help='Runs Greedy Model until threshold of R^2 increase is not achieved')
     parser.add_argument('--lasso', '-l', action='store_true', help='Run the LASSO model')
-    parser.add_argument('-alpha', '-a', default=0.01, help='Coefficient for normalization in the LASSO model')
+    parser.add_argument('-alpha', '-a', default=0.01, type=float, help='Coefficient for normalization in the LASSO model')
     args = parser.parse_args()
 
     # initialize predictor
@@ -348,9 +356,10 @@ if __name__ == '__main__':
         model.construct_predictor(features=features, heatmap=args.heatmaps, method='defined', num_preds=num_pred)
 
         # visualize model
-        model.visualize(preds=num_pred)
+        model.visualize(preds=num_pred, df=df_test)
 
-        print(f'\nPredictors in order of strength: {model.ordered_predictors}')
+
+        print(f'Greedy predictors in order of strength: {model.ordered_predictors}')
 
 
     if args.threshold:
@@ -364,7 +373,7 @@ if __name__ == '__main__':
         lasso.train(features=features)
 
         # visualize model
-        lasso.visualize()
+        lasso.visualize(df=df_test)
 
 # need to code the threshold method
 # need to find and resolve runtime error in log10
