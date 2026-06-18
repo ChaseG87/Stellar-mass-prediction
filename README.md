@@ -32,7 +32,7 @@ Python file containing code used to generate **figures/tsne_visualization**. t-S
 #### process_data.py
 Python file which preprocesses train and validation datasets for analysis. 
 
-##
+## star_data
 
 #### star_data/data_properties.pdf
 Contains a breakdown of the specific contents of stellar data provided in different parquet files.
@@ -45,7 +45,7 @@ This simulation is used as the training data for predictive models and data anal
 Parquet file containing pre-stellar gas properties and statisics associated with each star the snapshot before a sink point is produced by that star in a STARFORGE simulation with 
 the same hyperparmeters but different initial conditions. This dataset is used as the validation set for predictive models.
 
-##
+## figures
 
 #### figures/PCA
 Folder containing figures analyzing the magnitude of principal components from a PCA performed on internal gas statisics (of $T$, $n_e$, $B$, $\rho$) from accreted_gas_properties_pre_stellar.pq. All figures
