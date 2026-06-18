@@ -10,8 +10,15 @@ import argparse
 import sys
 
 
-df = pd.read_parquet('accreted_gas_properties_pre_stellar.pq')
-df = df.reset_index()
+# load train data
+df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq').reset_index()
+
+# load test data
+df_test = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_test.pq').reset_index()
+
+features = [ 'T', 'T_med', 'T_84', 'T_16', 'T_std', 'Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'Ne_std',
+            'B', 'B_med', 'B_84', 'B_16', 'B_std', 'rho', 'rho_med', 'rho_84', 'rho_16', 'rho_std', 'snap']  
+
 
 def perform_pca(df, three_d=False, n_components=3):
     '''
@@ -30,8 +37,6 @@ def perform_pca(df, three_d=False, n_components=3):
     df['sp_kin'] = df['E_kin'] / df['M_tot']
     df['sp_mag'] = df['E_mag'] / df['M_tot']
 
-    features = [ 'T', 'T_med', 'T_84', 'T_16', 'T_std', 'Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'Ne_std',
-            'B', 'B_med', 'B_84', 'B_16', 'B_std', 'rho', 'rho_med', 'rho_84', 'rho_16', 'rho_std', 'snap']  
     
     # Take the logarithm of the data to handle wide ranges and reduce skewness
     log_data = np.log10(df[features])
@@ -102,8 +107,8 @@ def regression_analysis(transformed_data):
     model.fit(transformed_data, target)
     predictions = model.predict(transformed_data)
     plt.scatter(target, predictions, s = 10, alpha = 0.5)
-    plt.xlabel('Actual Total Mass (M_sun)')
-    plt.ylabel('Predicted Total Mass (M_sun)')
+    plt.xlabel(r'Actual Total Mass ($M_\odot$)')
+    plt.ylabel(r'Predicted Total Mass ($M_\odot$)')
     R_squared = model.score(transformed_data, target)
     plt.title(f'PCA Regression Data R²: {R_squared:.2f}, Components = {len(transformed_data[0])}')
     plt.plot(target, target, c='r')
@@ -111,39 +116,76 @@ def regression_analysis(transformed_data):
     plt.show()
 
 
-def lasso_pca_regression(transformed_data, alpha):
+def lasso_pca_regression(transformed_data, test_transformed_data, alpha):
     # define components and df_pca
     components = ['comp' + str(i+1) for i in range(len(transformed_data[0]))]
     df_pca = pd.DataFrame(transformed_data, columns=components)
+    df_test_pca = pd.DataFrame(test_transformed_data, columns=components)
     df_pca['M_tot'] = df['M_tot']
+    df_test_pca['M_tot'] = df_test['M_tot']
 
     # initialize model and fit
     model = LassoAidedModelConstructor(df_pca, alpha=alpha)
     model.train(components)
 
     # visualize model results
-    model.visualize(title=f'PCA LASSO Aided Linear Regression, $R^2 = 0.85$, components = 8')
+    model.visualize(df=df_test_pca)
 
 
-def greedy_pca_regression(transformed_data, n_preds=8):
+def greedy_pca_regression(transformed_data, pca=None, test=False, n_preds=8):
 
     # define components and df_pca
+
     components = ['comp' + str(i+1) for i in range(len(transformed_data[0]))]
     df_pca = pd.DataFrame(transformed_data, columns=components)
     df_pca['M_tot'] = df['M_tot']
 
+
+    if test:
+
+        # Make sure PCA object is provided in test mode
+        if pca == None:
+            raise ValueError("Calling test requires pca object of train data.")
+
+        test_transformed_data = standardize_fit_pca(pca, df_train=df, df_test=df_test)
+
+        # define test dataframe
+        df_test_pca = pd.DataFrame(test_transformed_data, columns=components)
+        df_test_pca['M_tot'] = df_test['M_tot']
+
+
     # initialize model and fit
     model = GreedyModelConstructor(df_pca)
-    model.construct_predictor(components)
+    model.train(components, num_preds=n_preds, heatmap=True)
 
-    # visualize model results
-    model.visualize(preds=n_preds)
+    if test:
+        # visualize test model results
+        model.visualize(preds=n_preds, df=df_test_pca)
+    else:
+        # visualize train model results
+        model.visualize(preds=n_preds, df=df_pca)
+
+
+def standardize_fit_pca(pca_model, df_train, df_test):
+    
+
+    log_train = np.log10(df_train[features])
+    log_test = np.log10(df_test[features])
+
+    mean = log_train.mean()
+    std = log_train.std()
+
+    # Standardize the train data wrt the train data
+    standardized_test = (log_test - mean) / std
+
+    transformed_test = pca_model.transform(standardized_test)
+
+    return transformed_test
+
 
 
 def blind_regression_analysis(df):
 
-    features = ['T', 'T_med', 'T_84', 'T_16', 'T_std', 'Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'Ne_std',
-            'B', 'B_med', 'B_84', 'B_16', 'B_std', 'rho', 'rho_med', 'rho_84', 'rho_16', 'rho_std', 'snap'] 
     
     # Take the logarithm of the data to handle wide ranges and reduce skewness
     log_data = np.log10(df[features])
@@ -165,8 +207,9 @@ def main():
     argparser = argparse.ArgumentParser(description='Perform PCA analysis and correlation heatmap on pre-stellar gas properties.')
     argparser.add_argument('--pca_3d', '-3d', action='store_true', help='Perform 3D PCA analysis and visualization.')
     argparser.add_argument('--blind_regression', '-br', action='store_true', help='Perform blind regression analysis.')
-    argparser.add_argument('--n_components', '-n_comp', type=int, default=3)
+    argparser.add_argument('--n_components', '-n_comp', type=int, default=21)
     args = argparser.parse_args()
+
 
     if args.pca_3d:
         pca, transformed_data = perform_pca(df, three_d=True, n_components=args.n_components)

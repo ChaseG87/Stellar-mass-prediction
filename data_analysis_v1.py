@@ -21,7 +21,7 @@ Namespace Dependencies:
 """
 
 # Read the pre stellar parquet file into a DataFrame
-df = pd.read_parquet('accreted_gas_properties_pre_stellar.pq')
+df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq')
 
 # add distance from center metric to the DataFrame
 df['distance_from_center'] = np.sqrt((df['x_cm_1']-50)**2 + (df['x_cm_2']-50)**2 + (df['x_cm_3']-50)**2)

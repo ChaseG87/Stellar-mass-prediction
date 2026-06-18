@@ -23,7 +23,7 @@ Namespace Dependencies:
 
 
 # Read the pre stellar parquet file into a DataFrame
-df = pd.read_parquet('accreted_gas_properties_pre_stellar.pq')
+df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq')
 
 # add distance from center metric to the DataFrame
 df['sp_kin'] = df['E_kin']/df['M_tot']
@@ -368,15 +368,6 @@ def mass_sliding_window(df, feature, window_num=10):
     plt.tight_layout()
     plt.savefig('figures/' + feature + '/' + feature + '_sliding_window.pdf', dpi=300)
     plt.show()
-
-
-
-    # 1. extract points
-    # 2. calculate mean, std and skew of mass
-    
-    # plot std vs mass
-
-    # plot skew vs mass
 
 
 

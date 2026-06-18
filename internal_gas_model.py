@@ -8,10 +8,10 @@ import argparse
 
 
 # load train data
-df = pd.read_parquet('accreted_gas_properties_pre_stellar.pq').reset_index()
+df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq').reset_index()
 
 # load test data
-df_test = pd.read_parquet('accreted_gas_properties_pre_stellar_test.pq').reset_index()
+df_test = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_test.pq').reset_index()
 
 
 
