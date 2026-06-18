@@ -29,6 +29,9 @@ Python file containing code used to generate the **figures/PCA** figures and PCR
 #### t-SNE.py
 Python file containing code used to generate **figures/tsne_visualization**. t-SNE is applied to the internal pre-stellar gas properties and colored by final mass. 
 
+#### process_data.py
+Python file which preprocesses train and validation datasets for analysis. 
+
 ##
 
 #### star_data/data_properties.pdf
