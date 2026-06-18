@@ -5,13 +5,7 @@ from seaborn import heatmap
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Lasso
 import argparse
-
-
-# load train data
-df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq').reset_index()
-
-# load test data
-df_test = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_test.pq').reset_index()
+from process_data import log_train_val_data
 
 
 
@@ -19,10 +13,8 @@ df_test = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_test.pq
 features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
             'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'snap'] 
 
-
-# pre-process taking the log of features
-df[features] = np.log10(df[features])
-df_test[features] = np.log10(df_test[features])
+# pre-process data
+df, df_val = log_train_val_data(features=features)
 
 
 class GreedyModelConstructor:
@@ -67,7 +59,7 @@ class GreedyModelConstructor:
         '''
 
         X = self.df_input
-        y = np.log10(self.target)
+        y = self.target
 
         # initialize highest r2
         best_r2 = 0
@@ -210,7 +202,7 @@ class GreedyModelConstructor:
 
         # create model with GreedyModelConstructor object's properties
         X = self.df_input[self.ordered_predictors].values
-        y = np.log10(self.target)
+        y = self.target
 
         # fit current linear model 
         model = LinearRegression()
@@ -230,10 +222,10 @@ class GreedyModelConstructor:
         # get X and y for scatter and prediction
         if type(df) != type(pd.DataFrame()):
             X = self.df_input[self.ordered_predictors].values
-            y = np.log10(self.target)
+            y = self.target
         else:
             X = df[self.ordered_predictors].values
-            y = np.log10(df['M_tot'])
+            y = df['M_tot']
 
         pred, model = self.predict(X, return_model='True')
 
@@ -247,7 +239,7 @@ class GreedyModelConstructor:
         plt.title(f"Predicted vs Actual of Greedy Model $R^2 =$ {r2:.2f}, num_preds = {preds}")
         plt.xlabel('Ground Truth Mass')
         plt.ylabel('Predicted Mass')
-        if __name__ == "__main__" and type(df) == None:
+        if __name__ == "__main__" and type(df) == type(None):
             plt.savefig(f'figures/greedy_figures/greedy_pred{preds}.pdf', dpi=300)
         
         plt.show()
@@ -305,7 +297,7 @@ class LassoAidedModelConstructor:
             y = self.target
         else:
             X = df[self.key_features].values
-            y = np.log10(df['M_tot'])
+            y = df['M_tot']
 
         pred = self.model.predict(X)
         r2 = self.model.score(X, y)
@@ -346,7 +338,7 @@ if __name__ == '__main__':
         model.train(features=features, heatmap=args.heatmaps, num_preds=num_pred)
 
         # visualize model
-        model.visualize(preds=num_pred, df=df_test)
+        model.visualize(preds=num_pred, df=df)
 
 
         print(f'Greedy predictors in order of strength: {model.ordered_predictors}')
@@ -359,7 +351,7 @@ if __name__ == '__main__':
         lasso.train(features=features)
 
         # visualize model
-        lasso.visualize(df=df_test)
+        lasso.visualize(df=df_val)
 
 # need to code the threshold method
 
