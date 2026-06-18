@@ -4,16 +4,30 @@ This is a working repository analyzing relationship between pre-stellar gas prop
 ## Files and Usage
 
 #### data_analysis_v1.py
+Python file containing initial investigations of the correlations in the dataset primarily using heatmaps and scatter plots with power-law fits in log-log space.
 
 #### data_analysis_v2.py
+Python file containing code used to generate the different fitting methods (Linear, Piecewise-Linear, Polynomial, Log-Normal/Power-law) of the specific kinetic and specific
+magnetic energy. Created the plots in **figures/sp_kin** and **figures/sp_mag**.
 
 #### residual_analysis.py
-
-#### PCR.py
-
-#### t-SNE.py
+Python file containing code used to generate the heatmaps in **figures/residual_correlation_heatmaps** along with functions that generate pairplots of a variety of comparisons
+between variables.
 
 #### internal_gas_model.py
+Python file containing code for both the Greedy and LASSO-tuned methods of feature selection. The internal gas properties and final snap time before a sink point is generated are the input
+features being selected from. 
+
+The Greedy model works by iteratively adding features to a linear regression model. The first feature is selected by choosing the highest correlation with 
+the mass. Each subsequent feature is chosen based on the highest covariance with the residuals of the current linear model. This iteration is carried out for a determined finite number of steps. 
+The LASSO-tuned model uses a LASSO fit from the entire input space to the final mass. All features that are not tuned to zero by the $L_1$ loss are then fit to a linear regession model to the mass.
+
+#### PCR.py
+Python file containing code used to generate the **figures/PCA** figures and PCR regression. The lasso-tuned and greedy models are also implemented on the principal components in this file.
+
+
+#### t-SNE.py
+Python file containing code used to generate **figures/tsne_visualization**. t-SNE is applied to the internal pre-stellar gas properties and colored by final mass. 
 
 ##
 
