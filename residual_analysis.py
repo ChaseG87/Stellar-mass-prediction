@@ -12,6 +12,7 @@ df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq').reset_i
 
 df['sp_kin'] = df['E_kin'] / df['M_tot']
 df['sp_mag'] = df['E_mag'] / df['M_tot']
+df['sp_int'] = df['E_int'] / df['M_tot']
 
 
 def get_residuals(df, feature, model):
@@ -180,10 +181,10 @@ def residual_heatmap(df, model):
 #cross_correlation_scatter(df, ['Ne', 'Ne_med', 'Ne_16', 'Ne_84'])
 #cross_correlation_scatter(df, ['rho', 'rho_med', 'rho_16', 'rho_84'])
 #df = df.reset_index()
-cross_correlation_scatter(df, ['M_tot', 'T', 'B', 'Ne', 'rho', 'snap'])
-cross_correlation_scatter(df, ['M_tot', 'T_med', 'B_med', 'Ne_med', 'rho_med'])
-cross_correlation_scatter(df, ['M_tot', 'T_16', 'B_16', 'Ne_16', 'rho_16'])
-cross_correlation_scatter(df, ['M_tot', 'T_84', 'B_84', 'Ne_84', 'rho_84'])
+cross_correlation_scatter(df, ['M_tot', 'sp_kin', 'sig_3D', 'T', 'sp_int'])
+#cross_correlation_scatter(df, ['M_tot', 'T_med', 'B_med', 'Ne_med', 'rho_med'])
+#cross_correlation_scatter(df, ['M_tot', 'T_16', 'B_16', 'Ne_16', 'rho_16'])
+#cross_correlation_scatter(df, ['M_tot', 'T_84', 'B_84', 'Ne_84', 'rho_84'])
 
 #cross_correlation_scatter(df, ['M_tot', 'T_std', 'B_std', 'Ne_std', 'rho_std'])
 
