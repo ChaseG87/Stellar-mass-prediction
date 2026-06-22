@@ -30,12 +30,14 @@ the mass. Each subsequent feature is chosen based on the highest covariance with
 The LASSO-tuned model uses a LASSO fit from the entire input space to the final mass. All features that are not tuned to zero by the $L_1$ loss are then fit to a linear regession model to the mass.
 
 #### PCR.py
-Python file containing code used to generate the **figures/PCA** figures and PCR regression. The lasso-tuned and greedy models are also implemented on the principal components in this file (shows the 2D PCA by default with mass colored).
+Python file containing code used to generate the **figures/PCA** figures and PCR regression. The lasso-tuned and greedy models are also implemented on the principal components in this file (shows the 2D PCA by default with mass colored). Note: Both the greedy and LASSO models with 8 components choose the same components (1, 2, 3, 4, 5, 6, 9, 13). Because of multicollinearity the PCA is reduced rank which can been seen in **figures/PCA**.
 
 Usage:
   1. --pca_3d or -3d flag visualizes the first 3 principal components in 3d space 
   2. --blind_regression or -br flag visualizes a blind regression of all of the features
   3. --n_components or -n_comp flag followed by a positive int determines the number of principal compoenents with the default being 21 (the maximum)
+  4. --greedy or -gr flag runs the greedy PCA model with 8 components
+  5. --lasso or -l flag runs the LASSO-aided PCA model with 8 components
 
 
 
