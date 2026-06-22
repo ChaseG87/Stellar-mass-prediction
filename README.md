@@ -120,7 +120,7 @@ Notes on figures:
 
 ##### Next steps:
 * [x] Create a pre-stellar snap minus n snaps function to investigate the different datasets
-* [ ] Analyze the connection between the pre-stellar snap features and the features of the minus n snaps features
+* [x] Analyze the connection between the pre-stellar snap features and the features at minus 3 snaps
 * [ ] Analyze the predictive capactity of the minus n snaps features onto mass
 
 ### Pre-Stellar Continuation
