@@ -5,7 +5,7 @@ from seaborn import heatmap
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Lasso
 import argparse
-from process_data import log_train_val_data
+from process_data import log_train_val_data, artificial_data
 
 
 
@@ -190,6 +190,8 @@ class GreedyModelConstructor:
 
             r2s.append(feature_tuple[1])
         
+        print(f'Greedy features {self.ordered_predictors}')
+        
     
     def predict(self, input, return_model= False):
         '''
@@ -263,7 +265,7 @@ class LassoAidedModelConstructor:
 
         # save df and target
         self.df_input = df
-        self.target = np.log10(df['M_tot'].values)
+        self.target = df['M_tot'].values
     
     def train(self, features):
         '''
@@ -292,7 +294,7 @@ class LassoAidedModelConstructor:
         '''
 
         # score fitted model
-        if type(df) == None:
+        if type(df) == type(None):
             X = self.df_input[self.key_features].values
             y = self.target
         else:
@@ -323,7 +325,8 @@ if __name__ == '__main__':
     parser.add_argument('--greedy', "-gr", help='Runs Greedy Model with determined provided amount of features')
     parser.add_argument('--heatmaps', '-hm', action='store_true', help='Shows intermittent heatmaps if called')
     parser.add_argument('--lasso', '-l', action='store_true', help='Run the LASSO model')
-    parser.add_argument('-alpha', '-a', default=0.01, type=float, help='Coefficient for normalization in the LASSO model')
+    parser.add_argument('--alpha', '-a', default=0.01, type=float, help='Coefficient for normalization in the LASSO model')
+    parser.add_argument('--unit_test', '-ut', action='store_true', help='Runs Greedy model and LASSO on artificial dataset')
     args = parser.parse_args()
 
     # initialize predictor
@@ -353,7 +356,31 @@ if __name__ == '__main__':
         # visualize model
         lasso.visualize(df=df_val)
 
-# need to code the threshold method
+
+    if args.unit_test:
+        df = artificial_data()
+
+        features = ['x' + str(i+1) for i in range(10)]
+
+        num_pred = 8
+
+        model = GreedyModelConstructor(df)
+
+
+        model.train(features=features, heatmap=args.heatmaps, num_preds=num_pred)
+
+        # visualize model
+        model.visualize(preds=num_pred, df=df)
+
+        # evaluate lasso model
+        lasso = LassoAidedModelConstructor(df=df, alpha=0.55)
+
+        lasso.train(features=features)
+
+        # visualize model
+        lasso.visualize()
+
+
 
 
 
