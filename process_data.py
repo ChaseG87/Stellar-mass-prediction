@@ -125,9 +125,7 @@ def artificial_data():
 
     df[inputs] = input_points.T
 
-    plt.scatter(df[inputs[0]], df['M_tot'])
-    plt.show()
+    #plt.scatter(df[inputs[0]], df['M_tot'])
+    #plt.show()
     #print(df.head())
     return df
-
-artificial_data()
