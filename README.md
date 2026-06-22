@@ -96,6 +96,15 @@ formation and the final mass of stars.
 * **sp_mag_residuals_vs_X.pdf** visualizes the residuals as a function of the specific magnetic energy
 * **sp_mag_sliding_window.pdf** visualizes the mean and standard deviation of the final star mass using a sliding window
 
+#### figures/three_snap_vs_pre_stellar
+Folder containing figures inspecting how the stellar gas data is evolving through time. Specifically investigating 3 snaps backwards in time for each data point.
+
+Notes on figures:
+* All the pre-stellar gas's magnetic fields appear to be increasing as they approach the pre-sink snap time. The standard deviation in the distribution also appears to increase generally.
+* $\rho$ statistics appears to follow a similar trend as magnetic field but with a much tighter distribution. In the rho_16 and rho_med figures it is clear that already more dense gas in the older data yields a greater rate of increase in the stats. Additionally, the standard deviation of the change in these statistics when comparing different stars seems to be increasing with higher prior density.
+* For $n_e$, the standard deviation and mean don't appear to be very informative. However, the median, 16th percentile, and 84th percentile appear to show a large change from being relatively uniformly distributed to being more varied like a sort of "decay" of the statistic as time approaches the sink creation time.
+* The temperature statistics appears to stay relatively consistent with a general decrease in the standard deviation and marginal increase in all the other statistics on average.
+
 
 # Week 4 Notes
 
