@@ -4,18 +4,35 @@ This is a working repository analyzing relationship between pre-stellar gas prop
 ## Files and Usage
 
 #### data_analysis_v1.py
+Python file containing initial investigations of the correlations in the dataset primarily using heatmaps and scatter plots with power-law fits in log-log space.
 
 #### data_analysis_v2.py
+Python file containing code used to generate the different fitting methods (Linear, Piecewise-Linear, Polynomial, Log-Normal/Power-law) of the specific kinetic and specific
+magnetic energy. Created the plots in **figures/sp_kin** and **figures/sp_mag**.
 
 #### residual_analysis.py
-
-#### PCR.py
-
-#### t-SNE.py
+Python file containing code used to generate the heatmaps in **figures/residual_correlation_heatmaps** along with functions that generate pairplots of a variety of comparisons
+between variables.
 
 #### internal_gas_model.py
+Python file containing code for both the Greedy and LASSO-tuned methods of feature selection. The internal gas properties and final snap time before a sink point is generated are the input
+features being selected from. 
 
-##
+The Greedy model works by iteratively adding features to a linear regression model. The first feature is selected by choosing the highest correlation with 
+the mass. Each subsequent feature is chosen based on the highest covariance with the residuals of the current linear model. This iteration is carried out for a determined finite number of steps. 
+The LASSO-tuned model uses a LASSO fit from the entire input space to the final mass. All features that are not tuned to zero by the $L_1$ loss are then fit to a linear regession model to the mass.
+
+#### PCR.py
+Python file containing code used to generate the **figures/PCA** figures and PCR regression. The lasso-tuned and greedy models are also implemented on the principal components in this file.
+
+
+#### t-SNE.py
+Python file containing code used to generate **figures/tsne_visualization**. t-SNE is applied to the internal pre-stellar gas properties and colored by final mass. 
+
+#### process_data.py
+Python file which preprocesses train and validation datasets for analysis. 
+
+## star_data
 
 #### star_data/data_properties.pdf
 Contains a breakdown of the specific contents of stellar data provided in different parquet files.
@@ -28,7 +45,7 @@ This simulation is used as the training data for predictive models and data anal
 Parquet file containing pre-stellar gas properties and statisics associated with each star the snapshot before a sink point is produced by that star in a STARFORGE simulation with 
 the same hyperparmeters but different initial conditions. This dataset is used as the validation set for predictive models.
 
-##
+## figures
 
 #### figures/PCA
 Folder containing figures analyzing the magnitude of principal components from a PCA performed on internal gas statisics (of $T$, $n_e$, $B$, $\rho$) from accreted_gas_properties_pre_stellar.pq. All figures
@@ -59,3 +76,23 @@ formation and the final mass of stars.
 * **sp_mag_residuals_distribution.pdf** visualizes the distribution of the residuals with a gaussian fit for reference
 * **sp_mag_residuals_vs_X.pdf** visualizes the residuals as a function of the specific magnetic energy
 * **sp_mag_sliding_window.pdf** visualizes the mean and standard deviation of the final star mass using a sliding window
+
+
+# Week 4 Notes
+
+### Time Series Investigation
+6/22 - I am starting to investigate the time series data. The first step I am planning on taking is creating a dataset of the gas formation 3 snaps before the pre-stellar snap (the snap before a sink point is formed). I am interested in investigating the difference in predictive capacity of the older gas data and stellar mass. Additionally, I am interested in quantifying how fast the observed quantities I am using as predictors evolve with respect to the time from the pre-stellar snap.
+
+##### Next steps:
+* Create a pre-stellar snap - n snaps function to investigate the different datasets
+* Analyze the connection between the pre-stellar snap features and the features of the - n snaps features
+* Analyze the predictive capactity of the - n snaps features onto mass
+
+### Pre-Stellar Continuation
+6/22 - B, $n_e$, T, $\rho$ statistics and the pre-stellar snap have weak correlation independently with mass but collectively have predictive power of the mass in linear regression. The two models being employed to select the most important features in predicting final mass are the LASSO-aided model and a greedy residual model both in feature coordinates and PCA coordinates. The validation set of data from a simulation run with different initial conditions is fit well by the training dataset further supporting a meaningful connection between the variables. 
+
+##### Next steps:
+* Create a visualization of the RMSE of each model as the number of features increases (LASSO, PCA-LASSO, Greedy, PCA-Greedy)
+* Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added
+
+
