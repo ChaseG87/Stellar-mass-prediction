@@ -8,17 +8,12 @@ from internal_gas_model import GreedyModelConstructor
 import matplotlib.pyplot as plt
 import argparse
 import sys
-
-
-# load train data
-df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq').reset_index()
-
-# load test data
-df_test = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_test.pq').reset_index()
+from process_data import log_train_val_data
 
 features = [ 'T', 'T_med', 'T_84', 'T_16', 'T_std', 'Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'Ne_std',
             'B', 'B_med', 'B_84', 'B_16', 'B_std', 'rho', 'rho_med', 'rho_84', 'rho_16', 'rho_std', 'snap']  
 
+df, df_test = log_train_val_data(features=features)
 
 def perform_pca(df, three_d=False, n_components=3):
     '''
@@ -33,13 +28,10 @@ def perform_pca(df, three_d=False, n_components=3):
     - pca: PCA object containing the fitted model.
     - transformed_data: numpy array of shape (n_samples, n_components) containing the PCA-transformed data.
     '''
-    
-    df['sp_kin'] = df['E_kin'] / df['M_tot']
-    df['sp_mag'] = df['E_mag'] / df['M_tot']
 
     
     # Take the logarithm of the data to handle wide ranges and reduce skewness
-    log_data = np.log10(df[features])
+    log_data = df[features]
 
     # Standardize the data (mean=0, variance=1)
     standardized_data = (log_data - log_data.mean()) / log_data.std()
@@ -68,7 +60,7 @@ def perform_pca(df, three_d=False, n_components=3):
 
     # 2D scatter plot of the first two principal components colored by total mass
     plt.figure(figsize=(8, 5))
-    plt.scatter(transformed_data[:, 0], transformed_data[:, 1], s=7, c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
+    plt.scatter(transformed_data[:, 0], transformed_data[:, 1], s=7, c=df['M_tot'], cmap='viridis', alpha=0.7)
     plt.colorbar(label=r'Total Mass ($M_\odot$) [log scale]')
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
@@ -80,7 +72,7 @@ def perform_pca(df, three_d=False, n_components=3):
         # 3D scatter plot of the first three principal components colored by total mass
         plt.figure(figsize=(10, 8))
         ax = plt.axes(projection='3d')
-        sc = ax.scatter(transformed_data[:, 0], transformed_data[:, 1], transformed_data[:, 2], s=10, c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
+        sc = ax.scatter(transformed_data[:, 0], transformed_data[:, 1], transformed_data[:, 2], s=10, c=df['M_tot'], cmap='viridis', alpha=0.7)
         plt.colorbar(sc, label=r'Total Mass ($M_\odot$) [log scale]')
         ax.set_xlabel('Principal Component 1')
         ax.set_ylabel('Principal Component 2')
@@ -102,7 +94,7 @@ def regression_analysis(transformed_data):
     - predictions: numpy array of shape (n_samples,) containing the predicted values.
     '''
 
-    target = np.log10(df['M_tot'])  # target variable (total mass of accreted gas)
+    target = df['M_tot']  # target variable (total mass of accreted gas)
     model = LinearRegression()
     model.fit(transformed_data, target)
     predictions = model.predict(transformed_data)
@@ -116,20 +108,36 @@ def regression_analysis(transformed_data):
     plt.show()
 
 
-def lasso_pca_regression(transformed_data, test_transformed_data, alpha):
+def lasso_pca_regression(transformed_data, alpha, pca=None, test=False):
     # define components and df_pca
+
     components = ['comp' + str(i+1) for i in range(len(transformed_data[0]))]
     df_pca = pd.DataFrame(transformed_data, columns=components)
-    df_test_pca = pd.DataFrame(test_transformed_data, columns=components)
-    df_pca['M_tot'] = df['M_tot']
-    df_test_pca['M_tot'] = df_test['M_tot']
+    clean_df = df.reset_index()
+    df_pca['M_tot'] = clean_df['M_tot']
+
+
+    if test:
+
+        # Make sure PCA object is provided in test mode
+        if pca == None:
+            raise ValueError("Calling test requires pca object of train data.")
+
+        test_transformed_data = standardize_fit_pca(pca, df_train=df, df_test=df_test)
+
+        # define test dataframe
+        df_test_pca = pd.DataFrame(test_transformed_data, columns=components)
+        df_test_pca['M_tot'] = df_test['M_tot']
 
     # initialize model and fit
     model = LassoAidedModelConstructor(df_pca, alpha=alpha)
     model.train(components)
 
-    # visualize model results
-    model.visualize(df=df_test_pca)
+    if test:
+        # visualize model results
+        model.visualize(df=df_test_pca)
+    else:
+        model.visualize(df=df_pca)
 
 
 def greedy_pca_regression(transformed_data, pca=None, test=False, n_preds=8):
@@ -138,7 +146,8 @@ def greedy_pca_regression(transformed_data, pca=None, test=False, n_preds=8):
 
     components = ['comp' + str(i+1) for i in range(len(transformed_data[0]))]
     df_pca = pd.DataFrame(transformed_data, columns=components)
-    df_pca['M_tot'] = df['M_tot']
+    clean_df = df.reset_index()
+    df_pca['M_tot'] = clean_df['M_tot']
 
 
     if test:
@@ -169,8 +178,8 @@ def greedy_pca_regression(transformed_data, pca=None, test=False, n_preds=8):
 def standardize_fit_pca(pca_model, df_train, df_test):
     
 
-    log_train = np.log10(df_train[features])
-    log_test = np.log10(df_test[features])
+    log_train = df_train[features]
+    log_test = df_test[features]
 
     mean = log_train.mean()
     std = log_train.std()
@@ -188,9 +197,9 @@ def blind_regression_analysis(df):
 
     
     # Take the logarithm of the data to handle wide ranges and reduce skewness
-    log_data = np.log10(df[features])
+    log_data = df[features]
 
-    target = np.log10(df['M_tot'])  # target variable (total mass of accreted gas)
+    target = df['M_tot']  # target variable (total mass of accreted gas)
     model = LinearRegression()
 
     model.fit(log_data, target)
@@ -208,6 +217,8 @@ def main():
     argparser.add_argument('--pca_3d', '-3d', action='store_true', help='Perform 3D PCA analysis and visualization.')
     argparser.add_argument('--blind_regression', '-br', action='store_true', help='Perform blind regression analysis.')
     argparser.add_argument('--n_components', '-n_comp', type=int, default=21)
+    argparser.add_argument('--greedy', '-gr', action='store_true', help='Run greedy PCA model')
+    argparser.add_argument('--lasso', '-l',  action='store_true', help='Run LASSO PCA model')
     args = argparser.parse_args()
 
 
@@ -216,12 +227,16 @@ def main():
     else:
         pca, transformed_data = perform_pca(df, three_d=False, n_components=args.n_components)
 
-    greedy_pca_regression(transformed_data)
-    lasso_pca_regression(transformed_data, alpha=0.0095)
-    regression_analysis(transformed_data)
+    if args.greedy:
+        greedy_pca_regression(transformed_data, pca=pca, test=False)
+    
+    if args.lasso:
+        lasso_pca_regression(transformed_data, pca=pca, alpha=0.0095, test=False)
 
     if args.blind_regression:
         blind_regression_analysis(df)
+
+    #regression_analysis(transformed_data)
 
 
 if __name__ == "__main__":
