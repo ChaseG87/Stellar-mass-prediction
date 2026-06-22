@@ -17,6 +17,11 @@ between variables.
 #### internal_gas_model.py
 Python file containing code for both the Greedy and LASSO-tuned methods of feature selection. The internal gas properties and final snap time before a sink point is generated are the input
 features being selected from. 
+Usage: 
+  1. --greedy or -gr flag followed by an integer evaluates the greedy model on the training dataset
+  2. --lasso or -l flag calls the LASSO-aided model to be (the default alpha is set to 0.01 which produced 8 predictors)
+  3. --alpha or -a flag followed by a float sets the weight of the $L_1$ regularization for the LASSO model
+  4. --unit-test or -ut flag runs the unit-test for both the greedy and LASSO-aided models
 
 The Greedy model works by iteratively adding features to a linear regression model. The first feature is selected by choosing the highest correlation with 
 the mass. Each subsequent feature is chosen based on the highest covariance with the residuals of the current linear model. This iteration is carried out for a determined finite number of steps. 
@@ -94,5 +99,8 @@ formation and the final mass of stars.
 ##### Next steps:
 * [ ] Create a visualization of the RMSE of each model as the number of features increases (LASSO, PCA-LASSO, Greedy, PCA-Greedy)
 * [ ] Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added
+
+### Unit Testing of Model
+6/22 - I created artificial linearly correlated data in **process_data.py** with noise to test the LASSO and greedy models in **internal_gas_model.py**. The models appear to be able to use the correlations to parse good fits even with low signal to noise ratios. I am unsure how to evaluate the theoretical $R^2$ values of the models. I am planning on creating different highly colinear dimensions and see how the values are selected (desiring the models to select un-correlated predictors more often).
 
 
