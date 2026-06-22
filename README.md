@@ -84,7 +84,7 @@ formation and the final mass of stars.
 6/22 - I am starting to investigate the time series data. The first step I am planning on taking is creating a dataset of the gas formation 3 snaps before the pre-stellar snap (the snap before a sink point is formed). I am interested in investigating the difference in predictive capacity of the older gas data and stellar mass. Additionally, I am interested in quantifying how fast the observed quantities I am using as predictors evolve with respect to the time from the pre-stellar snap.
 
 ##### Next steps:
-* Create a pre-stellar snap - n snaps function dataset
+* Create a pre-stellar snap - n snaps function to investigate the different datasets
 * Analyze the connection between the pre-stellar snap features and the features of the - n snaps features
 * Analyze the predictive capactity of the - n snaps features onto mass
 
