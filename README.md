@@ -113,6 +113,9 @@ formation and the final mass of stars.
 * [ ] Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added
 
 ### Unit Testing of Model
-6/22 - I created artificial linearly correlated data in **process_data.py** with noise to test the LASSO and greedy models in **internal_gas_model.py**. The models appear to be able to use the correlations to parse good fits even with low signal to noise ratios. I am unsure how to evaluate the theoretical $R^2$ values of the models. I am planning on creating different highly colinear dimensions and see how the values are selected (desiring the models to select un-correlated predictors more often).
+6/22 - I created artificial linearly correlated data in **process_data.py** with noise to test the LASSO and greedy models in **internal_gas_model.py**. The models appear to be able to use the correlations to parse good fits even with low signal to noise ratios. I am unsure how to evaluate the theoretical $R^2$ values of the models. I am planning on creating different highly collinear dimensions and see how the values are selected (desiring the models to select un-correlated predictors more often).
+
+##### Next steps:
+* [ ] Test **internal_gas_model.py** with collinear data.
 
 
