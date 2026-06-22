@@ -17,27 +17,33 @@ master_df_val = pd.read_parquet('star_data/accreted_gas_properties_test.pq').res
 
 
 
-def log_train_val_data(features):
+def log_train_val_data(features, train=raw_df_train, val=raw_df_val):
     '''
     inputs:
+        - train: DataFrame of the raw training data
+        - val: DataFrame of the raw validation data
         - features: list of strings of input features to be investigated
     returns:
         - df_train, df_val: DataFrames of the train and validation data
     '''
 
+    # order data by sink index
+    train = train.set_index('sink_id').sort_index()
+    val = val.set_index('sink_id').sort_index()
 
     # pre-process taking the log of features
-    df_train = np.log10(raw_df_train[features])
-    df_val = np.log10(raw_df_val[features])
+    df_train = np.log10(train[features])
+    df_val = np.log10(val[features])
 
     # pre-process taking the log of the mass (target)
-    df_train['M_tot'] = np.log10(raw_df_train['M_tot'])
-    df_val['M_tot'] = np.log10(raw_df_val['M_tot'])
+    df_train['M_tot'] = np.log10(train['M_tot'])
+    df_val['M_tot'] = np.log10(val['M_tot'])
+
 
     return df_train, df_val
 
 
-def n_snaps_dataset(master_df, pre_df, n_snaps):
+def n_snaps_general(master_df, pre_df, n_snaps):
     '''
     Generates data of a specific number of snaps before a star is formed in the training dataset
     inputs:
@@ -70,7 +76,7 @@ def n_snaps_dataset(master_df, pre_df, n_snaps):
     return df
 
 
-def n_snaps_data(n_snaps, train_val=False):
+def n_snaps_extract(n_snaps, train_val=False):
     '''
     Returns a train or train val pair of star gas data n_snaps before the pre-stellar snap
 
@@ -83,12 +89,13 @@ def n_snaps_data(n_snaps, train_val=False):
         if not train_val returns just train DataFrame
     '''
 
-    train_df = n_snaps_dataset(master_df=master_df_train, pre_df=raw_df_train, n_snaps=n_snaps)
+    train_df = n_snaps_general(master_df=master_df_train, pre_df=raw_df_train, n_snaps=n_snaps)
 
 
     if train_val:
 
-        val_df = n_snaps_dataset(master_df=master_df_val, pre_df=raw_df_val, n_snaps=n_snaps)
+        val_df = n_snaps_general(master_df=master_df_val, pre_df=raw_df_val, n_snaps=n_snaps)
+
 
         return train_df, val_df
     
