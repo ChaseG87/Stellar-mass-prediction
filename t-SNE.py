@@ -10,11 +10,11 @@ import argparse
 
 
 # Load pre-stellar gas data
-df = pd.read_parquet('accreted_gas_properties_pre_stellar.pq')
+df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq')
 
 # Select input features 
-features = ['Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'T', 'T_med', 'T_84', 'T_16',
-            'B', 'B_med', 'B_84', 'B_16', 'rho', 'rho_med', 'rho_84', 'rho_16']  
+features = [ 'T', 'T_med', 'T_84', 'T_16', 'T_std', 'Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'Ne_std',
+            'B', 'B_med', 'B_84', 'B_16', 'B_std', 'rho', 'rho_med', 'rho_84', 'rho_16', 'rho_std'] 
 
 
 def perform_2D_tsne(df, features):
@@ -98,31 +98,17 @@ def perform_3D_tsne(df, features):
     return tsne, X_tsne
 
 
-def correlation_heatmap(df, features):
-    '''
-    Generates a correlation matrix of properties of interest.
-    '''
-
-    correlation_matrix = np.log10(df[features]).corr()
-    fig = plt.figure(figsize=(10, 8))
-    heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-    plt.title('Heatmap of intrensic property distributions')
-    plt.show()
-
 
 def main():
     argparser = argparse.ArgumentParser(description='Perform t-SNE analysis and correlation heatmap on pre-stellar gas properties.')
     argparser.add_argument('--tsne_2d', '-2d', action='store_true', help='Perform 2D t-SNE analysis and visualization.')
     argparser.add_argument('--tsne_3d', '-3d', action='store_true', help='Perform 3D t-SNE analysis and visualization.')
-    argparser.add_argument('--heatmap', '-hm', action='store_true', help='Generate a correlation heatmap of the features.')
     args = argparser.parse_args()
 
     if args.tsne_2d:
         perform_2D_tsne(df, features)
     if args.tsne_3d:
         perform_3D_tsne(df, features)
-    if args.heatmap:
-        correlation_heatmap(df, features)
     if sys.argv[1:] == []:
         print("No analysis option provided. Use --help for available options.")
 
