@@ -15,7 +15,7 @@ features = [ 'T', 'T_med', 'T_84', 'T_16', 'T_std', 'Ne', 'Ne_med', 'Ne_84', 'Ne
 
 df, df_test = log_train_val_data(features=features)
 
-def perform_pca(df, three_d=False, n_components=3):
+def perform_pca(df, three_d=False, n_components=21):
     '''
     Performs Principal Component Analysis (PCA) on the given DataFrame and plots the results.
     
@@ -123,7 +123,7 @@ def lasso_pca_regression(transformed_data, alpha, pca=None, test=False):
         if pca == None:
             raise ValueError("Calling test requires pca object of train data.")
 
-        test_transformed_data = standardize_fit_pca(pca, df_train=df, df_test=df_test)
+        test_transformed_data = standardize_fit_pca(pca, df_train=df[features], df_test=df_test[features])
 
         # define test dataframe
         df_test_pca = pd.DataFrame(test_transformed_data, columns=components)
@@ -156,7 +156,7 @@ def greedy_pca_regression(transformed_data, pca=None, test=False, n_preds=8):
         if pca == None:
             raise ValueError("Calling test requires pca object of train data.")
 
-        test_transformed_data = standardize_fit_pca(pca, df_train=df, df_test=df_test)
+        test_transformed_data = standardize_fit_pca(pca, df_train=df[features], df_test=df_test[features])
 
         # define test dataframe
         df_test_pca = pd.DataFrame(test_transformed_data, columns=components)
@@ -178,8 +178,8 @@ def greedy_pca_regression(transformed_data, pca=None, test=False, n_preds=8):
 def standardize_fit_pca(pca_model, df_train, df_test):
     
 
-    log_train = df_train[features]
-    log_test = df_test[features]
+    log_train = df_train
+    log_test = df_test
 
     mean = log_train.mean()
     std = log_train.std()

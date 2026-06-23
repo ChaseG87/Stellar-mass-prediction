@@ -1,16 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.pipeline import make_pipeline
-import seaborn as sns
 from seaborn import heatmap
-import pwlf
 import numpy as np
 import sys
 import argparse
-import scipy.stats as stats
-from scipy.optimize import minimize
 from process_data import n_snaps_extract, log_train_val_data
 
 '''
@@ -117,6 +110,7 @@ def main():
             plt.close()
 
         print('plotting complete.')
+
 
 if __name__ == '__main__':
     main()
