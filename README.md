@@ -123,6 +123,8 @@ Notes on figures:
 * [x] 2. Analyze the connection between the pre-stellar snap features and the features at minus 3 snaps
 * [ ] 3. Analyze the predictive capactity of the minus n snaps features onto mass
 
+##
+
 ### Pre-Stellar Continuation
 **6/22** - B, $n_e$, T, $\rho$ statistics and the pre-stellar snap have weak correlation independently with mass but collectively have predictive power of the mass in linear regression. The two models being employed to select the most important features in predicting final mass are the LASSO-aided model and a greedy residual model both in feature coordinates and PCA coordinates. The validation set of data from a simulation run with different initial conditions is fit well by the training dataset further supporting a meaningful connection between the variables. 
 
@@ -133,6 +135,8 @@ Notes on figures:
 ##### Next steps:
 * 1. [x] Create a visualization of the RMSE of each model as the number of features increases (LASSO, PCA-LASSO, Greedy, PCA-Greedy) (see **figures/model_RMSE_comparision.pdf**)
 * 2. [ ] Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added
+
+##
 
 ### Unit Testing of Model
 **6/22** - I created artificial linearly correlated data in **process_data.py** with noise to test the LASSO and greedy models in **internal_gas_model.py**. The models appear to be able to use the correlations to parse good fits even with low signal to noise ratios. I am unsure how to evaluate the theoretical $R^2$ values of the models. I am planning on creating different highly collinear dimensions and see how the values are selected (desiring the models to select un-correlated predictors more often).
