@@ -116,7 +116,7 @@ Notes on figures:
 # Week 4 Notes
 
 ### Time Series Investigation
-6/22 - I am starting to investigate the time series data. The first step I am planning on taking is creating a dataset of the gas formation 3 snaps before the pre-stellar snap (the snap before a sink point is formed). I am interested in investigating the difference in predictive capacity of the older gas data and stellar mass. Additionally, I am interested in quantifying how fast the observed quantities I am using as predictors evolve with respect to the time from the pre-stellar snap. To investigate the relationship between the pre-stellar snap data and the data from 3 snaps prior I am generating histograms of the percent changes in the features by star and ploting the pre-stellar and older data in a log-log scatter plot.
+6/22 - I am starting to investigate the time series data. The first step I am planning on taking is creating a dataset of the gas formation 3 snaps before the pre-stellar snap (the snap before a sink point is formed). I am interested in investigating the difference in predictive capacity of the older gas data and stellar mass. Additionally, I am interested in quantifying how fast the internal gas properties evolve with respect to the time from the pre-sink snap. To investigate the relationship between the pre-sink snap data and the data from 3 snaps prior, I am generating histograms of the percent changes in the features by star and ploting the pre-sink and -3 snap data in a log-log scatter plot.
 
 ##### Next steps:
 * [x] Create a pre-stellar snap minus n snaps function to investigate the different datasets
@@ -125,6 +125,8 @@ Notes on figures:
 
 ### Pre-Stellar Continuation
 6/22 - B, $n_e$, T, $\rho$ statistics and the pre-stellar snap have weak correlation independently with mass but collectively have predictive power of the mass in linear regression. The two models being employed to select the most important features in predicting final mass are the LASSO-aided model and a greedy residual model both in feature coordinates and PCA coordinates. The validation set of data from a simulation run with different initial conditions is fit well by the training dataset further supporting a meaningful connection between the variables. 
+
+###### Side Note: The specific internal energy is almost perfectly correlated with mean temperature while sig_3D is perfectly correlated with specific kinetic energy. This can be visualized by running **residual_analysis.py**.
 
 ##### Next steps:
 * [ ] Create a visualization of the RMSE of each model as the number of features increases (LASSO, PCA-LASSO, Greedy, PCA-Greedy)
