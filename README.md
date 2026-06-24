@@ -133,9 +133,9 @@ Notes on figures:
 **6/23** - After comparing the RMSE performance of the four different models it appears that the greedy model in the normal coordinate space is the most efficient at choosing loss reducing predictors. The base greedy model being a better preditor than the PCA models is a positive outcome as a model with meaningful components provides more explanatory value in understanding the characteristics of pre-stellar gas's connection to final stellar mass. However, I still need to investiate if the coefficients in multicompoent models differ meaningfully from independent regression on a feature (i.e. next step two of this section). 
 
 ##### Next steps:
-* 1. [x] Create a visualization of the RMSE of each model as the number of features increases (LASSO, PCA-LASSO, Greedy, PCA-Greedy) (see **figures/model_RMSE_comparision.pdf**)
-* 2. [ ] Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added
-* 3. [ ] Create a method which visualizes the residuals vs next chosen predictor in the greedy algorithm
+* [x] 1. Create a visualization of the RMSE of each model as the number of features increases (LASSO, PCA-LASSO, Greedy, PCA-Greedy) (see **figures/model_RMSE_comparision.pdf**)
+* [ ] 2. Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added
+* [ ] 3. Create a method which visualizes the residuals vs next chosen predictor in the greedy algorithm
 
 ##
 
