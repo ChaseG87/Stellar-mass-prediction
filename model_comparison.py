@@ -5,6 +5,7 @@ import seaborn as sns
 import numpy as np
 import sys
 import argparse
+from sklearn.linear_model import LinearRegression
 from process_data import n_snaps_extract, log_train_val_data
 from internal_gas_model import GreedyModelConstructor, LassoAidedModelConstructor
 from PCR import standardize_fit_pca
@@ -19,8 +20,8 @@ features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_
 # load clean train and validation data
 df_train, df_val = log_train_val_data(features=features)
 
-known_alphas = {}
-known_alphas_pca = {}
+known_alphas = {0:0.01}
+known_alphas_pca = {0:0.01}
 
 
 def alpha_to_num_preds(df, n_preds, features, pca=False):
@@ -43,7 +44,12 @@ def alpha_to_num_preds(df, n_preds, features, pca=False):
         model.train(features=features)
 
         return model
-    c_alpha = 0.01
+    
+
+    if max(prior_alphas.keys()) < n_preds:
+        c_alpha = prior_alphas[max(prior_alphas.keys())]
+    else:
+        c_alpha = 0.01
 
     # initialize model
     model = LassoAidedModelConstructor(df=df, alpha=c_alpha)
@@ -243,12 +249,97 @@ def rmse_comparison(train, val, preds):
     ax4.set_xticks(xs)
 
     plt.tight_layout()
-    plt.savefig('figures/model_RMSE_comparision.pdf', dpi=300)
+    #plt.savefig('figures/model_RMSE_comparision.pdf', dpi=300)
+    plt.show()
+
+
+def coefficient_comparision(train, preds, las=False):
+    '''
+    Generates a dot plot of the coefficients chosen by the model compared to their univariate coefficients.
+    inputs:
+        -train: DataFrame of training data
+        -las: bool - determines whether a greedy or LASSO model will be run
+    returns:
+        None
+    '''
+
+    lone_coefs = []
+
+    # normalize input features data
+    z_df = (train[features] - np.mean(train[features])) / np.std(train[features], axis=0)
+    z_df['M_tot'] = train['M_tot']
+
+
+    # retrieve coefficents in greedy case
+    if not las:
+        greedy = GreedyModelConstructor(df=z_df)
+        greedy.train(features=features, num_preds=preds)
+
+        coupled_coefs = greedy.model.coef_
+        tick_features = greedy.ordered_predictors
+
+        plt.title('Greedy model Coupled vs Univariate Coefficents')
+
+        for feature in greedy.ordered_predictors:
+
+            linear = LinearRegression()
+            linear.fit(z_df[feature].values.reshape(-1, 1), z_df['M_tot'].values)
+            lone_coefs.append(linear.coef_)
+
+    
+    # retrieve coefficients in lasso case
+    if las:
+        lasso = alpha_to_num_preds(df=z_df, features=features, n_preds=preds)
+        print(len(lasso.key_features))
+
+        coupled_coefs = lasso.model.coef_
+        tick_features = lasso.key_features
+
+        plt.title('LASSO model Coupled vs Univariate Coefficents')     
+
+        for feature in lasso.key_features:
+
+            linear = LinearRegression()
+            linear.fit(z_df[feature].values.reshape(-1, 1), z_df['M_tot'].values)
+            lone_coefs.append(linear.coef_)
+
+
+    # define x space
+    xs = range(1, preds+1)
+
+    # plot
+    plt.scatter(xs, lone_coefs, label='Univariate Coefficient', alpha=0.5, c='b')
+    plt.scatter(xs, coupled_coefs, label='Coupled Coefficient', alpha=0.5, c='r')
+    plt.legend()
+    plt.xticks(xs, tick_features)
     plt.show()
 
 
 
-rmse_comparison(train=df_train, val=df_val, preds=21)
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--rmse', action='store_true', help='Generates a visualization of the RMSE error of each model vs number of predictors')
+    parser.add_argument('--greedy_coefs', '-g_cfs', default=0, type=int, help='Generates a visualization comparing the univariate and coupled coefficients of the greedy model\'s features.')
+    parser.add_argument('--lasso_coefs', '-c_cfs', default=0, type=int, help='Generates a visualization comparing the univariate and coupled coefficients of the LASSO model\'s features.')
+    args = parser.parse_args()
+    
+    if args.rmse:
+        rmse_comparison(train=df_train, val=df_val, preds=21)
+
+    if args.greedy_coefs:
+        coefficient_comparision(train=df_train, preds=args.greedy_coefs, las=False)
+    
+    if args.lasso_coefs:
+        coefficient_comparision(train=df_train, preds=args.lasso_coefs, las=True)
+    
+    if len(sys.argv) < 2:
+        raise ValueError('Must call a flag - run --help to see options')
+
+
+if __name__ == '__main__':
+
+    main()
 
 
     

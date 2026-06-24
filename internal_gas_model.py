@@ -191,6 +191,16 @@ class GreedyModelConstructor:
             r2s.append(feature_tuple[1])
         
         print(f'Greedy features {self.ordered_predictors}')
+
+
+        X = self.df_input[self.ordered_predictors].values
+        y = self.target
+
+        # fit current linear model 
+        model = LinearRegression()
+        model.fit(X, y)
+
+        self.model = model
         
     
     def predict(self, input, return_model= False):
@@ -266,6 +276,7 @@ class LassoAidedModelConstructor:
         # save df and target
         self.df_input = df
         self.target = df['M_tot'].values
+        self.key_features = []
     
     def train(self, features):
         '''
@@ -286,7 +297,7 @@ class LassoAidedModelConstructor:
         X_fin = self.df_input[self.key_features].values
         self.model = LinearRegression()
         self.model.fit(X_fin, self.target)
-
+    
 
     def visualize(self, df=None, title=None):
         '''
