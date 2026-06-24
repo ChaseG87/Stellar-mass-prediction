@@ -169,10 +169,10 @@ def greedy_pca_regression(transformed_data, pca=None, test=False, n_preds=8):
 
     if test:
         # visualize test model results
-        model.visualize(preds=n_preds, df=df_test_pca)
+        model.visualize(df=df_test_pca)
     else:
         # visualize train model results
-        model.visualize(preds=n_preds, df=df_pca)
+        model.visualize(df=df_pca)
 
 
 def standardize_fit_pca(pca_model, df_train, df_test):

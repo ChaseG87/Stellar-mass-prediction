@@ -102,7 +102,7 @@ class GreedyModelConstructor:
         return y - model.predict(X)
 
     
-    def additional_predictor(self, features, heatmap=True):
+    def additional_predictor(self, features, heatmap=True, res_scatter=True):
         '''
         Chooses the next parameter to add to the predictor using the residuals
         of the current prediction model.
@@ -142,7 +142,6 @@ class GreedyModelConstructor:
             features.pop()
             features.pop()
 
-
         # loop through features to find best option
         for feature in features:
 
@@ -158,6 +157,11 @@ class GreedyModelConstructor:
                 best_feature = feature
                 best_r2 = r2
             
+
+        if res_scatter:
+            #plot scatter of chosen feature vs residuals 
+            pass
+
 
         return (best_feature, best_r2)
         
@@ -226,9 +230,9 @@ class GreedyModelConstructor:
         return model.predict(input)
     
 
-    def visualize(self, preds, df=None):
+    def visualize(self, df=None):
         '''
-        Visualizes the prediction model
+        Visualizes the prediction model.
         '''
 
         # get X and y for scatter and prediction
@@ -248,11 +252,11 @@ class GreedyModelConstructor:
 
         # plot perfect prediction line
         plt.plot(y, y, c='r')
-        plt.title(f"Predicted vs Actual of Greedy Model $R^2 =$ {r2:.2f}, num_preds = {preds}")
+        plt.title(f"Predicted vs Actual of Greedy Model $R^2 =$ {r2:.2f}, num_preds = {len(self.ordered_predictors)}")
         plt.xlabel('Ground Truth Mass')
         plt.ylabel('Predicted Mass')
         if __name__ == "__main__" and type(df) == type(None):
-            plt.savefig(f'figures/greedy_figures/greedy_pred{preds}.pdf', dpi=300)
+            plt.savefig(f'figures/greedy_figures/greedy_pred{len(self.ordered_predictors)}.pdf', dpi=300)
         
         plt.show()
 
@@ -352,7 +356,7 @@ if __name__ == '__main__':
         model.train(features=features, heatmap=args.heatmaps, num_preds=num_pred)
 
         # visualize model
-        model.visualize(preds=num_pred, df=df)
+        model.visualize(df=df)
 
 
         print(f'Greedy predictors in order of strength: {model.ordered_predictors}')
@@ -381,7 +385,7 @@ if __name__ == '__main__':
         model.train(features=features, heatmap=args.heatmaps, num_preds=num_pred)
 
         # visualize model
-        model.visualize(preds=num_pred, df=df)
+        model.visualize(df=df)
 
         # evaluate lasso model
         lasso = LassoAidedModelConstructor(df=df, alpha=0.55)
