@@ -137,7 +137,7 @@ Notes on figures:
 * [x] 2. Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added (generated from **model_comparision.py**)
 * [x] 3. Create a method which visualizes the residuals vs next chosen predictor in the greedy algorithm
 
-**6/24** - The first seven features selected by the greedy model in order are T_std, rho_med, T_med, B_std, rho, Ne_std, rho_std. The standard deviation of temperature I think can be connected to the gas being more disperate in larger stars while smaller stars only have local gas.
+**6/24** - The first seven features selected by the greedy model in order are T_std, rho_med, T_med, B_std, rho, Ne_std, rho_std. The standard deviation of temperature I think can be connected to the gas being more disperate in larger stars while smaller stars only have local gas (Kaalva et al.).
 
 ##
 
