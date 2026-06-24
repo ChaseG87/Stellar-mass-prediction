@@ -290,7 +290,7 @@ def coefficient_comparision(train, preds, las=False):
     # retrieve coefficients in lasso case
     if las:
         lasso = alpha_to_num_preds(df=z_df, features=features, n_preds=preds)
-        print(len(lasso.key_features))
+
 
         coupled_coefs = lasso.model.coef_
         tick_features = lasso.key_features
@@ -307,11 +307,19 @@ def coefficient_comparision(train, preds, las=False):
     # define x space
     xs = range(1, preds+1)
 
-    # plot
+
+    # Loop through the range and fill every alternating block
+    for i in range(0, preds):
+        if i % 2 == 0:
+            # facecolor handles the gray tone, alpha controls the transparency
+            plt.axvspan(i + 0.5, i + 1.5, facecolor='lightgrey', alpha=0.4, zorder=1)
+
+    # plot scatter of coefficients
     plt.scatter(xs, lone_coefs, label='Univariate Coefficient', alpha=0.5, c='b')
     plt.scatter(xs, coupled_coefs, label='Coupled Coefficient', alpha=0.5, c='r')
     plt.legend()
     plt.xticks(xs, tick_features)
+    plt.tight_layout()
     plt.show()
 
 
