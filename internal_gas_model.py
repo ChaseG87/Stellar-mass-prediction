@@ -4,6 +4,7 @@ import numpy as np
 from seaborn import heatmap
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Lasso
+from sklearn.linear_model import LassoCV
 import argparse
 from process_data import log_train_val_data, artificial_data
 
@@ -159,15 +160,29 @@ class GreedyModelConstructor:
             
 
         if res_scatter:
-            #plot scatter of chosen feature vs residuals 
-            pass
+            feat_vals = X[best_feature]
+
+            plt.title('Best Feature (' + best_feature + ') vs. Residuals')
+            plt.xlabel(best_feature)
+            plt.ylabel('Residuals of current model')
+            plt.scatter(feat_vals, residuals, alpha=0.7, s=10)
+
+            dummy_xs = np.linspace(X[best_feature].min(), X[best_feature].max(), 100)
+            best_model = LinearRegression()
+            best_model.fit(X[best_feature].values.reshape(-1, 1), residuals)
+            ys = best_model.predict(dummy_xs.reshape(-1, 1))
+
+            plt.plot(dummy_xs, ys, label=f'$R^2$ = {best_r2:.2f}', c='r', linestyle='--')
+            plt.legend()
+
+            plt.show()
 
 
         return (best_feature, best_r2)
         
 
 
-    def train(self, features, heatmap=False, num_preds = 8):
+    def train(self, features, heatmap=False, num_preds = 8, res_scatter=False):
         '''
         features: list of features on which the model will be trained on.
 
@@ -188,7 +203,7 @@ class GreedyModelConstructor:
 
         # loop through to add additional features based on residuals of the current model
         for _ in range(num_preds - 1):
-            feature_tuple = self.additional_predictor(features, heatmap=heatmap)
+            feature_tuple = self.additional_predictor(features, heatmap=heatmap, res_scatter=res_scatter)
 
             self.ordered_predictors.append(feature_tuple[0])
 
@@ -267,7 +282,7 @@ class LassoAidedModelConstructor:
     and generates a linear model of the selected features.
     '''
 
-    def __init__(self, df, alpha=0.01):
+    def __init__(self, df, alpha=0.01, pure=False):
         '''
         initializes the LassoModelConstuctor
 
@@ -281,6 +296,7 @@ class LassoAidedModelConstructor:
         self.df_input = df
         self.target = df['M_tot'].values
         self.key_features = []
+        self.pure = pure
     
     def train(self, features):
         '''
@@ -297,10 +313,14 @@ class LassoAidedModelConstructor:
         self.key_features = [features[i] for i in range(len(self.model.coef_)) if abs(self.model.coef_[i]) > 0.00001]
         print(f'Lasso features {self.key_features}')
 
-        # fit a linear regression to the pruned features
-        X_fin = self.df_input[self.key_features].values
-        self.model = LinearRegression()
-        self.model.fit(X_fin, self.target)
+        if not self.pure:
+            # fit a linear regression to the pruned features
+            X_fin = self.df_input[self.key_features].values
+            self.model = LinearRegression()
+            self.model.fit(X_fin, self.target)
+
+        print(type(self.model))
+
     
 
     def visualize(self, df=None, title=None):
@@ -337,9 +357,10 @@ class LassoAidedModelConstructor:
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Perform Greedy Linear Model based on Covariance with Residuals.')
-    parser.add_argument('--greedy', "-gr", help='Runs Greedy Model with determined provided amount of features')
+    parser.add_argument('--greedy', "-gr", type=int, help='Runs Greedy Model with determined provided amount of features')
     parser.add_argument('--heatmaps', '-hm', action='store_true', help='Shows intermittent heatmaps if called')
     parser.add_argument('--lasso', '-l', action='store_true', help='Run the LASSO model')
+    parser.add_argument('--lasso_cv', '-l_cv', action='store_true', help='Run the LASSO Cross-Validation model')
     parser.add_argument('--alpha', '-a', default=0.01, type=float, help='Coefficient for normalization in the LASSO model')
     parser.add_argument('--unit_test', '-ut', action='store_true', help='Runs Greedy model and LASSO on artificial dataset')
     args = parser.parse_args()
@@ -349,11 +370,11 @@ if __name__ == '__main__':
 
     if args.greedy:
         
-        num_pred = int(args.greedy)
+        num_pred = args.greedy
 
         # select features
 
-        model.train(features=features, heatmap=args.heatmaps, num_preds=num_pred)
+        model.train(features=features, heatmap=args.heatmaps, num_preds=num_pred, res_scatter=True)
 
         # visualize model
         model.visualize(df=df)
@@ -369,7 +390,34 @@ if __name__ == '__main__':
         lasso.train(features=features)
 
         # visualize model
-        lasso.visualize(df=df_val)
+        lasso.visualize(df=df)
+
+    
+    if args.lasso_cv:
+
+        X = df[features].values
+        y = df['M_tot'].values
+
+        model = LassoCV(cv=5).fit(X, y)
+        print(model.coef_, model.alpha_)
+        r2 = model.score(X, y)
+
+        print(r2)
+        pred = model.predict(X)
+
+        plt.scatter(y, pred, s=10, alpha=0.7)
+        plt.plot(y, y, c='r', label=f'$R^2 = $ {r2:.2f}')
+        plt.title("LASSO 5-fold Cross-Validation - features = 12")
+        plt.xlabel(r'Ground Truth Mass [$\log_{10}(M_\odot)$]')
+        plt.ylabel(r'Predicted Mass [$\log_{10}(M_\odot)$]')
+
+        coef_names = [features[i] for i in range(21) if model.coef_[i]]
+        print(coef_names)
+
+        plt.savefig('figures/lasso_cv_5_fold.pdf', dpi=300)
+        plt.show()
+
+    
 
 
     if args.unit_test:
@@ -395,9 +443,3 @@ if __name__ == '__main__':
         # visualize model
         lasso.visualize()
 
-
-
-
-
-
-    
