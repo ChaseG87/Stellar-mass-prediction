@@ -405,16 +405,17 @@ if __name__ == '__main__':
         print(r2)
         pred = model.predict(X)
 
-        plt.scatter(y, pred, s=10, alpha=0.7)
+        plt.scatter(y, pred, s=10, alpha=0.5)
         plt.plot(y, y, c='r', label=f'$R^2 = $ {r2:.2f}')
         plt.title("LASSO 5-fold Cross-Validation - features = 12")
         plt.xlabel(r'Ground Truth Mass [$\log_{10}(M_\odot)$]')
         plt.ylabel(r'Predicted Mass [$\log_{10}(M_\odot)$]')
+        plt.legend()
 
         coef_names = [features[i] for i in range(21) if model.coef_[i]]
         print(coef_names)
 
-        plt.savefig('figures/lasso_cv_5_fold.pdf', dpi=300)
+        #plt.savefig('figures/lasso_cv_5_fold.pdf', dpi=300)
         plt.show()
 
     
