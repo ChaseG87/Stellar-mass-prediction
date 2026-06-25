@@ -136,11 +136,12 @@ Notes on figures:
 * [x] 1. Create a visualization of the RMSE of each model as the number of features increases (LASSO, PCA-LASSO, Greedy, PCA-Greedy) (see **figures/model_RMSE_comparision.pdf**)
 * [x] 2. Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added (generated from **model_comparision.py**)
 * [x] 3. Create a method which visualizes the residuals vs next chosen predictor in the greedy algorithm
-* [ ] 4. Implement pure LASSO and LASSO-CV and compare to LASSO-aided linear regression
+* [x] 4. Implement pure LASSO and LASSO-CV
+* [ ] 5. Compare to LASSO-aided linear regression to LASSO-CV
 
 **6/24** - The first seven features selected by the greedy model in order are T_std, rho_med, T_med, B_std, rho, Ne_std, rho_std. The standard deviation of temperature I think can be connected to the gas being more disperate in larger stars while smaller stars only have local gas (Kaalva et al.). The 6th choice, Ne_std, is the second most correlated as a single variable. There are two clusters that appear to form in the $n_e$ statistics. This should be investigated.
 
-**6/25** - The "LASSO-aided" model where I have been running LASSO to choose features then running a linear regression is known as Post-LASSO. It aims to create sparse models while getting rid of regularization biased placed on features you are interested in using as predictors. There appear to be some statistical problems when performing hypothesis testing on Post-LASSO. Debiased-LASSO is another methd taht behaves in a similar way but hypothesis tests and error estimation methods remain valid.
+**6/25** - The "LASSO-aided" model where I have been running LASSO to choose features then running a linear regression is known as Post-LASSO. It aims to create sparse models while getting rid of regularization biased placed on features you are interested in using as predictors. There appear to be some statistical problems when performing hypothesis testing on Post-LASSO. Debiased-LASSO is another methd taht behaves in a similar way but hypothesis tests and error estimation methods remain valid. The LASSO CV model with 5-folds for cross validation resulted in the selection of 12 features.
 
 ##
 
