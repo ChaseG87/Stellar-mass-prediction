@@ -54,6 +54,14 @@ Usage:
   1. --tsne_2d or -2d flag visualizes the 2d t-SNE
   2. --tsne_3d or -3d flag visualizes the 3d t-SNE
 
+#### model_comparision.py
+Python file that creates visual comparisions of the train and validation RMSE of different complexities of models on pre-stellar gas and the consistency of their coefficients. 
+
+Usage:
+  1. --rmse flag runs a function that compares the performance of the greedy, greedy PCA, LASSO, and LASSO PCA models as more features are included (produces **figures/model_RMSE_comparision**).
+  2. --greedy_coefs or -g_cfs visualizes the difference in coefficients between the greedy model and their univariate linear regression coefficient for a selected number of features
+  3. --lasso_coefs or -l_cfs visualizes the difference in coefficients between the LASSO model and their univariate linear regression coefficient for a selected number of features
+
 #### process_data.py
 Python file which preprocesses train and validation datasets for analysis. 
 
@@ -121,7 +129,6 @@ Notes on figures:
 ##### Next steps:
 * [x] 1. Create a pre-stellar snap minus n snaps function to investigate the different datasets
 * [x] 2. Analyze the connection between the pre-stellar snap features and the features at minus 3 snaps
-* [ ] 3. Analyze the predictive capactity of the minus n snaps features onto mass
 
 ##
 
@@ -137,7 +144,6 @@ Notes on figures:
 * [x] 2. Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added (generated from **model_comparision.py**)
 * [x] 3. Create a method which visualizes the residuals vs next chosen predictor in the greedy algorithm
 * [x] 4. Implement pure LASSO and LASSO-CV
-* [ ] 5. Compare to LASSO-aided linear regression to LASSO-CV
 
 **6/24** - The first seven features selected by the greedy model in order are T_std, rho_med, T_med, B_std, rho, Ne_std, rho_std. The standard deviation of temperature I think can be connected to the gas being more disperate in larger stars while smaller stars only have local gas (Kaalva et al.). The 6th choice, Ne_std, is the second most correlated as a single variable. There are two clusters that appear to form in the $n_e$ statistics. This should be investigated.
 
@@ -152,3 +158,25 @@ Notes on figures:
 * 1. [ ] Test **internal_gas_model.py** with collinear data.
 
 
+## Week 5 Notes
+
+### Time Series Investigation
+
+**6/29** - As we move back in time I want to know: What is the nature of the rate of information loss for predicting mass? In the case that it is exponential, what is the half-life of information loss in the simulation? I plan on applying a model to each snapshot before sink point creation and see how the $R^2$ evolves as a metric of this information loss. The type of model needed for such a task could need to be robust to non-linear relations so I will implement a random forest in addition to a simple linear regression model. The relability of prediction in both the train and validation sets should be investigated.
+
+##### Next Steps:
+* [ ] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots
+* [ ] 2. Analyze $R^2$ decay as time evolves using linear regression (train and val)
+* [ ] 3. Analyze $R^2$ decay as time evolves using random forest (train and val)
+
+##
+
+### Pre-Stellar Continuation 
+
+**6/29** - The LASSO-CV model has been successful in predicting the star mass with an $R^2$ of 0.87. However, it selects 16 features when normalized. When the data is not normalized it has the same predictive power of $R^2$ = 0.87 but is more sparse with only 12 features being selected. A deeper investigation of the loss as a function of alpha should be investigated to determine the contour of the loss space. Additionally, a the $n_e$ appears to be a good predictor of low mass stars that turns into scatter for higher mass stars. A linear piecewise function could be useful in determining how informative $n_e$ values are in predicting the final mass.
+
+##### Next Steps:
+* [ ] 1. Compare to LASSO-aided linear regression to LASSO-CV
+* [ ] 2. Investigate LASSO loss as a function of alpha for standardized data
+* [ ] 3. Investigate Ridge Loss instead of $L_1$ LASSO loss
+* [ ] 4. Investigate a piecewise model of $n_e$ properties (train and val)
