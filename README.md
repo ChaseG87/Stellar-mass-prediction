@@ -175,6 +175,8 @@ Notes on figures:
 
 **6/29** - The LASSO-CV model has been successful in predicting the star mass with an $R^2$ of 0.87. However, it selects 16 features when normalized. When the data is not normalized it has the same predictive power of $R^2$ = 0.87 but is more sparse with only 12 features being selected. A deeper investigation of the loss as a function of alpha should be investigated to determine the contour of the loss space. Additionally, a the $n_e$ appears to be a good predictor of low mass stars that turns into scatter for higher mass stars. A linear piecewise function could be useful in determining how informative $n_e$ values are in predicting the final mass.
 
+###### Side Inquiry: Should I refactor **process_data.py** to pre-standardize all input features in the training and validation sets with respect to the mean and standard deviation of the training set? Some reading has lead me to believe that validation data should be normalized with respect to training statistics and not its own ([source](https://medium.com/@spinjosovsky/normalize-data-before-or-after-split-of-training-and-testing-data-7b8005f81e26)).  
+
 ##### Next Steps:
 * [ ] 1. Compare to LASSO-aided linear regression to LASSO-CV
 * [ ] 2. Investigate LASSO loss as a function of alpha for standardized data
