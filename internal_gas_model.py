@@ -6,6 +6,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Lasso
 from sklearn.linear_model import LassoCV
 import argparse
+from sklearn.preprocessing import StandardScaler
 from process_data import log_train_val_data, artificial_data
 
 
@@ -398,6 +399,10 @@ if __name__ == '__main__':
         X = df[features].values
         y = df['M_tot'].values
 
+        # scale x data
+        scaler = StandardScaler()
+        X = scaler.fit_transform(X)
+
         model = LassoCV(cv=5).fit(X, y)
         print(model.coef_, model.alpha_)
         r2 = model.score(X, y)
@@ -405,21 +410,21 @@ if __name__ == '__main__':
         print(r2)
         pred = model.predict(X)
 
+        coef_names = [features[i] for i in range(21) if model.coef_[i]]
+        print(coef_names)
+
+
         plt.scatter(y, pred, s=10, alpha=0.5)
         plt.plot(y, y, c='r', label=f'$R^2 = $ {r2:.2f}')
-        plt.title("LASSO 5-fold Cross-Validation - features = 12")
+        plt.title(f"LASSO 5-fold Cross-Validation - features = {len(coef_names)}")
         plt.xlabel(r'Ground Truth Mass [$\log_{10}(M_\odot)$]')
         plt.ylabel(r'Predicted Mass [$\log_{10}(M_\odot)$]')
         plt.legend()
-
-        coef_names = [features[i] for i in range(21) if model.coef_[i]]
-        print(coef_names)
 
         #plt.savefig('figures/lasso_cv_5_fold.pdf', dpi=300)
         plt.show()
 
     
-
 
     if args.unit_test:
         df = artificial_data()
