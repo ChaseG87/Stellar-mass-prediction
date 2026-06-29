@@ -5,9 +5,11 @@ import seaborn as sns
 import numpy as np
 import sys
 import argparse
+from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from process_data import n_snaps_extract, log_train_val_data
 from internal_gas_model import GreedyModelConstructor, LassoAidedModelConstructor
+from sklearn.linear_model import LassoCV
 from PCR import standardize_fit_pca
 
 # tasks:
@@ -24,7 +26,7 @@ known_alphas = {0:0.01}
 known_alphas_pca = {0:0.01}
 
 
-def alpha_to_num_preds(df, n_preds, features, pca=False):
+def alpha_to_num_preds(df, n_preds, features, pca=False, pure=False):
     '''
     Finds the value of alpha in lasso model which delivers a chosen n_preds for comparision to greedy model
     using an adjustment for alpha when under/over shooting.
@@ -40,7 +42,7 @@ def alpha_to_num_preds(df, n_preds, features, pca=False):
     # If we have seen an alpha value producing n_preds before, use it instead of searching
     if n_preds in prior_alphas:
 
-        model = LassoAidedModelConstructor(df=df, alpha=prior_alphas[n_preds])
+        model = LassoAidedModelConstructor(df=df, alpha=prior_alphas[n_preds], pure=pure)
         model.train(features=features)
 
         return model
@@ -52,7 +54,7 @@ def alpha_to_num_preds(df, n_preds, features, pca=False):
         c_alpha = 0.01
 
     # initialize model
-    model = LassoAidedModelConstructor(df=df, alpha=c_alpha)
+    model = LassoAidedModelConstructor(df=df, alpha=c_alpha, pure=pure)
 
     # start while loop that iterates through alphas to find matching n_preds
     while len(model.key_features) != n_preds:
@@ -67,14 +69,14 @@ def alpha_to_num_preds(df, n_preds, features, pca=False):
 
         elif len(model.key_features) > n_preds:
             prior_alphas[len(model.key_features)] = c_alpha
-            c_alpha *= 1.15
+            c_alpha *= 1.05
         
         elif len(model.key_features) < n_preds:
             prior_alphas[len(model.key_features)] = c_alpha
-            c_alpha *= 0.8
+            c_alpha *= 0.9
             
         
-        model = LassoAidedModelConstructor(df=df, alpha=c_alpha)
+        model = LassoAidedModelConstructor(df=df, alpha=c_alpha, pure=pure)
 
 
 def rmse_comparison(train, val, preds):
@@ -91,11 +93,14 @@ def rmse_comparison(train, val, preds):
     train_rmse_greedy, val_rmse_greedy, train_rmse_lasso, val_rmse_lasso = [], [], [], []
     train_rmse_pca_greedy, val_rmse_pca_greedy, train_rmse_pca_lasso, val_rmse_pca_lasso = [], [], [], []    
 
+    # Scale Data
+    scaler = StandardScaler()
+    train[features] = scaler.fit_transform(train[features])
+    val[features] = scaler.transform(val[features])
+    
     # Perform PCA
-    standardized_data = (train[features] - train[features].mean()) / train[features].std()
-
     pca = PCA(n_components=21)
-    transformed_train_data = pca.fit_transform(standardized_data)
+    transformed_train_data = pca.fit_transform(train[features])
 
     # get PCA validation data in the normalized space defined by the training data
     transformed_val_data = standardize_fit_pca(pca_model=pca, df_train=train[features], df_test=val[features])
@@ -139,10 +144,10 @@ def rmse_comparison(train, val, preds):
 
 
         # base lasso model
-        b_lasso = alpha_to_num_preds(df=df_train, features=features, n_preds=i+1)
+        b_lasso = alpha_to_num_preds(df=df_train, features=features, n_preds=i+1, pure=True)
 
         # get base lasso train rmse
-        train_b_lasso_preds = b_lasso.model.predict(train[b_lasso.key_features].values.reshape(-1, i+1))
+        train_b_lasso_preds = b_lasso.model.predict(train[features])
         train_b_lasso_rmse = np.sqrt(np.mean((train['M_tot'].values - train_b_lasso_preds)**2))
 
         # append rmse base lasso train
@@ -150,7 +155,7 @@ def rmse_comparison(train, val, preds):
 
 
         # get base lasso validation rmse
-        val_b_lasso_preds = b_lasso.model.predict(val[b_lasso.key_features].values.reshape(-1, i+1))
+        val_b_lasso_preds = b_lasso.model.predict(val[features])
         val_b_lasso_rmse = np.sqrt(np.mean((val['M_tot'].values - val_b_lasso_preds)**2))
 
         # append rmse base lasso val
@@ -177,17 +182,17 @@ def rmse_comparison(train, val, preds):
         val_rmse_pca_greedy.append(val_pca_greedy_rmse)
 
         # pca lasso model
-        pca_lasso = alpha_to_num_preds(df=train_df_pca, features=components, n_preds=i+1, pca=True)
+        pca_lasso = alpha_to_num_preds(df=train_df_pca, features=components, n_preds=i+1, pca=True, pure=True)
 
         # get pca lasso train rmse
-        train_pca_lasso_preds = pca_lasso.model.predict(train_df_pca[pca_lasso.key_features].values.reshape(-1, i+1))
+        train_pca_lasso_preds = pca_lasso.model.predict(train_df_pca[components])
         train_pca_lasso_rmse = np.sqrt(np.mean((train_df_pca['M_tot'].values - train_pca_lasso_preds)**2))
 
         # append rmse pca lasso train
         train_rmse_pca_lasso.append(train_pca_lasso_rmse)
 
         # get pca lasso val rmse
-        val_pca_lasso_preds = pca_lasso.model.predict(val_df_pca[pca_lasso.key_features].values.reshape(-1, i+1))
+        val_pca_lasso_preds = pca_lasso.model.predict(val_df_pca[components])
         val_pca_lasso_rmse = np.sqrt(np.mean((val_df_pca['M_tot'].values - val_pca_lasso_preds)**2))
 
         # append rmse pca lasso val
@@ -217,7 +222,7 @@ def rmse_comparison(train, val, preds):
     ax1.set_xticks(xs)
 
     # plot the base lasso model loss
-    ax2.set_title('Train and Validation RMSE of Base LASSO-Aided Model')
+    ax2.set_title('Train and Validation RMSE of Base LASSO Model')
     ax2.set_xlabel('Number of Features')
     ax2.set_ylabel('RMSE Loss')
     ax2.plot(xs, train_rmse_lasso, 'o', label='Train Loss', c='r', alpha=0.7)
@@ -228,13 +233,13 @@ def rmse_comparison(train, val, preds):
     ax2.set_xticks(xs)
 
     # plot the pca greedy model loss
-    ax3.set_title('Train and Validation RMSE of PCA LASSO-Aided Model')
+    ax3.set_title('Train and Validation RMSE of PCA Greedy Model')
     ax3.set_xlabel('Number of Features')
     ax3.set_ylabel('RMSE Loss')
-    ax3.plot(xs, train_rmse_pca_lasso, 'o', label='Train Loss', c='r', alpha=0.7)
-    ax3.plot(xs, val_rmse_pca_lasso, 'o',label='Validation Loss', c='b', alpha=0.7)
-    ax3.plot(xs, train_rmse_pca_lasso, c='r', alpha=0.7)
-    ax3.plot(xs, val_rmse_pca_lasso, c='b', alpha=0.7)
+    ax3.plot(xs, train_rmse_pca_greedy, 'o', label='Train Loss', c='r', alpha=0.7)
+    ax3.plot(xs, val_rmse_pca_greedy, 'o',label='Validation Loss', c='b', alpha=0.7)
+    ax3.plot(xs, train_rmse_pca_greedy, c='r', alpha=0.7)
+    ax3.plot(xs, val_rmse_pca_greedy, c='b', alpha=0.7)
     ax3.legend()
     ax3.set_xticks(xs)
 
@@ -249,7 +254,7 @@ def rmse_comparison(train, val, preds):
     ax4.set_xticks(xs)
 
     plt.tight_layout()
-    #plt.savefig('figures/model_RMSE_comparision.pdf', dpi=300)
+    plt.savefig('figures/model_RMSE_comparision.pdf', dpi=300)
     plt.show()
 
 
@@ -269,6 +274,9 @@ def coefficient_comparision(train, preds, las=False):
     z_df = (train[features] - np.mean(train[features])) / np.std(train[features], axis=0)
     z_df['M_tot'] = train['M_tot']
 
+    # define figsize for formatting
+    plt.figure(figsize=(12, 8))
+
 
     # retrieve coefficents in greedy case
     if not las:
@@ -278,7 +286,7 @@ def coefficient_comparision(train, preds, las=False):
         coupled_coefs = greedy.model.coef_
         tick_features = greedy.ordered_predictors
 
-        plt.title('Greedy model Coupled vs Univariate Coefficents')
+        plt.title('Greedy model Coupled vs Univariate Coefficents (standardized)')
 
         for feature in greedy.ordered_predictors:
 
@@ -290,12 +298,14 @@ def coefficient_comparision(train, preds, las=False):
     # retrieve coefficients in lasso case
     if las:
         lasso = alpha_to_num_preds(df=z_df, features=features, n_preds=preds)
-
+        lasso_pure = alpha_to_num_preds(df=z_df, features=features, n_preds=preds, pure=True)
 
         coupled_coefs = lasso.model.coef_
+        coupled_pure = lasso_pure.model.sparse_coef_.data
+        print(coupled_pure)
         tick_features = lasso.key_features
 
-        plt.title('LASSO model Coupled vs Univariate Coefficents')     
+        plt.title('LASSO models vs Univariate Coefficents (standardized)')     
 
         for feature in lasso.key_features:
 
@@ -316,10 +326,12 @@ def coefficient_comparision(train, preds, las=False):
 
     # plot scatter of coefficients
     plt.scatter(xs, lone_coefs, label='Univariate Coefficient', alpha=0.5, c='b')
-    plt.scatter(xs, coupled_coefs, label='Coupled Coefficient', alpha=0.5, c='r')
+    plt.scatter(xs, coupled_coefs, label='Post-LASSO Coefficient', alpha=0.5, c='r')
+    plt.scatter(xs, coupled_pure, label='LASSO Coefficient', alpha=0.5, c='g')
     plt.legend()
     plt.xticks(xs, tick_features)
     plt.tight_layout()
+    plt.savefig('figures/lasso_coefficient_comp.pdf', dpi=300)
     plt.show()
 
 
@@ -329,7 +341,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--rmse', action='store_true', help='Generates a visualization of the RMSE error of each model vs number of predictors')
     parser.add_argument('--greedy_coefs', '-g_cfs', default=0, type=int, help='Generates a visualization comparing the univariate and coupled coefficients of the greedy model\'s features.')
-    parser.add_argument('--lasso_coefs', '-c_cfs', default=0, type=int, help='Generates a visualization comparing the univariate and coupled coefficients of the LASSO model\'s features.')
+    parser.add_argument('--lasso_coefs', '-l_cfs', default=0, type=int, help='Generates a visualization comparing the univariate and coupled coefficients of the LASSO model\'s features.')
     args = parser.parse_args()
     
     if args.rmse:
