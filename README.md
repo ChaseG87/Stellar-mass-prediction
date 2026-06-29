@@ -166,8 +166,8 @@ Notes on figures:
 
 ##### Next Steps:
 * [ ] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots
-* [ ] 2. Analyze $R^2$ decay as time evolves using linear regression (train and val)
-* [ ] 3. Analyze $R^2$ decay as time evolves using random forest (train and val)
+* [ ] 2. Analyze $R^2$ decay as time evolves using linear regression (train and validation)
+* [ ] 3. Analyze $R^2$ decay as time evolves using random forest (train and validation)
 
 ##
 
@@ -175,8 +175,10 @@ Notes on figures:
 
 **6/29** - The LASSO-CV model has been successful in predicting the star mass with an $R^2$ of 0.87. However, it selects 16 features when normalized. When the data is not normalized it has the same predictive power of $R^2$ = 0.87 but is more sparse with only 12 features being selected. A deeper investigation of the loss as a function of alpha should be investigated to determine the contour of the loss space. Additionally, a the $n_e$ appears to be a good predictor of low mass stars that turns into scatter for higher mass stars. A linear piecewise function could be useful in determining how informative $n_e$ values are in predicting the final mass.
 
+###### Side Inquiry: Should I refactor **process_data.py** to pre-standardize all input features in the training and validation sets with respect to the mean and standard deviation of the training set? Some reading has lead me to believe that validation data should be normalized with respect to training statistics and not its own ([source](https://medium.com/@spinjosovsky/normalize-data-before-or-after-split-of-training-and-testing-data-7b8005f81e26)).  
+
 ##### Next Steps:
 * [ ] 1. Compare to LASSO-aided linear regression to LASSO-CV
 * [ ] 2. Investigate LASSO loss as a function of alpha for standardized data
 * [ ] 3. Investigate Ridge Loss instead of $L_1$ LASSO loss
-* [ ] 4. Investigate a piecewise model of $n_e$ properties (train and val)
+* [ ] 4. Investigate a piecewise model of $n_e$ properties (train and validation)
