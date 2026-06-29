@@ -36,16 +36,18 @@ df_train_min3, df_val_min3 = log_train_val_data(features=features, train=df_trai
 df_train_base, df_val_base = log_train_val_data(features=features)
 
 
-def plot_intrinsic_gas_heatmap(df):
+def plot_intrinsic_gas_heatmap(snaps=3):
     '''
     Plots a heatmap of the correlation matrix for the distribution of intrensic gas properties and mass.
     '''
         
+    df_t = n_snaps_extract(n_snaps=snaps, train_val=False)
+    df_t, _ = log_train_val_data(features=features, train=df_t)
 
-    correlation_matrix = df[features].corr()
+    correlation_matrix = df_t[features].corr()
     plt.figure(figsize=(12, 10))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-    plt.title('Correlation Heatmap of Intrinsic Gas Properties')
+    plt.title(f'Correlation Heatmap of Intrinsic Gas Properties ({snaps} snaps pre-sink snap)')
     plt.show()
 
 
@@ -98,6 +100,7 @@ def distribution_analysis(pre_df, old_df, feature, save_fig=False):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--plot_3_snap_comp', '-plot_3sc', action='store_true', help='plots all statistics histograms pre-stellar vs 3 snaps pre-stellar')
+    parser.add_argument('--plot_heatmap', '-hm', type=int, default=0, help='plots a heatmap of properties from a specified number of snaps from the pre-sink snap')
     args = parser.parse_args()
 
     if args.plot_3_snap_comp:
@@ -110,6 +113,10 @@ def main():
             plt.close()
 
         print('plotting complete.')
+
+    if args.plot_heatmap:
+        plot_intrinsic_gas_heatmap(snaps=args.plot_heatmap)
+
 
 
 if __name__ == '__main__':
