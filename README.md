@@ -166,8 +166,8 @@ Notes on figures:
 
 ##### Next Steps:
 * [ ] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots
-* [ ] 2. Analyze $R^2$ decay as time evolves using linear regression (train and val)
-* [ ] 3. Analyze $R^2$ decay as time evolves using random forest (train and val)
+* [ ] 2. Analyze $R^2$ decay as time evolves using linear regression (train and validation)
+* [ ] 3. Analyze $R^2$ decay as time evolves using random forest (train and validation)
 
 ##
 
@@ -181,4 +181,4 @@ Notes on figures:
 * [ ] 1. Compare to LASSO-aided linear regression to LASSO-CV
 * [ ] 2. Investigate LASSO loss as a function of alpha for standardized data
 * [ ] 3. Investigate Ridge Loss instead of $L_1$ LASSO loss
-* [ ] 4. Investigate a piecewise model of $n_e$ properties (train and val)
+* [ ] 4. Investigate a piecewise model of $n_e$ properties (train and validation)
