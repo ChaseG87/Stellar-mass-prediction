@@ -177,8 +177,18 @@ Notes on figures:
 
 ###### Side Inquiry: Should I refactor **process_data.py** to pre-standardize all input features in the training and validation sets with respect to the mean and standard deviation of the training set? Some reading has lead me to believe that validation data should be normalized with respect to training statistics and not its own ([source](https://medium.com/@spinjosovsky/normalize-data-before-or-after-split-of-training-and-testing-data-7b8005f81e26)).  
 
+
 ##### Next Steps:
 * [ ] 1. Compare to LASSO-aided linear regression to LASSO-CV
 * [ ] 2. Investigate LASSO loss as a function of alpha for standardized data
 * [ ] 3. Investigate Ridge Loss instead of $L_1$ LASSO loss
 * [ ] 4. Investigate a piecewise model of $n_e$ properties (train and validation)
+
+### Sampling influencing Standard Deviation
+
+The potential sampling problem with the standard deviation is being approached by replacing it with a different statistic that investigates how the star looking 0.01 parsecs around the center of mass of the star. To make sure the same sampling error isn't repeated a subset of stars may be excluded that are too small and be unreliable due to sampling issues.
+
+##### Next Steps:
+* [ ] 1. Look at distribution of "safe" stars to select
+* [ ] 2. Investigate correlation strength with final mass on "safe" subset of stars for the 0.01 pc cut
+* [ ] 3. Investigate resulting changes in model performance
