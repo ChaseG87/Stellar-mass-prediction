@@ -64,8 +64,8 @@ def perform_pca(df, three_d=False, n_components=21):
     plt.colorbar(label=r'Total Mass ($M_\odot$) [log scale]')
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
-    plt.title('PCA of Pre-Stellar Gas Property Distributions (features: T, Ne, B, rho)')
-    #plt.savefig('pca_visualization.pdf', dpi=300, bbox_inches='tight')
+    plt.title(r'PCA of Pre-Stellar Gas Property Distributions (features: T, $n_e$, B, $\rho$)')
+    #plt.savefig('figures/pca_visualization.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
     if three_d:
