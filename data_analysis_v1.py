@@ -69,9 +69,9 @@ def plot_intrinsic_gas_heatmap(df):
 
     correlation_matrix = np.log10(df[chosen_columns]).corr()
     plt.figure(figsize=(12, 10))
-    heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+    heatmap(correlation_matrix, annot=False, cmap='coolwarm', fmt='.2f')
     plt.title('Correlation Heatmap of Intrinsic Gas Properties')
-    plt.savefig('intrinsic_prop_correlation_heatmap.pdf', dpi=300, bbox_inches='tight')
+    plt.savefig('intinsic_prop_correlation_heatmap_numberless.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -139,18 +139,19 @@ def plot_dispersion_vs_mass(df):
 
 
 
-def plot_Ne_vs_mass(df):
+def plot_feature_vs_mass(df, feature):
     '''
     Plots the relationship between the electron density of the accreted gas and its total mass.
     '''
-    plt.scatter(df['Ne'], df['M_tot'], alpha=0.5)
-    plt.xlabel('Electron Density (free electrons per baryon)')
+    plt.scatter(df[feature], df['M_tot'], alpha=0.5)
+    plt.xlabel(feature)
     plt.ylabel('Total Mass (M_sun)')
     plt.title('Electron Density vs Total Mass of Accreted Gas')
     plt.xscale('log')
     plt.yscale('log')
     plt.show()
 
+plot_feature_vs_mass(df, 'T_med')
 
 def plot_star_locations(df):
     '''
