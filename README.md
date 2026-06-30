@@ -162,10 +162,10 @@ Notes on figures:
 
 ### Time Series Investigation
 
-**6/29** - As we move back in time I want to know: What is the nature of the rate of information loss for predicting mass? In the case that it is exponential, what is the half-life of information loss in the simulation? I plan on applying a model to each snapshot before sink point creation and see how the $R^2$ evolves as a metric of this information loss. The type of model needed for such a task could need to be robust to non-linear relations so I will implement a random forest in addition to a simple linear regression model. The relability of prediction in both the train and validation sets should be investigated.
+**6/29** - As we move back in time I want to know: What is the nature of the rate of information loss for predicting mass? In the case that it is exponential, what is the half-life of information loss in the simulation? I plan on applying a model to each snapshot before sink point creation and see how the $R^2$ evolves as a metric of this information loss. The type of model needed for such a task could need to be robust to non-linear relations so I will implement a random forest in addition to a simple linear regression model. The relability of prediction in both the train and validation sets should be investigated. The [time series heatmaps](figures/time_series_heatmaps) show a consistent connection between the standard deviation of features and the total mass. This maintained correlation leads me to believe there is a sampling bias or some other bias connecting the standard deviations to a trival correlation to mass.
 
 ##### Next Steps:
-* [ ] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots
+* [x] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots
 * [ ] 2. Analyze $R^2$ decay as time evolves using linear regression (train and validation)
 * [ ] 3. Analyze $R^2$ decay as time evolves using random forest (train and validation)
 
