@@ -186,9 +186,10 @@ Notes on figures:
 
 ### Sampling influencing Standard Deviation
 
-The potential sampling problem with the standard deviation is being approached by replacing it with a different statistic that investigates how the star looking 0.01 parsecs around the center of mass of the star. To make sure the same sampling error isn't repeated a subset of stars may be excluded that are too small and be unreliable due to sampling issues.
+The potential sampling problem with the standard deviation is being approached by replacing it with a different statistic that investigates how the star looking 0.01 parsecs around the center of mass of the star. To make sure the same sampling error isn't repeated a subset of stars may be excluded that are too small and be unreliable due to sampling issues. The 0.01 pc cut data is a lot less correlated than the data of the full pre-stellar cloud. When modelling a LASSO-CV model onto the cut data an $R^2$ of 0.38 is achieved with especially poor predictive capabilities for smaller stars. When including the magnitude of angular velocity the performance does not improve. 
 
 ##### Next Steps:
 * [x] 1. Look at distribution of "safe" stars to select (168 are elminated by demanding more than 10 particles and a greater max distance than 0.005 pcs of the 2249 total)
 * [x] 2. Investigate correlation strength with final mass on "safe" subset of stars for the 0.01 pc cut (**figures/internal_gas_0.01_cut.pdf**)
 * [x] 3. Investigate resulting changes in model performance (**figures/lasso_cv_0.01_cut.pdf**)
+* [ ] 4. Investigate the performace of random forest on the 0.01 pc cut data
