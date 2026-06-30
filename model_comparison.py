@@ -5,9 +5,8 @@ import seaborn as sns
 import numpy as np
 import sys
 import argparse
-from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
-from process_data import n_snaps_extract, log_train_val_data
+from process_data import n_snaps_extract, log_data
 from internal_gas_model import GreedyModelConstructor, LassoAidedModelConstructor
 from sklearn.linear_model import LassoCV
 from PCR import standardize_fit_pca
@@ -16,11 +15,11 @@ from PCR import standardize_fit_pca
 # 1. compare RMSE performance for training and test data as a function of the number of predictors for each model
 # 2. compare the coefficients of the features in the models vs their coefficient on their own
 
-features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
-            'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'snap'] 
+features = ['T', 'T_med', 'T_16', 'T_84', 'T_std_er', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std_er',
+            'B', 'B_med', 'B_16', 'B_84', 'B_std_er', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std_er', 'snap'] 
 
 # load clean train and validation data
-df_train, df_val = log_train_val_data(features=features)
+df_train, df_val = log_data(features=features, train_val=True, normalize=True)
 
 known_alphas = {0:0.01}
 known_alphas_pca = {0:0.01}
@@ -92,11 +91,6 @@ def rmse_comparison(train, val, preds):
     
     train_rmse_greedy, val_rmse_greedy, train_rmse_lasso, val_rmse_lasso = [], [], [], []
     train_rmse_pca_greedy, val_rmse_pca_greedy, train_rmse_pca_lasso, val_rmse_pca_lasso = [], [], [], []    
-
-    # Scale Data
-    scaler = StandardScaler()
-    train[features] = scaler.fit_transform(train[features])
-    val[features] = scaler.transform(val[features])
     
     # Perform PCA
     pca = PCA(n_components=21)
@@ -258,7 +252,7 @@ def rmse_comparison(train, val, preds):
     plt.show()
 
 
-def coefficient_comparision(train, preds, las=False):
+def coefficient_comparision(train, preds, las=False, las_cv=False):
     '''
     Generates a dot plot of the coefficients chosen by the model compared to their univariate coefficients.
     inputs:
@@ -279,7 +273,7 @@ def coefficient_comparision(train, preds, las=False):
 
 
     # retrieve coefficents in greedy case
-    if not las:
+    if not las and (not las_cv):
         greedy = GreedyModelConstructor(df=z_df)
         greedy.train(features=features, num_preds=preds)
 
@@ -313,6 +307,32 @@ def coefficient_comparision(train, preds, las=False):
             linear.fit(z_df[feature].values.reshape(-1, 1), z_df['M_tot'].values)
             lone_coefs.append(linear.coef_)
 
+    elif las_cv:
+        # defining and training lasso with cross validation
+        lasso_cv = LassoCV(cv=5).fit(z_df[features].values.reshape(-1, len(features)), z_df['M_tot'])
+
+        # pulling coefficients
+        coupled_pure = lasso_cv.coef_
+        tick_features = [features[i] for i in range(len(features)) if coupled_pure[i]]
+
+        # extracting only non-zero coefficients
+        coupled_pure = [coupled_pure[i] for i in range(len(features)) if coupled_pure[i]]
+
+        # initialize and train post lasso
+        post_lasso = LinearRegression().fit(z_df[tick_features].values.reshape(-1, len(tick_features)), z_df['M_tot'])
+        coupled_coefs = post_lasso.coef_
+
+
+        for feature in tick_features:
+
+            linear = LinearRegression()
+            linear.fit(z_df[feature].values.reshape(-1, 1), z_df['M_tot'].values)
+            lone_coefs.append(linear.coef_)
+
+        plt.title('LASSO-CV vs Post-LASSO vs Univariate Coefficients (standardized)')
+
+        # define preds by the number of features lasso cv selected
+        preds = len(tick_features)
 
     # define x space
     xs = range(1, preds+1)
@@ -336,12 +356,12 @@ def coefficient_comparision(train, preds, las=False):
 
 
 
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--rmse', action='store_true', help='Generates a visualization of the RMSE error of each model vs number of predictors')
     parser.add_argument('--greedy_coefs', '-g_cfs', default=0, type=int, help='Generates a visualization comparing the univariate and coupled coefficients of the greedy model\'s features.')
     parser.add_argument('--lasso_coefs', '-l_cfs', default=0, type=int, help='Generates a visualization comparing the univariate and coupled coefficients of the LASSO model\'s features.')
+    parser.add_argument('--lasso_cv_coefs', '-lcv_cfs', action='store_true', help='Generates a visualization comparing the univariate and coupled coefficients of the LASSO-CV model\'s features.')
     args = parser.parse_args()
     
     if args.rmse:
@@ -352,6 +372,9 @@ def main():
     
     if args.lasso_coefs:
         coefficient_comparision(train=df_train, preds=args.lasso_coefs, las=True)
+
+    if args.lasso_cv_coefs:
+        coefficient_comparision(train=df_train, preds=1, las_cv=True)
     
     if len(sys.argv) < 2:
         raise ValueError('Must call a flag - run --help to see options')

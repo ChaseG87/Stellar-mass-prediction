@@ -12,8 +12,8 @@ from process_data import log_data, artificial_data
 
 
 # define features to be investigated
-features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
-            'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'snap'] 
+features = ['T', 'T_med', 'T_16', 'T_84', 'T_std_er', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std_er',
+            'B', 'B_med', 'B_16', 'B_84', 'B_std_er', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std_er', 'snap'] 
 
 # pre-process data
 df, df_val = log_data(features = features, train_val = True, normalize = True)
@@ -405,7 +405,7 @@ if __name__ == '__main__':
         print(r2)
         pred = model.predict(X)
 
-        coef_names = [features[i] for i in range(21) if model.coef_[i]]
+        coef_names = [features[i] for i in range(len(features)) if model.coef_[i]]
         print(coef_names)
 
 
