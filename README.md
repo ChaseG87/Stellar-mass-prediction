@@ -50,7 +50,7 @@ Usage:
 
 
 #### t-SNE.py
-Python file containing code used to generate [figures/tsne_visualization](figures/tsne_visualization). t-SNE is applied to the internal pre-stellar gas properties and colored by final mass. 
+Python file containing code used to generate [figures/tsne_visualization.pdf](figures/tsne_visualization.pdf). t-SNE is applied to the internal pre-stellar gas properties and colored by final mass. 
 
 Usage:
   1. --tsne_2d or -2d flag visualizes the 2d t-SNE
@@ -60,7 +60,7 @@ Usage:
 Python file that creates visual comparisions of the train and validation RMSE of different complexities of models on pre-stellar gas and the consistency of their coefficients. 
 
 Usage:
-  1. --rmse flag runs a function that compares the performance of the greedy, greedy PCA, LASSO, and LASSO PCA models as more features are included (produces [figures/model_RMSE_comparision](figures/model_RMSE_comparision)).
+  1. --rmse flag runs a function that compares the performance of the greedy, greedy PCA, LASSO, and LASSO PCA models as more features are included (produces [figures/model_RMSE_comparision.pdf](figures/model_RMSE_comparision.pdf)).
   2. --greedy_coefs or -g_cfs visualizes the difference in coefficients between the greedy model and their univariate linear regression coefficient for a selected number of features
   3. --lasso_coefs or -l_cfs visualizes the difference in coefficients between the LASSO model and their univariate linear regression coefficient for a selected number of features
 
@@ -143,7 +143,7 @@ Notes on figures:
 
 ##### Next steps:
 * [x] 1. Create a visualization of the RMSE of each model as the number of features increases (LASSO, PCA-LASSO, Greedy, PCA-Greedy) (see [figures/model_RMSE_comparision.pdf](figures/model_RMSE_comparision.pdf))
-* [x] 2. Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added (generated from **model_comparision.py**, example: [figures/lasso_coefficient_comp](figures/lasso_coefficient_comp))
+* [x] 2. Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added (generated from **model_comparision.py**, example: [figures/lasso_coefficient_comp.pdf](figures/lasso_coefficient_comp.pdf))
 * [x] 3. Create a method which visualizes the residuals vs next chosen predictor in the greedy algorithm
 * [x] 4. Implement pure LASSO and LASSO-CV
 
@@ -164,10 +164,10 @@ Notes on figures:
 
 ### Time Series Investigation
 
-**6/29** - As we move back in time I want to know: What is the nature of the rate of information loss for predicting mass? In the case that it is exponential, what is the half-life of information loss in the simulation? I plan on applying a model to each snapshot before sink point creation and see how the $R^2$ evolves as a metric of this information loss. The type of model needed for such a task could need to be robust to non-linear relations so I will implement a random forest in addition to a simple linear regression model. The relability of prediction in both the train and validation sets should be investigated. The [time series heatmaps](figures/time_series_heatmaps) show a consistent connection between the standard deviation of features and the total mass. This maintained correlation leads me to believe there is a sampling bias or some other bias connecting the standard deviations to a trival correlation to mass.
+**6/29** - As we move back in time I want to know: What is the nature of the rate of information loss for predicting mass? In the case that it is exponential, what is the half-life of information loss in the simulation? I plan on applying a model to each snapshot before sink point creation and see how the $R^2$ evolves as a metric of this information loss. The type of model needed for such a task could need to be robust to non-linear relations so I will implement a random forest in addition to a simple linear regression model. The relability of prediction in both the train and validation sets should be investigated. The time series heatmaps show a consistent connection between the standard deviation of features and the total mass. This maintained correlation leads me to believe there is a sampling bias or some other bias connecting the standard deviations to a trival correlation to mass.
 
 ##### Next Steps:
-* [x] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots
+* [x] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots ([time series heatmaps](figures/time_series_heatmaps))
 * [ ] 2. Analyze $R^2$ decay as time evolves using linear regression (train and validation)
 * [ ] 3. Analyze $R^2$ decay as time evolves using random forest (train and validation)
 
