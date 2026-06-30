@@ -4,7 +4,7 @@ from seaborn import heatmap
 import numpy as np
 import sys
 import argparse
-from process_data import n_snaps_extract, log_train_val_data, normalize_data
+from process_data import n_snaps_extract, log_data, normalize_data, add_standard_error
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 
@@ -24,8 +24,8 @@ Namespace Dependencies:
 '''
 
 # define features of interest, not looking at snap as were looking at changes in internal gas values with respect to time
-features = ['M_tot', 'T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
-        'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std'] 
+features = ['M_tot', 'T', 'T_med', 'T_16', 'T_84', 'T_std_er', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std_er', 'Ne_std',
+        'B', 'B_med', 'B_16', 'B_84', 'B_std_er', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std_er', 'rho_std'] 
 
 # Define data frame to be investigated
 
@@ -34,14 +34,16 @@ def plot_intrinsic_gas_heatmap(snaps=3, save=False):
     '''
     Plots a heatmap of the correlation matrix for the distribution of intrensic gas properties and mass.
     '''
-        
+    
     df_t = n_snaps_extract(n_snaps=snaps, train_val=False)
-    df_t, _ = log_train_val_data(features=features, train=df_t)
+    df_t = add_standard_error(df=df_t)
+    df_t = log_data(features=features, train=df_t, train_val=False)
 
     correlation_matrix = df_t[features].corr()
     plt.figure(figsize=(12, 10))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
     plt.title(f'Correlation Heatmap of Intrinsic Gas Properties ({snaps} snaps pre-sink snap)')
+    plt.tight_layout()
     if save:
         plt.savefig(f'figures/time_series_heatmaps/internal_gas_heatmap_{snaps}_presink.pdf', dpi=300)
     plt.show()
@@ -93,11 +95,7 @@ def distribution_analysis(pre_df, old_df, feature, save_fig=False):
         plt.savefig('figures/three_snap_vs_pre_stellar/time_comp_' + feature + '.pdf', dpi=300)
 
 
-def add_standard_error(df):
-    pass
-
-
-def apply_random_forest(features, train_df, val_df):
+def visualize_random_forest(features, train_df, val_df):
     '''
     Takes training and validation DataFrames from the same snapshot and evaluates a random forest
     inputs:
@@ -116,7 +114,6 @@ def apply_random_forest(features, train_df, val_df):
 
     # initialize and fit model
     model = RandomForestRegressor()
-    model = LinearRegression()
     model.fit(X=X_train, y=y_train)
     
     # score both train and validation
@@ -188,10 +185,15 @@ def main():
 
         # n snaps pre-sink snap
         df_train_min, df_val_min = n_snaps_extract(n_snaps=args.random_forest, train_val=True)
-        df_train_min, df_val_min = log_train_val_data(features=features, train=df_train_min, val=df_val_min)
+
+        # add standard error
+        df_train_min = add_standard_error(df_train_min)
+        df_val_min = add_standard_error(df_val_min)
+
+        df_train_min, df_val_min = log_data(features=features, train=df_train_min, val=df_val_min, train_val=True)
         df_train_min, df_val_min = normalize_data(features[1:], df_train=df_train_min, df_val=df_val_min)
 
-        apply_random_forest(features=rf_features, train_df=df_train_min, val_df=df_val_min)
+        visualize_random_forest(features=rf_features, train_df=df_train_min, val_df=df_val_min)
 
         plt.suptitle(f'Train-Validation Comparision {args.random_forest} snapshots pre-sink')
         plt.tight_layout()

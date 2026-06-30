@@ -65,13 +65,14 @@ def plot_intrinsic_gas_heatmap(df):
         
 
     chosen_columns = ['M_tot', 'T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
-                     'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std'] 
+                     'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'snap'] 
 
     correlation_matrix = np.log10(df[chosen_columns]).corr()
     plt.figure(figsize=(12, 10))
     heatmap(correlation_matrix, annot=False, cmap='coolwarm', fmt='.2f')
     plt.title('Correlation Heatmap of Intrinsic Gas Properties')
-    plt.savefig('intinsic_prop_correlation_heatmap_numberless.pdf', dpi=300, bbox_inches='tight')
+    plt.tight_layout()
+    #plt.savefig('intinsic_prop_correlation_heatmap_numberless.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -151,7 +152,6 @@ def plot_feature_vs_mass(df, feature):
     plt.yscale('log')
     plt.show()
 
-plot_feature_vs_mass(df, 'T_med')
 
 def plot_star_locations(df):
     '''
@@ -381,6 +381,8 @@ def radians_vs_mass(df):
 
     plt.show()
 
+
+
 if __name__ == "__main__":
 
     # Parser options for different analyses
@@ -413,7 +415,7 @@ if __name__ == "__main__":
     if args.dispersion:
         plot_dispersion_vs_mass(df)
     if args.electron_density:
-        plot_Ne_vs_mass(df)
+        plot_feature_vs_mass(df)
     if args.star_locations:
         plot_star_locations(df)
     if args.temperature_vs_ne:

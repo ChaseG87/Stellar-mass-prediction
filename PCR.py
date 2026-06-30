@@ -8,12 +8,12 @@ from internal_gas_model import GreedyModelConstructor
 import matplotlib.pyplot as plt
 import argparse
 import sys
-from process_data import log_train_val_data
+from process_data import log_data
 
 features = [ 'T', 'T_med', 'T_84', 'T_16', 'T_std', 'Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'Ne_std',
             'B', 'B_med', 'B_84', 'B_16', 'B_std', 'rho', 'rho_med', 'rho_84', 'rho_16', 'rho_std', 'snap']  
 
-df, df_test = log_train_val_data(features=features)
+df, df_test = log_data(features=features, train_val = True)
 
 def perform_pca(df, three_d=False, n_components=21):
     '''

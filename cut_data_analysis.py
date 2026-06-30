@@ -2,22 +2,27 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from process_data import log_train_val_data, normalize_data
+from process_data import log_data, normalize_data
 from data_analysis_v1 import plot_intrinsic_gas_heatmap
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LassoCV
 
 
 features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
-                'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'snap'] 
+                'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'snap', 'L_mag'] 
 
 # read file
 df_cut = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_cut.pq').reset_index()
 
-print(df_cut['max_dist_peak'][df_cut['max_dist_peak'] < 0.005].count())
+# add specific angular momentum
+df_cut['L_mag'] = np.sqrt(df_cut['L_vec_1']**2 + df_cut['L_vec_2']**2 + df_cut['L_vec_3']**2)
 
-df_clean_cut = df_cut[(df_cut['N_inc'] >= 10) & (df_cut['max_dist_peak'] > 0.005)]
 
+print(df_cut['M_tot'].count(), df_cut['M_tot'][df_cut['max_dist_peak'] > 0.009].count())
+
+df_clean_cut = df_cut[(df_cut['N_inc'] >= 10) & (df_cut['max_dist_peak'] > 0.009)]
+
+print(df_clean_cut['M_tot'].count())
 # log taken within the function
 plot_intrinsic_gas_heatmap(df=df_clean_cut)
 
@@ -25,7 +30,7 @@ plot_intrinsic_gas_heatmap(df=df_clean_cut)
 # 65 of those have a max_dist_peak less than 0.005 pcs
 
 # take log of both
-X = np.log10(df_clean_cut[features].values.reshape(-1, 21))
+X = np.log10(df_clean_cut[features].values.reshape(-1, len(features)))
 y = np.log10(df_clean_cut['M_tot'].values)
 
 
@@ -39,7 +44,7 @@ pred = model.predict(X)
 
 r2 = model.score(X, y)
 
-used_features = [features[i] for i in range(21) if model.coef_[i]]
+used_features = [features[i] for i in range(len(features)) if model.coef_[i]]
 
 
 # plot prediction
@@ -52,7 +57,7 @@ plt.title(f'LASSO-CV applied to 0.01 pc cut, $R^2$ = {r2:.2f}, num_features = {l
 plt.xlabel(r'Ground Truth Mass ($\log_{10} M_\odot$)')
 plt.ylabel(r'Prediction ($\log_{10} M_\odot$)')
 
-plt.savefig('lasso_cv_0.01_cut.pdf', dpi=300)
+#plt.savefig('lasso_cv_0.01_cut.pdf', dpi=300)
 plt.show()
 
 

@@ -45,29 +45,65 @@ def normalize_data(features, df_train, df_val=None):
         return df_train
 
 
-def log_train_val_data(features, train=raw_df_train, val=raw_df_val):
+def add_standard_error(df):
+    '''
+    Takes DataFrames and adds the standard error using the standard deviation and number of included particles
+    inputs:
+        -dfs: DataFrames to be updated
+    returns:
+        df: DataFrames with standard error statistics
+    '''
+
+    sample_dem = np.sqrt(df['N_inc'])
+
+    df['T_std_er'] = df['T_std']/sample_dem
+    df['B_std_er'] = df['B_std']/sample_dem
+    df['Ne_std_er'] = df['Ne_std']/sample_dem
+    df['rho_std_er'] = df['rho_std']/sample_dem
+
+    return df
+
+
+def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, normalize=False):
     '''
     inputs:
         - train: DataFrame of the raw training data
         - val: DataFrame of the raw validation data
         - features: list of strings of input features to be investigated
+        - train_val: bool that determines if a validation set will also be included
+        - normalize: bool that determines if the input features are normalized
     returns:
         - df_train, df_val: DataFrames of the train and validation data
     '''
 
     # order data by sink index
     train = train.set_index('sink_id').sort_index()
-    val = val.set_index('sink_id').sort_index()
+
+    # add standard error
+    train = add_standard_error(train)
 
     # pre-process taking the log of features
     df_train = np.log10(train[features])
-    df_val = np.log10(val[features])
 
     # pre-process taking the log of the mass (target)
     df_train['M_tot'] = np.log10(train['M_tot'])
-    df_val['M_tot'] = np.log10(val['M_tot'])
 
-    return df_train, df_val
+    if train_val:
+        # apply the same process for validation data if train_val is called
+        val = add_standard_error(val)
+        val = val.set_index('sink_id').sort_index()
+        df_val = np.log10(val[features])
+        df_val['M_tot'] = np.log10(val['M_tot'])
+
+        if normalize:
+            return normalize_data(features=features, df_train=df_train, df_val=df_val)
+        else:
+            return df_train, df_val
+    
+    if normalize:
+        return normalize(features=features, df_train=df_train)
+    else:
+        return df_train
 
 
 def n_snaps_general(master_df, pre_df, n_snaps):
@@ -159,7 +195,4 @@ def artificial_data():
 
     df[inputs] = input_points.T
 
-    #plt.scatter(df[inputs[0]], df['M_tot'])
-    #plt.show()
-    #print(df.head())
     return df

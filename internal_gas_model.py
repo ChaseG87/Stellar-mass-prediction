@@ -7,7 +7,7 @@ from sklearn.linear_model import Lasso
 from sklearn.linear_model import LassoCV
 import argparse
 from sklearn.preprocessing import StandardScaler
-from process_data import log_train_val_data, artificial_data
+from process_data import log_data, artificial_data
 
 
 
@@ -16,7 +16,7 @@ features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_
             'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'snap'] 
 
 # pre-process data
-df, df_val = log_train_val_data(features=features)
+df, df_val = log_data(features = features, train_val = True, normalize = True)
 
 
 class GreedyModelConstructor:
@@ -354,7 +354,6 @@ class LassoAidedModelConstructor:
         plt.show()
 
 
-
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Perform Greedy Linear Model based on Covariance with Residuals.')
@@ -398,10 +397,6 @@ if __name__ == '__main__':
 
         X = df[features].values
         y = df['M_tot'].values
-
-        # scale x data
-        scaler = StandardScaler()
-        X = scaler.fit_transform(X)
 
         model = LassoCV(cv=5).fit(X, y)
         print(model.coef_, model.alpha_)
