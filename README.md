@@ -179,12 +179,14 @@ Notes on figures:
 
 ###### Side Inquiry: Should I refactor **process_data.py** to pre-standardize all input features in the training and validation sets with respect to the mean and standard deviation of the training set? Some reading has lead me to believe that validation data should be normalized with respect to training statistics and not its own ([source](https://medium.com/@spinjosovsky/normalize-data-before-or-after-split-of-training-and-testing-data-7b8005f81e26)).  
 
+**6/30** - Including the standard error instead of the standard deviation in the model resulted in greater performance for the LASSO-CV model from $R^2 = 0.87$ to $R^2 = 0.92$. There is a risk of data leakage in the opposite direction of standard deviation as smaller samples with naturally have a larger standard error from the division by $\sqrt{n}$. 
 
 ##### Next Steps:
-* [ ] 1. Compare to LASSO-aided linear regression to LASSO-CV
+* [x] 1. Compare to post-LASSO linear regression to coefficients to LASSO-CV (with the same features)
 * [ ] 2. Investigate LASSO loss as a function of alpha for standardized data
 * [ ] 3. Investigate Ridge Loss instead of $L_1$ LASSO loss
 * [ ] 4. Investigate a piecewise model of $n_e$ properties (train and validation)
+* [x] 5. Investigate the affect of changing from standard deviation to standard error
 
 ### Sampling influencing Standard Deviation
 
