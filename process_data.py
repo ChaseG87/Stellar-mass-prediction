@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
 
 # load pre-stellar train data
 raw_df_train = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq').reset_index()
@@ -15,6 +16,33 @@ master_df_train = pd.read_parquet('star_data/accreted_gas_properties.pq').reset_
 master_df_val = pd.read_parquet('star_data/accreted_gas_properties_test.pq').reset_index()
 
 
+def normalize_data(features, df_train, df_val=None):
+    '''
+    Normalizes input features of data with respect to the training dataset.
+    
+    inputs:
+        -features: list of strings of features to be normalized
+        -df_train: DataFrame of training data
+        -df_val: DataFrame of validation data (optional)
+    '''
+
+    # create scaler and scale training data
+    scaler = StandardScaler()
+    training_data = df_train[features]
+    scaled_training_data = scaler.fit_transform(training_data)
+    df_train[features] = scaled_training_data
+
+    # scale validation of called
+    if type(df_val) != type(None):
+
+        val_data = df_val[features]
+        scaled_val_data = scaler.transform(val_data)
+        df_val[features] = scaled_val_data
+
+        return df_train, df_val
+    
+    else:
+        return df_train
 
 
 def log_train_val_data(features, train=raw_df_train, val=raw_df_val):
@@ -38,7 +66,6 @@ def log_train_val_data(features, train=raw_df_train, val=raw_df_val):
     # pre-process taking the log of the mass (target)
     df_train['M_tot'] = np.log10(train['M_tot'])
     df_val['M_tot'] = np.log10(val['M_tot'])
-
 
     return df_train, df_val
 
