@@ -143,7 +143,7 @@ Notes on figures:
 
 ##### Next steps:
 * [x] 1. Create a visualization of the RMSE of each model as the number of features increases (LASSO, PCA-LASSO, Greedy, PCA-Greedy) (see [figures/model_RMSE_comparision.pdf](figures/model_RMSE_comparision.pdf))
-* [x] 2. Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added (generated from **model_comparision.py**)
+* [x] 2. Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added (generated from **model_comparision.py**, example: [figures/lasso_coefficient_comp](figures/lasso_coefficient_comp))
 * [x] 3. Create a method which visualizes the residuals vs next chosen predictor in the greedy algorithm
 * [x] 4. Implement pure LASSO and LASSO-CV
 
