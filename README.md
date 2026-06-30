@@ -166,8 +166,6 @@ Notes on figures:
 
 **6/29** - As we move back in time I want to know: What is the nature of the rate of information loss for predicting mass? In the case that it is exponential, what is the half-life of information loss in the simulation? I plan on applying a model to each snapshot before sink point creation and see how the $R^2$ evolves as a metric of this information loss. The type of model needed for such a task could need to be robust to non-linear relations so I will implement a random forest in addition to a simple linear regression model. The relability of prediction in both the train and validation sets should be investigated. 
 
-The time series heatmaps show a consistent connection between the standard deviation of features and the total mass. This maintained correlation leads me to believe there is a sampling bias or some other bias connecting the standard deviations to a trival correlation to mass.
-
 ##### Next Steps:
 * [x] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots ([time series heatmaps](figures/time_series_heatmaps))
 * [ ] 2. Analyze $R^2$ decay as time evolves using linear regression (train and validation)
@@ -190,7 +188,9 @@ The time series heatmaps show a consistent connection between the standard devia
 
 ### Sampling influencing Standard Deviation
 
-The potential sampling problem with the standard deviation is being approached by replacing it with a different statistic that investigates how the star looking 0.01 parsecs around the center of mass of the star. To make sure the same sampling error isn't repeated a subset of stars may be excluded that are too small and be unreliable due to sampling issues. The 0.01 pc cut data is a lot less correlated than the data of the full pre-stellar cloud. When modelling a LASSO-CV model onto the cut data an $R^2$ of 0.38 is achieved with especially poor predictive capabilities for smaller stars. When including the magnitude of angular velocity the performance does not improve. 
+**6/29** - The potential sampling problem with the standard deviation is being approached by replacing it with a different statistic that investigates how the star looking 0.01 parsecs around the center of mass of the star. To make sure the same sampling error isn't repeated a subset of stars may be excluded that are too small and be unreliable due to sampling issues. The 0.01 pc cut data is a lot less correlated than the data of the full pre-stellar cloud. When modelling a LASSO-CV model onto the cut data an $R^2$ of 0.38 is achieved with especially poor predictive capabilities for smaller stars. When including the magnitude of angular velocity the performance does not improve. 
+
+**6/30** - The time series heatmaps show a consistent connection between the standard deviation of features and the total mass. This maintained correlation leads me to believe there is a sampling bias or some other bias connecting the standard deviations to a trival correlation to mass.
 
 ##### Next Steps:
 * [x] 1. Look at distribution of "safe" stars to select (168 are elminated by demanding more than 10 particles and a greater max distance than 0.005 pcs of the 2249 total)
