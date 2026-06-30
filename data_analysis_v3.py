@@ -146,7 +146,7 @@ def visualize_random_forest(features, train_df, val_df):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--plot_3_snap_comp', '-plot_3sc', action='store_true', help='plots all statistics histograms pre-stellar vs 3 snaps pre-stellar')
-    parser.add_argument('--plot_heatmap', '-hm', type=int, default=0, help='plots a heatmap of properties from a specified number of snaps from the pre-sink snap')
+    parser.add_argument('--plot_heatmap', '-hm', type=int, default=-1, help='plots a heatmap of properties from a specified number of snaps from the pre-sink snap')
     parser.add_argument('--save', '-s', action='store_true', help='Flag called to save the called figures')
     parser.add_argument('--random_forest', '-rf', type=int, default=-1, help='Evaluates the train and validation of a random forest a given number of snaps presink')
     args = parser.parse_args()
@@ -155,13 +155,11 @@ def main():
 
         # 3 snaps pre-sink snap
         df_train_min3, df_val_min3 = n_snaps_extract(n_snaps=3, train_val=True)
-        df_train_min3, df_val_min3 = log_train_val_data(features=features, train=df_train_min3, val=df_val_min3)
-        df_train_min3, df_val_min3 = normalize_data(features[1:], df_train=df_train_min3, df_val=df_val_min3)
+        df_train_min3, df_val_min3 = log_data(features=features, train=df_train_min3, val=df_val_min3, train_val=True, normalize=True)
 
 
         # pre-sink snap
-        df_train_base, df_val_base = log_train_val_data(features=features)
-        df_train_base, df_val_base = normalize_data(features[1:], df_train=df_train_base, df_val=df_val_base)
+        df_train_base, df_val_base = log_data(features=features, train_val=True, normalize=True)
 
         print('plotting...')
 
@@ -174,7 +172,7 @@ def main():
         print('plotting complete.')
 
 
-    if args.plot_heatmap:
+    if (args.plot_heatmap + 1):
         plot_intrinsic_gas_heatmap(snaps=args.plot_heatmap, save=args.save)
 
 
