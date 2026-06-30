@@ -8,16 +8,18 @@ Python file containing initial investigations of the correlations in the dataset
 
 #### data_analysis_v2.py
 Python file containing code used to generate the different fitting methods (Linear, Piecewise-Linear, Polynomial, Log-Normal/Power-law) of the specific kinetic and specific
-magnetic energy. Created the plots in **figures/sp_kin** and **figures/sp_mag**.
+magnetic energy. Created the plots in [figures/sp_kin](figures/sp_kin) and [figures/sp_kin](figures/sp_mag).
 
 #### data_analysis_v3.py
-Python file containing code used to perform data analysis on time series data at different snapshots. Used to produce the figures in **figures/three_snap_vs_pre_stellar**.
+Python file containing code used to perform data analysis on time series data at different snapshots. Used to produce the scatter plots in [figures/three_snap_vs_pre_stellar](figures/three_snap_vs_pre_stellar) and [figures/time_series_heatmaps](figures/time_series_heatmaps).
 
 Usage:
-  1. --plot_3_snap_comp or -plot_3sc to run the code to save the comparision of snapshots right before sink point creation and three before that snapshot.
+  1. --plot_3_snap_comp or -plot_3sc flag to run the code to save the comparision of snapshots right before sink point creation and three before that snapshot.
+  2. --plot_heatmap or -hm flag to generate a heatmap n snapshots before the pre-sink snapshot
+  3. --save or -s flag that saves generated figures from other flags
 
 #### residual_analysis.py
-Python file containing code used to generate the heatmaps in **figures/residual_correlation_heatmaps** along with functions that generate pairplots of a variety of comparisons
+Python file containing code used to generate the heatmaps in [figures/residual_correlation_heatmaps](figures/residual_correlation_heatmaps) along with functions that generate pairplots of a variety of comparisons
 between variables.
 
 #### internal_gas_model.py
@@ -36,7 +38,7 @@ the mass. Each subsequent feature is chosen based on the highest covariance with
 The LASSO-tuned model uses a LASSO fit from the entire input space to the final mass. All features that are not tuned to zero by the $L_1$ loss are then fit to a linear regession model to the mass.
 
 #### PCR.py
-Python file containing code used to generate the **figures/PCA** figures and PCR regression. The lasso-tuned and greedy models are also implemented on the principal components in this file (shows the 2D PCA by default with mass colored). Note: Both the greedy and LASSO models with 8 components choose the same components (1, 2, 3, 4, 5, 6, 9, 13). Because of multicollinearity the PCA is reduced rank which can been seen in **figures/PCA**.
+Python file containing code used to generate the [figures/PCA](figures/PCA) figures and PCR regression. The lasso-tuned and greedy models are also implemented on the principal components in this file (shows the 2D PCA by default with mass colored). Note: Both the greedy and LASSO models with 8 components choose the same components (1, 2, 3, 4, 5, 6, 9, 13). Because of multicollinearity the PCA is reduced rank which can been seen in [figures/PCA](figures/PCA).
 
 Usage:
   1. --pca_3d or -3d flag visualizes the first 3 principal components in 3d space 
@@ -48,7 +50,7 @@ Usage:
 
 
 #### t-SNE.py
-Python file containing code used to generate **figures/tsne_visualization**. t-SNE is applied to the internal pre-stellar gas properties and colored by final mass. 
+Python file containing code used to generate [figures/tsne_visualization](figures/tsne_visualization). t-SNE is applied to the internal pre-stellar gas properties and colored by final mass. 
 
 Usage:
   1. --tsne_2d or -2d flag visualizes the 2d t-SNE
@@ -58,7 +60,7 @@ Usage:
 Python file that creates visual comparisions of the train and validation RMSE of different complexities of models on pre-stellar gas and the consistency of their coefficients. 
 
 Usage:
-  1. --rmse flag runs a function that compares the performance of the greedy, greedy PCA, LASSO, and LASSO PCA models as more features are included (produces **figures/model_RMSE_comparision**).
+  1. --rmse flag runs a function that compares the performance of the greedy, greedy PCA, LASSO, and LASSO PCA models as more features are included (produces [figures/model_RMSE_comparision](figures/model_RMSE_comparision)).
   2. --greedy_coefs or -g_cfs visualizes the difference in coefficients between the greedy model and their univariate linear regression coefficient for a selected number of features
   3. --lasso_coefs or -l_cfs visualizes the difference in coefficients between the LASSO model and their univariate linear regression coefficient for a selected number of features
 
@@ -67,7 +69,7 @@ Python file which preprocesses train and validation datasets for analysis.
 
 ## star_data
 
-#### star_data/data_properties.pdf
+#### [star_data/data_properties.pdf](star_data/data_properties.pdf)
 Contains a breakdown of the specific contents of stellar data provided in different parquet files.
 
 #### star_data/accreted_gas_properties_pre_stellar.pq
@@ -80,21 +82,21 @@ the same hyperparmeters but different initial conditions. This dataset is used a
 
 ## figures
 
-#### figures/PCA
+#### [figures/PCA](figures/PCA)
 Folder containing figures analyzing the magnitude of principal components from a PCA performed on internal gas statisics (of $T$, $n_e$, $B$, $\rho$) from accreted_gas_properties_pre_stellar.pq. All figures
 in the folder were produced from **PCR.py**.
 * **components_ratios.pdf** visualizes the proportion of variance described by each principal compoenent
 * **cumulative_variance.pdf** visualizes the contribution to the total variance using a cumulative distribution
 * **pca_8_components.pdf** visualizes a PCR (Principal Component Regression) using the first 8 components in the space to predict the final stellar mass.
 
-#### figures/greedy_figures
+#### [figures/greedy_figures](figures/greedy_figures)
 Folder containing the results on the training data of the greedy linear regression algorithm from **internal_gas_model.py** using from 1 to 10 features.
 
-#### figures/residual_correlation_heatmaps
+#### [figures/residual_correlation_heatmaps](figures/residual_correlation_heatmaps)
 Folder containing correlation heatmaps comparing residuals of different models, shown in **figures/sp_kin** and **figures/sp_mag** for the specific kinetic and specific magnetic energies respectively,
 and internal properties of the pre-stellar gas of each star. Generated by **data_analysis_v2.py**.
 
-#### figures/sp_kin
+#### [figures/sp_kin](figures/sp_kin)
 Folder containing plots analyzing the fits of four different regression fits in log-log space(Linear, Piecewise-Linear, Polynomial, and Log-Normal/Power-Law) to the relation between specific kinetic energy the snap before sink point
 formation and the final mass of stars. 
 * **sp_kin_regression_plots.pdf** visualizes the scatter plot vs the fits
@@ -102,7 +104,7 @@ formation and the final mass of stars.
 * **sp_kin_residuals_vs_X.pdf** visualizes the residuals as a function of the specific kinetic energy
 * **sp_kin_sliding_window.pdf** visualizes the mean and standard deviation of the final star mass using a sliding window
 
-#### figures/sp_mag
+#### [figures/sp_mag](figures/sp_mag)
 Folder containing plots analyzing the fits of four different regression fits in log-log space(Linear, Piecewise-Linear, Polynomial, and Log-Normal/Power-Law) to the relation between specific magnetic energy the snap before sink point
 formation and the final mass of stars. 
 * **sp_mag_regression_plots.pdf** visualizes the scatter plot vs the fits
@@ -110,7 +112,7 @@ formation and the final mass of stars.
 * **sp_mag_residuals_vs_X.pdf** visualizes the residuals as a function of the specific magnetic energy
 * **sp_mag_sliding_window.pdf** visualizes the mean and standard deviation of the final star mass using a sliding window
 
-#### figures/three_snap_vs_pre_stellar
+#### [figures/three_snap_vs_pre_stellar](figures/three_snap_vs_pre_stellar)
 Folder containing figures inspecting how the stellar gas data is evolving through time. Specifically investigating 3 snaps backwards in time for each data point.
 
 Notes on figures:
@@ -140,7 +142,7 @@ Notes on figures:
 **6/23** - After comparing the RMSE performance of the four different models it appears that the greedy model in the normal coordinate space is the most efficient at choosing loss reducing predictors. The base greedy model being a better preditor than the PCA models is a positive outcome as a model with meaningful components provides more explanatory value in understanding the characteristics of pre-stellar gas's connection to final stellar mass. However, I still need to investiate if the coefficients in multicompoent models differ meaningfully from independent regression on a feature (i.e. next step two of this section). 
 
 ##### Next steps:
-* [x] 1. Create a visualization of the RMSE of each model as the number of features increases (LASSO, PCA-LASSO, Greedy, PCA-Greedy) (see **figures/model_RMSE_comparision.pdf**)
+* [x] 1. Create a visualization of the RMSE of each model as the number of features increases (LASSO, PCA-LASSO, Greedy, PCA-Greedy) (see [figures/model_RMSE_comparision.pdf](figures/model_RMSE_comparision.pdf))
 * [x] 2. Create a visualization of the exponent of the power-law with respect to mass to see if it is conserved/consistent as more (potentially colinear) variables are added (generated from **model_comparision.py**)
 * [x] 3. Create a method which visualizes the residuals vs next chosen predictor in the greedy algorithm
 * [x] 4. Implement pure LASSO and LASSO-CV
@@ -190,6 +192,6 @@ The potential sampling problem with the standard deviation is being approached b
 
 ##### Next Steps:
 * [x] 1. Look at distribution of "safe" stars to select (168 are elminated by demanding more than 10 particles and a greater max distance than 0.005 pcs of the 2249 total)
-* [x] 2. Investigate correlation strength with final mass on "safe" subset of stars for the 0.01 pc cut (**figures/internal_gas_0.01_cut.pdf**)
-* [x] 3. Investigate resulting changes in model performance (**figures/lasso_cv_0.01_cut.pdf**)
+* [x] 2. Investigate correlation strength with final mass on "safe" subset of stars for the 0.01 pc cut ([figures/internal_gas_0.01_cut.pdf](figures/internal_gas_0.01_cut.pdf))
+* [x] 3. Investigate resulting changes in model performance ([figures/lasso_cv_0.01_cut.pdf](figures/lasso_cv_0.01_cut.pdf))
 * [ ] 4. Investigate the performace of random forest on the 0.01 pc cut data
