@@ -203,7 +203,9 @@ I want to investigate the
 
 Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 particles reduces the total number of stars by 296. This reduction did not appear to improve the performance of the LASSO-CV model even with the inclusion of angular velocities and the magnitude of mass weighted angular velocity. 
 
-**7/1** - Removing low mass stars (less than 0.1 ($M_\odot$) increases the performance of the 0.01 pc cut model to an $R^2$ of 0.59. This operation eliminates 738 total stars which is about 1/3rd of the full dataset. However the mass of these stars are in the brown dwarf zone which could explain their divergent behavior. 
+**7/1** - Removing low mass stars (less than 0.1 ($M_\odot$) increases the performance of the 0.01 pc cut model to an $R^2$ of 0.59. This operation eliminates 738 total stars which is about 1/3rd of the full dataset. However the mass of these stars are in the brown dwarf zone which could explain their divergent behavior.
+
+Looking at the amount of a star's final mass that is contained in the 0.01 pc sphere, it is apparent that the vast majority of even large mass stars have about 95% of their mass in the 0.01 pc near their peak density the snapshot before the sink point is formed. The most disperate star still has 88% of its mass in the 0.01 pc sphere. [figures/mass_vs_mass_proportion.pdf](figures/mass_vs_mass_proportion.pdf)
 
 
 ##### Next Steps:
