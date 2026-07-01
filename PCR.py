@@ -30,6 +30,8 @@ def perform_pca(df, three_d=False, n_components=21):
     '''
 
     
+    features = ['Ne_std', 'B_std', 'T_std', 'rho_std']
+    
     # Take the logarithm of the data to handle wide ranges and reduce skewness
     log_data = df[features]
 

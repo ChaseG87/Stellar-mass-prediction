@@ -13,8 +13,8 @@ import argparse
 df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq')
 
 # Select input features 
-features = [ 'T', 'T_med', 'T_84', 'T_16', 'T_std', 'Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'Ne_std',
-            'B', 'B_med', 'B_84', 'B_16', 'B_std', 'rho', 'rho_med', 'rho_84', 'rho_16', 'rho_std'] 
+features = ['Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'T', 'T_med', 'T_84', 'T_16',
+            'B', 'B_med', 'B_84', 'B_16', 'rho', 'rho_med', 'rho_84', 'rho_16', 'Ne_std', 'B_std', 'T_std', 'rho_std']  
 
 
 def perform_2D_tsne(df, features):
@@ -32,7 +32,7 @@ def perform_2D_tsne(df, features):
 
     X = np.log10(df[features])
 
-    # Standardize features (Crucial: t-SNE relies on Euclidean distances)
+    # Standardize features 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
