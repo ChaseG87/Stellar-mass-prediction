@@ -166,6 +166,8 @@ Notes on figures:
 
 **6/29** - As we move back in time I want to know: What is the nature of the rate of information loss for predicting mass? In the case that it is exponential, what is the half-life of information loss in the simulation? I plan on applying a model to each snapshot before sink point creation and see how the $R^2$ evolves as a metric of this information loss. The type of model needed for such a task could need to be robust to non-linear relations so I will implement a random forest in addition to a simple linear regression model. The relability of prediction in both the train and validation sets should be investigated. 
 
+**7/1** - The decay of the $R^2$ value of the full linear regression model when applied to the internal gas propererties excluding both the standard deviation and standard error yields a characteristic exponential shape. Additionally, the distance between the training and validation data increases implying past a certain point the model is fitting more to noise as the signal is reduced. This drop of in time series data is what I expect of a highly turbulent system like the STARFORGE simulations.
+
 ##### Next Steps:
 * [x] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots ([time series heatmaps](figures/time_series_heatmaps))
 * [x] 2. Analyze $R^2$ decay as time evolves using linear regression (train and validation)
@@ -181,12 +183,15 @@ Notes on figures:
 
 **6/30** - Including the standard error instead of the standard deviation in the model resulted in greater performance for the LASSO-CV model from $R^2 = 0.87$ to $R^2 = 0.92$. There is a risk of data leakage in the opposite direction of standard deviation as smaller samples with naturally have a larger standard error from the division by $\sqrt{n}$. 
 
+**7/1** - Experimenting with Ridge loss and a mixed Ridge Loss and LASSO model known as Elastic Net, I have found that the coefficients remain similarly erradic when compared to the univariate coefficients. 
+
 ##### Next Steps:
 * [x] 1. Compare to post-LASSO linear regression to coefficients to LASSO-CV (with the same features)
 * [ ] 2. Investigate LASSO loss as a function of alpha for standardized data
-* [ ] 3. Investigate Ridge Loss instead of $L_1$ LASSO loss
-* [ ] 4. Investigate a piecewise model of $n_e$ properties (train and validation)
-* [x] 5. Investigate the affect of changing from standard deviation to standard error
+* [x] 3. Investigate Ridge Loss instead of $L_1$ LASSO loss
+* [x] 4. Investigate Elastic Net (Ridge and LASSO loss)
+* [ ] 5. Investigate a piecewise model of $n_e$ properties (train and validation)
+* [x] 6. Investigate the affect of changing from standard deviation to standard error
 
 ### Sampling influencing Standard Deviation
 
