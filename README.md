@@ -168,10 +168,13 @@ Notes on figures:
 
 **7/1** - The decay of the $R^2$ value of the full linear regression model when applied to the internal gas propererties excluding both the standard deviation and standard error yields a characteristic exponential shape. Additionally, the distance between the training and validation data increases implying past a certain point the model is fitting more to noise as the signal is reduced. This drop of in time series data is what I expect of a highly turbulent system like the STARFORGE simulations.
 
+I want to investigate the 
+
 ##### Next Steps:
 * [x] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots ([time series heatmaps](figures/time_series_heatmaps))
 * [x] 2. Analyze $R^2$ decay as time evolves using linear regression (train and validation)
 * [ ] 3. Analyze $R^2$ decay as time evolves using random forest (train and validation)
+* [ ] 4. Investigate results of decay vs. time plots to discover potentially exponential or power-law relationships
 
 ##
 
@@ -187,11 +190,10 @@ Notes on figures:
 
 ##### Next Steps:
 * [x] 1. Compare to post-LASSO linear regression to coefficients to LASSO-CV (with the same features)
-* [ ] 2. Investigate LASSO loss as a function of alpha for standardized data
-* [x] 3. Investigate Ridge Loss instead of $L_1$ LASSO loss
-* [x] 4. Investigate Elastic Net (Ridge and LASSO loss)
-* [ ] 5. Investigate a piecewise model of $n_e$ properties (train and validation)
-* [x] 6. Investigate the affect of changing from standard deviation to standard error
+* [x] 2. Investigate Ridge Loss instead of $L_1$ LASSO loss
+* [x] 3. Investigate Elastic Net (Ridge and LASSO loss)
+* [ ] 4. Investigate a piecewise model of $n_e$ properties (train and validation)
+* [x] 5. Investigate the affect of changing from standard deviation to standard error
 
 ### Sampling influencing Standard Deviation
 
@@ -201,7 +203,7 @@ Notes on figures:
 
 Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 particles reduces the total number of stars by 296. This reduction did not appear to improve the performance of the LASSO-CV model even with the inclusion of angular velocities and the magnitude of mass weighted angular velocity. 
 
-**7/1** - Removing low mass stars (less than 0.1 ($M_\odot$) increases the performance of the 0.01 pc cut model to an $R^2$ of 0.59. This operation eliminates 738 stars which is about 1/3rd of the full dataset. However the mass of these stars are in the brown dwarf zone which could explain their divergent behavior. 
+**7/1** - Removing low mass stars (less than 0.1 ($M_\odot$) increases the performance of the 0.01 pc cut model to an $R^2$ of 0.59. This operation eliminates 738 total stars which is about 1/3rd of the full dataset. However the mass of these stars are in the brown dwarf zone which could explain their divergent behavior. 
 
 
 ##### Next Steps:
@@ -210,3 +212,4 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 * [x] 3. Investigate resulting changes in model performance ([figures/lasso_cv_0.01_cut.pdf](figures/lasso_cv_0.01_cut.pdf))
 * [ ] 4. Investigate the performace of random forest on the 0.01 pc cut data
 * [x] 5. Investigate the performance of angular velocity on 0.01 pc cut data ([figures/internal_gas_0.01_cut.pdf](figures/internal_gas_0.01_cut.pdf)* updated)
+* [ ] 6. Investigate the performace of validation partitions of 0.01 pc cut data
