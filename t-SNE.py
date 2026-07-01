@@ -7,14 +7,16 @@ from seaborn import heatmap
 from sklearn.manifold import TSNE
 import sys
 import argparse
+from process_data import log_data
 
 
-# Load pre-stellar gas data
-df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq')
 
 # Select input features 
 features = ['Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'T', 'T_med', 'T_84', 'T_16',
             'B', 'B_med', 'B_84', 'B_16', 'rho', 'rho_med', 'rho_84', 'rho_16', 'Ne_std', 'B_std', 'T_std', 'rho_std']  
+
+# load pre-stellar data
+df = log_data(features=features, train_val=False)
 
 
 def perform_2D_tsne(df, features):
@@ -30,7 +32,7 @@ def perform_2D_tsne(df, features):
     - X_tsne: numpy array of shape (n_samples, 2) containing the t-SNE-transformed data.
     '''
 
-    X = np.log10(df[features])
+    X = df[features]
 
     # Standardize features 
     scaler = StandardScaler()
@@ -46,7 +48,7 @@ def perform_2D_tsne(df, features):
 
     # Plot t-SNE results
     plt.figure(figsize=(10, 8))
-    scatter = plt.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], s=10, c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
+    scatter = plt.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], s=10, c=df['mf'], cmap='viridis', alpha=0.7)
     plt.colorbar(scatter, label=r'Total Mass ($M_\odot$) [log scale]')
     plt.title(r't-SNE of Pre-Stellar Gas Property Distributions (features: $n_e$, T, B, $\rho$)')
     plt.xlabel('t-SNE 1')
@@ -70,7 +72,7 @@ def perform_3D_tsne(df, features):
     - X_tsne: numpy array of shape (n_samples, 3) containing the t-SNE-transformed data.
     '''
 
-    X = np.log10(df[features])
+    X = df[features]
 
     # Standardize features
     scaler = StandardScaler()
@@ -86,13 +88,13 @@ def perform_3D_tsne(df, features):
     # Plot t-SNE results in 3D
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection='3d')
-    scatter = ax.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], df_tsne['t-SNE 3'], c=np.log10(df['M_tot']), cmap='viridis', alpha=0.7)
+    scatter = ax.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], df_tsne['t-SNE 3'], c=df['mf'], cmap='viridis', alpha=0.7)
     plt.colorbar(scatter, label=r'Total Mass ($M_\odot$) [log scale]')
     ax.set_title(r'3D t-SNE of Pre-Stellar Gas Property Distributions (features: $n_e$, T, B, $\rho$)')
     ax.set_xlabel('t-SNE 1')
     ax.set_ylabel('t-SNE 2')
     ax.set_zlabel('t-SNE 3')
-    plt.savefig('tsne_3d_visualization.pdf', dpi=300, bbox_inches='tight')
+    #plt.savefig('tsne_3d_visualization.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
     return tsne, X_tsne

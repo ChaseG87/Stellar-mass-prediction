@@ -15,6 +15,25 @@ master_df_train = pd.read_parquet('star_data/accreted_gas_properties.pq').reset_
 # load full validation data
 master_df_val = pd.read_parquet('star_data/accreted_gas_properties_test.pq').reset_index()
 
+# load snap table
+snap_table_df = pd.read_parquet('star_data/first_snap_table.pq').reset_index()
+
+
+def merge_snap_table(df, snap_table):
+    '''
+    Merges the snap table with the given DataFrame based on the 'sink_id' column.
+    
+    inputs:
+    - df: pandas DataFrame containing the data to be merged.
+    - snap_table: pandas DataFrame containing the snap table data.
+    
+    returns:
+    - merged_df: pandas DataFrame resulting from merging df and snap_table on the 'sink_id' column.
+    '''
+
+    merged_df = pd.merge(left=df, right=snap_table[['pid', 'mf']], left_on='sink_id', right_on='pid', how='outer')
+    return merged_df
+
 
 def normalize_data(features, df_train, df_val=None):
     '''
@@ -77,6 +96,7 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
     '''
 
     # order data by sink index
+    train = merge_snap_table(train, snap_table_df)
     train = train.set_index('sink_id').sort_index()
 
     # add standard error
@@ -86,14 +106,15 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
     df_train = np.log10(train[features])
 
     # pre-process taking the log of the mass (target)
-    df_train['M_tot'] = np.log10(train['M_tot'])
+    df_train['mf'] = np.log10(train['mf'])
 
     if train_val:
         # apply the same process for validation data if train_val is called
+        val = merge_snap_table(val, snap_table_df)
         val = add_standard_error(val)
         val = val.set_index('sink_id').sort_index()
         df_val = np.log10(val[features])
-        df_val['M_tot'] = np.log10(val['M_tot'])
+        df_val['mf'] = np.log10(val['mf'])
 
         if normalize:
             return normalize_data(features=features, df_train=df_train, df_val=df_val)
@@ -132,9 +153,11 @@ def n_snaps_general(master_df, pre_df, n_snaps):
         right_on=['sink_id', 'target_snap'], 
         how='inner'
     )
-    
+
     # clean up the extra lookup columns brought over by the merge
     df = df.drop(columns=['target_snap'])
+
+    df = merge_snap_table(df, snap_table_df)
 
     return df
 
