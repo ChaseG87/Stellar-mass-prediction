@@ -168,7 +168,7 @@ Notes on figures:
 
 ##### Next Steps:
 * [x] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots ([time series heatmaps](figures/time_series_heatmaps))
-* [ ] 2. Analyze $R^2$ decay as time evolves using linear regression (train and validation)
+* [x] 2. Analyze $R^2$ decay as time evolves using linear regression (train and validation)
 * [ ] 3. Analyze $R^2$ decay as time evolves using random forest (train and validation)
 
 ##
