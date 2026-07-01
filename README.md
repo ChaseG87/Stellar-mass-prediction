@@ -201,6 +201,9 @@ Notes on figures:
 
 Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 particles reduces the total number of stars by 296. This reduction did not appear to improve the performance of the LASSO-CV model even with the inclusion of angular velocities and the magnitude of mass weighted angular velocity. 
 
+**7/1** - Removing low mass stars (less than 0.1 ($M_\odot$) increases the performance of the 0.01 pc cut model to an $R^2$ of 0.59. This operation eliminates 738 stars which is about 1/3rd of the full dataset. However the mass of these stars are in the brown dwarf zone which could explain their divergent behavior. 
+
+
 ##### Next Steps:
 * [x] 1. Look at distribution of "safe" stars to select (168 are elminated by demanding at least 10 particles and a greater max distance than 0.005 pcs of the 2249 total)
 * [x] 2. Investigate correlation strength with final mass on "safe" subset of stars for the 0.01 pc cut ([figures/internal_gas_0.01_cut.pdf](figures/internal_gas_0.01_cut.pdf))
