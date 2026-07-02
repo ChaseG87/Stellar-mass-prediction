@@ -5,11 +5,9 @@ import seaborn as sns
 import numpy as np
 import sys
 import argparse
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, LassoCV, ElasticNetCV, RidgeCV
 from process_data import n_snaps_extract, log_data
 from internal_gas_model import GreedyModelConstructor, LassoAidedModelConstructor
-from sklearn.linear_model import LassoCV
-from PCR import standardize_fit_pca
 
 # tasks:
 # 1. compare RMSE performance for training and test data as a function of the number of predictors for each model
@@ -97,7 +95,8 @@ def rmse_comparison(train, val, preds):
     transformed_train_data = pca.fit_transform(train[features])
 
     # get PCA validation data in the normalized space defined by the training data
-    transformed_val_data = standardize_fit_pca(pca_model=pca, df_train=train[features], df_test=val[features])
+    print(val.isna().sum())
+    transformed_val_data = pca.transform(val[features])
 
     # generate component names
     components = ['comp' + str(i+1) for i in range(len(transformed_train_data[0]))]
@@ -105,12 +104,12 @@ def rmse_comparison(train, val, preds):
     # PCA train DF creation
     train_df_pca = pd.DataFrame(transformed_train_data, columns=components)
     clean_df = train.reset_index()
-    train_df_pca['M_tot'] = clean_df['M_tot']
+    train_df_pca['mf'] = clean_df['mf']
 
     # PCA validation DF creation
     val_df_pca = pd.DataFrame(transformed_val_data, columns=components)
     clean_val_df = val.reset_index()
-    val_df_pca['M_tot'] = clean_val_df['M_tot']
+    val_df_pca['mf'] = clean_val_df['mf']
 
     # iterate through num_preds
     for i in range(preds):
@@ -123,7 +122,7 @@ def rmse_comparison(train, val, preds):
 
         # get base greedy train rmse
         train_b_greedy_preds = b_greedy.predict(train[b_greedy.ordered_predictors].values.reshape(-1, i+1))
-        train_b_greedy_rmse = np.sqrt(np.mean((train['M_tot'].values - train_b_greedy_preds)**2))
+        train_b_greedy_rmse = np.sqrt(np.mean((train['mf'].values - train_b_greedy_preds)**2))
 
         # append rmse base greedy train
         train_rmse_greedy.append(train_b_greedy_rmse)
@@ -131,7 +130,7 @@ def rmse_comparison(train, val, preds):
 
         # get base greedy validation rmse
         val_b_greedy_preds = b_greedy.predict(val[b_greedy.ordered_predictors].values.reshape(-1, i+1))
-        val_b_greedy_rmse = np.sqrt(np.mean((val['M_tot'].values - val_b_greedy_preds)**2))
+        val_b_greedy_rmse = np.sqrt(np.mean((val['mf'].values - val_b_greedy_preds)**2))
 
         # append rmse base greedy val
         val_rmse_greedy.append(val_b_greedy_rmse)
@@ -142,7 +141,7 @@ def rmse_comparison(train, val, preds):
 
         # get base lasso train rmse
         train_b_lasso_preds = b_lasso.model.predict(train[features])
-        train_b_lasso_rmse = np.sqrt(np.mean((train['M_tot'].values - train_b_lasso_preds)**2))
+        train_b_lasso_rmse = np.sqrt(np.mean((train['mf'].values - train_b_lasso_preds)**2))
 
         # append rmse base lasso train
         train_rmse_lasso.append(train_b_lasso_rmse)
@@ -150,7 +149,7 @@ def rmse_comparison(train, val, preds):
 
         # get base lasso validation rmse
         val_b_lasso_preds = b_lasso.model.predict(val[features])
-        val_b_lasso_rmse = np.sqrt(np.mean((val['M_tot'].values - val_b_lasso_preds)**2))
+        val_b_lasso_rmse = np.sqrt(np.mean((val['mf'].values - val_b_lasso_preds)**2))
 
         # append rmse base lasso val
         val_rmse_lasso.append(val_b_lasso_rmse)
@@ -163,14 +162,14 @@ def rmse_comparison(train, val, preds):
 
         # get pca greedy train rmse
         train_pca_greedy_preds = pca_greedy.predict(train_df_pca[pca_greedy.ordered_predictors].values.reshape(-1, i+1))
-        train_pca_greedy_rmse = np.sqrt(np.mean((train_df_pca['M_tot'].values - train_pca_greedy_preds)**2))
+        train_pca_greedy_rmse = np.sqrt(np.mean((train_df_pca['mf'].values - train_pca_greedy_preds)**2))
 
         # append rmse pca greedy train
         train_rmse_pca_greedy.append(train_pca_greedy_rmse)
 
         # get pca greedy val rmse
         val_pca_greedy_preds = pca_greedy.predict(val_df_pca[pca_greedy.ordered_predictors].values.reshape(-1, i+1))
-        val_pca_greedy_rmse = np.sqrt(np.mean((val_df_pca['M_tot'].values - val_pca_greedy_preds)**2))
+        val_pca_greedy_rmse = np.sqrt(np.mean((val_df_pca['mf'].values - val_pca_greedy_preds)**2))
 
         # append rmse pca greedy train
         val_rmse_pca_greedy.append(val_pca_greedy_rmse)
@@ -180,14 +179,14 @@ def rmse_comparison(train, val, preds):
 
         # get pca lasso train rmse
         train_pca_lasso_preds = pca_lasso.model.predict(train_df_pca[components])
-        train_pca_lasso_rmse = np.sqrt(np.mean((train_df_pca['M_tot'].values - train_pca_lasso_preds)**2))
+        train_pca_lasso_rmse = np.sqrt(np.mean((train_df_pca['mf'].values - train_pca_lasso_preds)**2))
 
         # append rmse pca lasso train
         train_rmse_pca_lasso.append(train_pca_lasso_rmse)
 
         # get pca lasso val rmse
         val_pca_lasso_preds = pca_lasso.model.predict(val_df_pca[components])
-        val_pca_lasso_rmse = np.sqrt(np.mean((val_df_pca['M_tot'].values - val_pca_lasso_preds)**2))
+        val_pca_lasso_rmse = np.sqrt(np.mean((val_df_pca['mf'].values - val_pca_lasso_preds)**2))
 
         # append rmse pca lasso val
         val_rmse_pca_lasso.append(val_pca_lasso_rmse)
@@ -266,7 +265,7 @@ def coefficient_comparision(train, preds, las=False, las_cv=False):
 
     # normalize input features data
     z_df = (train[features] - np.mean(train[features])) / np.std(train[features], axis=0)
-    z_df['M_tot'] = train['M_tot']
+    z_df['mf'] = train['mf']
 
     # define figsize for formatting
     plt.figure(figsize=(12, 8))
@@ -285,7 +284,7 @@ def coefficient_comparision(train, preds, las=False, las_cv=False):
         for feature in greedy.ordered_predictors:
 
             linear = LinearRegression()
-            linear.fit(z_df[feature].values.reshape(-1, 1), z_df['M_tot'].values)
+            linear.fit(z_df[feature].values.reshape(-1, 1), z_df['mf'].values)
             lone_coefs.append(linear.coef_)
 
     
@@ -304,12 +303,14 @@ def coefficient_comparision(train, preds, las=False, las_cv=False):
         for feature in lasso.key_features:
 
             linear = LinearRegression()
-            linear.fit(z_df[feature].values.reshape(-1, 1), z_df['M_tot'].values)
+            linear.fit(z_df[feature].values.reshape(-1, 1), z_df['mf'].values)
             lone_coefs.append(linear.coef_)
 
     elif las_cv:
         # defining and training lasso with cross validation
-        lasso_cv = LassoCV(cv=5).fit(z_df[features].values.reshape(-1, len(features)), z_df['M_tot'])
+        lasso_cv = LassoCV(cv=5).fit(z_df[features].values.reshape(-1, len(features)), z_df['mf'])
+        #lasso_cv = ElasticNetCV(l1_ratio=0.5, cv=5).fit(z_df[features].values.reshape(-1, len(features)), z_df['mf'])
+        #lasso_cv = RidgeCV(alphas=np.logspace(0, 6, 13), cv=5).fit(z_df[features].values.reshape(-1, len(features)), z_df['mf'])
 
         # pulling coefficients
         coupled_pure = lasso_cv.coef_
@@ -319,14 +320,14 @@ def coefficient_comparision(train, preds, las=False, las_cv=False):
         coupled_pure = [coupled_pure[i] for i in range(len(features)) if coupled_pure[i]]
 
         # initialize and train post lasso
-        post_lasso = LinearRegression().fit(z_df[tick_features].values.reshape(-1, len(tick_features)), z_df['M_tot'])
+        post_lasso = LinearRegression().fit(z_df[tick_features].values.reshape(-1, len(tick_features)), z_df['mf'])
         coupled_coefs = post_lasso.coef_
 
 
         for feature in tick_features:
 
             linear = LinearRegression()
-            linear.fit(z_df[feature].values.reshape(-1, 1), z_df['M_tot'].values)
+            linear.fit(z_df[feature].values.reshape(-1, 1), z_df['mf'].values)
             lone_coefs.append(linear.coef_)
 
         plt.title('LASSO-CV vs Post-LASSO vs Univariate Coefficients (standardized)')
@@ -351,7 +352,7 @@ def coefficient_comparision(train, preds, las=False, las_cv=False):
     plt.legend()
     plt.xticks(xs, tick_features)
     plt.tight_layout()
-    plt.savefig('figures/lasso_coefficient_comp.pdf', dpi=300)
+    #plt.savefig('figures/lasso_coefficient_comp.pdf', dpi=300)
     plt.show()
 
 

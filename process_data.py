@@ -18,6 +18,9 @@ master_df_val = pd.read_parquet('star_data/accreted_gas_properties_test.pq').res
 # load snap table
 snap_table_df = pd.read_parquet('star_data/first_snap_table.pq').reset_index()
 
+# load val snap table
+val_snap_table_df = pd.read_parquet('star_data/first_snap_table_test.pq').reset_index()
+
 
 def merge_snap_table(df, snap_table=snap_table_df):
     '''
@@ -112,7 +115,7 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
     if train_val:
         # apply the same process for validation data if train_val is called
         if 'mf' not in val.columns:
-            val = merge_snap_table(val, snap_table_df)
+            val = merge_snap_table(val.reset_index(), snap_table=val_snap_table_df)
         val = add_standard_error(val)
         val = val.set_index('sink_id').sort_index()
         df_val = np.log10(val[features])
@@ -129,7 +132,7 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
         return df_train
 
 
-def n_snaps_general(master_df, pre_df, n_snaps):
+def n_snaps_general(master_df, pre_df, n_snaps, val=False):
     '''
     Generates data of a specific number of snaps before a star is formed in the training dataset
     inputs:
@@ -159,7 +162,10 @@ def n_snaps_general(master_df, pre_df, n_snaps):
     # clean up the extra lookup columns brought over by the merge
     df = df.drop(columns=['target_snap'])
 
-    df = merge_snap_table(df, snap_table_df)
+    if val:
+        df = merge_snap_table(df, snap_table=val_snap_table_df)
+    else:
+        df = merge_snap_table(df, snap_table=snap_table_df)
 
     return df
 
@@ -181,6 +187,7 @@ def n_snaps_extract(n_snaps, train_val=False):
 
 
     if train_val:
+
 
         val_df = n_snaps_general(master_df=master_df_val, pre_df=raw_df_val, n_snaps=n_snaps)
 

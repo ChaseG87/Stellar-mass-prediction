@@ -29,7 +29,7 @@ class GreedyModelConstructor:
         initializes the GreedyModelContructor
         '''
         self.df_input = df
-        self.target = df['M_tot'].values
+        self.target = df['mf'].values
         self.ordered_predictors = []
 
 
@@ -126,7 +126,7 @@ class GreedyModelConstructor:
         # define X space
         X = self.df_input[features].copy()
         X['residuals'] = residuals
-        X['M_tot'] = self.target
+        X['mf'] = self.target
 
 
         # initialize r2
@@ -136,7 +136,7 @@ class GreedyModelConstructor:
         if heatmap:
             features = features.copy()
             features.append('residuals')
-            features.append('M_tot')
+            features.append('mf')
 
             self.create_heatmap(X, features=features)
 
@@ -257,7 +257,7 @@ class GreedyModelConstructor:
             y = self.target
         else:
             X = df[self.ordered_predictors].values
-            y = df['M_tot']
+            y = df['mf']
 
         pred, model = self.predict(X, return_model='True')
 
@@ -295,7 +295,7 @@ class LassoAidedModelConstructor:
 
         # save df and target
         self.df_input = df
-        self.target = df['M_tot'].values
+        self.target = df['mf'].values
         self.key_features = []
         self.pure = pure
     
@@ -335,7 +335,7 @@ class LassoAidedModelConstructor:
             y = self.target
         else:
             X = df[self.key_features].values
-            y = df['M_tot']
+            y = df['mf']
 
         pred = self.model.predict(X)
         r2 = self.model.score(X, y)
@@ -396,7 +396,7 @@ if __name__ == '__main__':
     if args.lasso_cv:
 
         X = df[features].values
-        y = df['M_tot'].values
+        y = df['mf'].values
 
         model = LassoCV(cv=5).fit(X, y)
         print(model.coef_, model.alpha_)
