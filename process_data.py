@@ -19,7 +19,7 @@ master_df_val = pd.read_parquet('star_data/accreted_gas_properties_test.pq').res
 snap_table_df = pd.read_parquet('star_data/first_snap_table.pq').reset_index()
 
 
-def merge_snap_table(df, snap_table):
+def merge_snap_table(df, snap_table=snap_table_df):
     '''
     Merges the snap table with the given DataFrame based on the 'sink_id' column.
     
