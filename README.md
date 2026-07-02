@@ -168,13 +168,16 @@ Notes on figures:
 
 **7/1** - The decay of the $R^2$ value of the full linear regression model when applied to the internal gas propererties excluding both the standard deviation and standard error yields a characteristic exponential shape. Additionally, the distance between the training and validation data increases implying past a certain point the model is fitting more to noise as the signal is reduced. This drop of in time series data is what I expect of a highly turbulent system like the STARFORGE simulations.
 
-I want to investigate the 
+**7/2** - The validation performance of both the linear regression model and random forest's $R^2$ values decay exponentially as they move back in time. This can be seen in the information decay plots with the linear decay of $R^2$ on their linear-log axes. The correlation coefficient between the validation $R^2$ exponentiated and snapshot number is -0.89 for the linear model and -0.90 for the random forest model (these change when the base is change but remain high). I think the exponential rate of losing information in time, which is what you expect turbulent system, strengthens the variables I am investigating are not subject to trivial data leaking. 
+
+For the random forest model I tuned the hyperparameters of max_features, max_depth, min_samples_split, and min_samples_leaf. I am concerned that the training performance way overperforms the validation data in old snapshots but this appears to be a feature of random forests with many trees.
 
 ##### Next Steps:
 * [x] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots ([time series heatmaps](figures/time_series_heatmaps))
-* [x] 2. Analyze $R^2$ decay as time evolves using linear regression (train and validation)
-* [ ] 3. Analyze $R^2$ decay as time evolves using random forest (train and validation)
-* [ ] 4. Investigate results of decay vs. time plots to discover potentially exponential or power-law relationships
+* [x] 2. Analyze $R^2$ decay as time evolves using linear regression ([figures/information_decay_linear_regression.pdf](figures/information_decay_linear_regression.pdf))
+* [x] 3. Tune hyperparameters for the random forest model.
+* [x] 4. Analyze $R^2$ decay as time evolves using random forest ([figures/information_decay_random_forest.pdf](figures/information_decay_random_forest.pdf))
+* [x] 5. Investigate results of decay vs. time plots to discover potentially exponential or power-law relationships (appears to be exponential in both linear and random forest)
 
 ##
 
@@ -192,8 +195,7 @@ I want to investigate the
 * [x] 1. Compare to post-LASSO linear regression to coefficients to LASSO-CV (with the same features)
 * [x] 2. Investigate Ridge Loss instead of $L_1$ LASSO loss
 * [x] 3. Investigate Elastic Net (Ridge and LASSO loss)
-* [ ] 4. Investigate a piecewise model of $n_e$ properties (train and validation)
-* [x] 5. Investigate the affect of changing from standard deviation to standard error
+* [x] 4. Investigate the affect of changing from standard deviation to standard error
 
 ### Sampling influencing Standard Deviation
 
@@ -215,3 +217,4 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 * [ ] 6. Investigate the performace of validation partitions of 0.01 pc cut data
 
 **7/2** - The ground truth for the prior analysis has been incorrectly using M_tot, the total mass instead of mf, the final mass of the star. After fixing the preprocessing to shift the target over the results appear to be qualitatively the same in the prior analysis. The old plots will be stored in [figures_bad_target](figures_bad_target) and all future figures and regenerated figures with the correct figure will be in [figures](figures).
+
