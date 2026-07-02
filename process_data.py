@@ -189,7 +189,7 @@ def n_snaps_extract(n_snaps, train_val=False):
     if train_val:
 
 
-        val_df = n_snaps_general(master_df=master_df_val, pre_df=raw_df_val, n_snaps=n_snaps)
+        val_df = n_snaps_general(master_df=master_df_val, pre_df=raw_df_val, n_snaps=n_snaps, val=True)
 
 
         return train_df, val_df
