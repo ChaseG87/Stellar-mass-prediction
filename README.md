@@ -19,7 +19,7 @@ Usage:
   3. --save or -s flag that saves generated figures from other flags
 
 #### residual_analysis.py
-Python file containing code used to generate the heatmaps in [figures/residual_correlation_heatmaps](figures/residual_correlation_heatmaps) along with functions that generate pairplots of a variety of comparisons
+Python file containing code used to generate the heatmaps in [residual_correlation_heatmaps](figures_bad_target/residual_correlation_heatmaps) along with functions that generate pairplots of a variety of comparisons
 between variables.
 
 #### internal_gas_model.py
@@ -60,7 +60,7 @@ Usage:
 Python file that creates visual comparisions of the train and validation RMSE of different complexities of models on pre-stellar gas and the consistency of their coefficients. 
 
 Usage:
-  1. --rmse flag runs a function that compares the performance of the greedy, greedy PCA, LASSO, and LASSO PCA models as more features are included (produces [figures/model_RMSE_comparision.pdf](figures/model_RMSE_comparision.pdf)).
+  1. --rmse flag runs a function that compares the performance of the greedy, greedy PCA, LASSO, and LASSO PCA models as more features are included (produces [figures/model_RMSE_comparison.pdf](figures/model_RMSE_comparison.pdf)).
   2. --greedy_coefs or -g_cfs visualizes the difference in coefficients between the greedy model and their univariate linear regression coefficient for a selected number of features
   3. --lasso_coefs or -l_cfs visualizes the difference in coefficients between the LASSO model and their univariate linear regression coefficient for a selected number of features
 
@@ -203,7 +203,7 @@ I want to investigate the
 
 Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 particles reduces the total number of stars by 296. This reduction did not appear to improve the performance of the LASSO-CV model even with the inclusion of angular velocities and the magnitude of mass weighted angular velocity. 
 
-**7/1** - Removing low mass stars (less than 0.1 ($M_\odot$) increases the performance of the 0.01 pc cut model to an $R^2$ of 0.59. This operation eliminates 738 total stars which is about 1/3rd of the full dataset. However the mass of these stars are in the brown dwarf zone which could explain their divergent behavior.
+**7/1** - Removing low mass stars (less than 0.1 ($M_\odot$) increases the performance of the 0.01 pc cut model to an $R^2$ of 0.59. This operation eliminates 738 total stars which is about 1/3rd of the full dataset. However, the mass of these stars are in the brown dwarf zone which could explain their divergent behavior.
 
 
 ##### Next Steps:
@@ -213,3 +213,5 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 * [ ] 4. Investigate the performace of random forest on the 0.01 pc cut data
 * [x] 5. Investigate the performance of angular velocity on 0.01 pc cut data ([figures/internal_gas_0.01_cut.pdf](figures/internal_gas_0.01_cut.pdf)* updated)
 * [ ] 6. Investigate the performace of validation partitions of 0.01 pc cut data
+
+**7/2** - The ground truth for the prior analysis has been incorrectly using M_tot, the total mass instead of mf, the final mass of the star. After fixing the preprocessing to shift the target over the results appear to be qualitatively the same in the prior analysis. The old plots will be stored in [figures_bad_target](figures_bad_target) and all future figures and regenerated figures with the correct figure will be in [figures](figures).
