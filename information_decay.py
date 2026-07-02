@@ -6,14 +6,17 @@ import sys
 import argparse
 from process_data import n_snaps_extract, log_data
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import GridSearchCV, KFold
 from sklearn.linear_model import LinearRegression
 
 
-features = ['T', 'T_med', 'T_16', 'T_84', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84',
-        'B', 'B_med', 'B_16', 'B_84',  'rho', 'rho_med', 'rho_16', 'rho_84'] 
+features = ['T', 'T_med', 'T_16', 'T_84', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84',       
+            'B', 'B_med', 'B_16', 'B_84', 'rho', 'rho_med', 'rho_16', 'rho_84'] 
+
+best_params = {'max_depth': None, 'max_features': 0.5, 'min_samples_leaf': 2, 'min_samples_split': 2}
 
 
-def linear_regression_information_decay(features, snaps):
+def regression_information_decay(features, snaps, model='linear'):
     '''
     Looks at the decay of R^2 across all snapshots pre-sink for linear regression models trained on the features and snapshot of interest.
     inputs:
@@ -30,20 +33,25 @@ def linear_regression_information_decay(features, snaps):
     for i in range(snaps):
 
         # extract data
-        train_df, val_df = n_snaps_extract(n_snaps=i, train_val=True)
-        train_df, val_df = log_data(features=features, train=train_df, val=val_df, train_val=True)
+        train_df, val_df = n_snaps_extract(features=features, n_snaps=i, train_val=True)
+
 
         X_train = train_df[features].values.reshape(-1, len(features))
         y_train = train_df['mf'].values
 
-        model = LinearRegression().fit(X=X_train, y=y_train)
+        if model == 'linear':
+            model_ = LinearRegression().fit(X=X_train, y=y_train)
+        elif model == 'random_forest':
+            model_ = RandomForestRegressor(**best_params).fit(X=X_train, y=y_train)
+        else:
+            raise ValueError("Invalid model type. Choose 'linear' or 'random_forest'.")
 
-        c_r2 = model.score(X_train, y_train)
+        c_r2 = model_.score(X_train, y_train)
         r2s_train.append(c_r2)
 
         X_val = val_df[features].values.reshape(-1, len(features))
         y_val = val_df['mf'].values
-        c_r2_val = model.score(X_val, y_val)
+        c_r2_val = model_.score(X_val, y_val)
         r2s_val.append(c_r2_val)
 
     plt.figure(figsize=(15, 8))
@@ -54,32 +62,55 @@ def linear_regression_information_decay(features, snaps):
     plt.xticks(np.arange(0, snaps, 5))
     plt.xlabel('Snapshots Before Pre-Sink Snapshot')
     plt.ylabel(r'$R^2$ Score')
-    plt.title('Information Decay - Linear Regression')
+    plt.title(f'Information Decay - {model.capitalize()} Regression')
 
     plt.yscale('log')
     plt.legend()
-    plt.savefig('figures/information_decay_linear_regression.pdf', dpi=300)
+    plt.savefig(f'figures/information_decay_{model}_regression.pdf', dpi=300)
     plt.show()
 
 
-def random_forest_grid_search(features, df_train, df_val):
-    pass
+def random_forest_grid_search(features, df_train):
 
 
-def random_forest_information_decay(features, snaps):
-    pass
+    X_train = df_train[features].values.reshape(-1, len(features))
+    y_train = df_train['mf'].values
+
+    # Define the cross-validation strategy
+    folds = KFold(n_splits=5, shuffle=True, random_state=42)
+
+    # Define the hyperparameter grid
+    param_grid = {
+        'max_features': ['sqrt', 0.3, 0.5],
+        'max_depth': [None, 10, 20],
+        'min_samples_split': [2, 5],
+        'min_samples_leaf': [1, 2, 4]
+    }
+
+    # Initialize and run grid search
+    rf = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1) # n_jobs=-1 uses all CPU cores
+    grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=folds, scoring='r2', verbose=2, n_jobs=-1)
+    grid_search.fit(X_train, y_train)
+
+    # print the best parameters and the corresponding R^2 score
+    print("Best Parameters found:", grid_search.best_params_)
+    print("Best Validation R^2:", grid_search.best_score_)
+
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--linear', '-l', action='store_true', help='Perform linear regression information decay analysis')
     parser.add_argument('--random_forest', '-rf', action='store_true', help='Perform random forest information decay analysis')
+    parser.add_argument('--rf_grid_search', '-rf_gs', action='store_true', help='Perform random forest grid search for hyperparameter tuning')
     args = parser.parse_args()
 
     if args.linear:
-        linear_regression_information_decay(features=features, snaps=42)
+        regression_information_decay(features=features, snaps=42, model='linear')
     if args.random_forest:
-        pass
+        regression_information_decay(features=features, snaps=42, model='random_forest')
+    if args.rf_grid_search:
+        random_forest_grid_search(features=features, df_train=log_data(features=features, train_val=False, normalize=True))
 
 
 if __name__ == '__main__':
