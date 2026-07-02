@@ -4,7 +4,7 @@ from seaborn import heatmap
 import numpy as np
 import sys
 import argparse
-from process_data import n_snaps_extract, log_data, normalize_data, add_standard_error
+from process_data import n_snaps_extract, log_data, normalize_data, add_standard_error, merge_snap_table
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 
@@ -24,7 +24,7 @@ Namespace Dependencies:
 '''
 
 # define features of interest, not looking at snap as were looking at changes in internal gas values with respect to time
-features = ['M_tot', 'T', 'T_med', 'T_16', 'T_84', 'T_std_er', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std_er', 'Ne_std',
+features = ['T', 'T_med', 'T_16', 'T_84', 'T_std_er', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std_er', 'Ne_std',
         'B', 'B_med', 'B_16', 'B_84', 'B_std_er', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std_er', 'rho_std'] 
 
 # Define data frame to be investigated
@@ -34,6 +34,8 @@ def plot_intrinsic_gas_heatmap(snaps=3, save=False):
     '''
     Plots a heatmap of the correlation matrix for the distribution of intrensic gas properties and mass.
     '''
+
+    features.append('mf')
     
     df_t = n_snaps_extract(n_snaps=snaps, train_val=False)
     df_t = add_standard_error(df=df_t)
@@ -106,11 +108,11 @@ def visualize_random_forest(features, train_df, val_df):
 
     # define training data
     X_train = train_df[features].values.reshape(-1, len(features))
-    y_train = train_df['M_tot'].values
+    y_train = train_df['mf'].values
 
     # define validation data
     X_val = val_df[features].values.reshape(-1, len(features))
-    y_val = val_df['M_tot'].values
+    y_val = val_df['mf'].values
 
     # initialize and fit model
     model = RandomForestRegressor()
@@ -159,7 +161,7 @@ def main():
 
 
         # pre-sink snap
-        df_train_base, df_val_base = log_data(features=features, train_val=True, normalize=True)
+        df_train_base = log_data(features=features, train_val=False, normalize=True)
 
         print('plotting...')
 
@@ -188,8 +190,8 @@ def main():
         df_train_min = add_standard_error(df_train_min)
         df_val_min = add_standard_error(df_val_min)
 
-        df_train_min, df_val_min = log_data(features=features, train=df_train_min, val=df_val_min, train_val=True)
-        df_train_min, df_val_min = normalize_data(features[1:], df_train=df_train_min, df_val=df_val_min)
+        # log and normalize the data
+        df_train_min, df_val_min = log_data(features=features, train=df_train_min, val=df_val_min, train_val=True, normalize=True)
 
         visualize_random_forest(features=rf_features, train_df=df_train_min, val_df=df_val_min)
 
