@@ -9,6 +9,7 @@ import sys
 import argparse
 import scipy.stats as stats
 from scipy.optimize import minimize
+from process_data import merge_snap_table
 
 '''
 Namespace Dependencies:
@@ -23,12 +24,13 @@ Namespace Dependencies:
 
 
 # Read the pre stellar parquet file into a DataFrame
-df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq')
+df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq').reset_index()
+df = merge_snap_table(df)
 
 # add distance from center metric to the DataFrame
-df['sp_kin'] = df['E_kin']/df['M_tot']
-df['sp_mag'] = df['E_mag']/df['M_tot']
-df['sp_int'] = df['E_int']/df['M_tot'] # poorly correlated
+df['sp_kin'] = df['E_kin']/df['mf']
+df['sp_mag'] = df['E_mag']/df['mf']
+df['sp_int'] = df['E_int']/df['mf'] # poorly correlated
 # There are NaNs in gravitation so it is not being investigated
 
 
@@ -94,13 +96,13 @@ class LogNormalPowerLawFitter:
 
 def linear_fit(df, feature, axis):
     '''
-    Fits a linear model of a given feature to the total mass M_tot
+    Fits a linear model of a given feature to the total mass mf
     '''
 
     # fit model
     model = LinearRegression()
     X = np.log10(df[[feature]]).values.reshape(-1, 1)
-    y = np.log10(df['M_tot']).values
+    y = np.log10(df['mf']).values
     model.fit(X, y)
 
     # score model
@@ -116,9 +118,9 @@ def linear_fit(df, feature, axis):
 
     # labels and titles
     axis.legend()
-    axis.set_title(f'Linear fit of {feature} vs M_tot')
+    axis.set_title(f'Linear fit of {feature} vs mf')
     axis.set_xlabel(r'$\log_{10}$' + feature)
-    axis.set_ylabel(r'$\log_{10}$ M_tot ($M_\odot$)')
+    axis.set_ylabel(r'$\log_{10}$ mf ($M_\odot$)')
 
 
     residuals = y - model.predict(X)
@@ -128,11 +130,11 @@ def linear_fit(df, feature, axis):
 
 def piecewise_fit(df, feature, axis, n=2):
     '''
-    Fits a piecewise power-law of a given feature to M_tot with n breakpoints
+    Fits a piecewise power-law of a given feature to mf with n breakpoints
     '''
 
     X = np.log10(df[feature]).values
-    y = np.log10(df['M_tot']).values
+    y = np.log10(df['mf']).values
 
     # initialize the model object
     model = pwlf.PiecewiseLinFit(X, y)
@@ -150,9 +152,9 @@ def piecewise_fit(df, feature, axis, n=2):
     axis.plot(xs, ys, c='r', linestyle='--')
 
     #labels and titles
-    axis.set_title(f'Piecewise fit, n={n}, {feature} vs M_tot')
+    axis.set_title(f'Piecewise fit, n={n}, {feature} vs mf')
     axis.set_xlabel(r'$\log_{10}$' + feature)
-    axis.set_ylabel(r'$\log_{10}$ M_tot ($M_\odot$)')
+    axis.set_ylabel(r'$\log_{10}$ mf ($M_\odot$)')
 
 
     residuals = y - model.predict(X)
@@ -162,13 +164,13 @@ def piecewise_fit(df, feature, axis, n=2):
 
 def polynomial_fit(df, feature, axis, n=2):
     '''
-    Fits a polynomial model of degree n for given feature to the total mass M_tot
+    Fits a polynomial model of degree n for given feature to the total mass mf
     '''
 
     # fit model
     poly_model = make_pipeline(PolynomialFeatures(degree=n), LinearRegression())
     X = np.log10(df[[feature]]).values.reshape(-1, 1)
-    y = np.log10(df['M_tot']).values
+    y = np.log10(df['mf']).values
     poly_model.fit(X, y)
 
     # score model
@@ -184,9 +186,9 @@ def polynomial_fit(df, feature, axis, n=2):
 
     # labels and titles
     axis.legend()
-    axis.set_title(f'Polynomial fit of {feature} vs M_tot')
+    axis.set_title(f'Polynomial fit of {feature} vs mf')
     axis.set_xlabel(r'$\log_{10}$' + feature)
-    axis.set_ylabel(r'$\log_{10}$ M_tot ($M_\odot$)')
+    axis.set_ylabel(r'$\log_{10}$ mf ($M_\odot$)')
 
     residuals = y - poly_model.predict(X)
 
@@ -196,7 +198,7 @@ def polynomial_fit(df, feature, axis, n=2):
 def log_normal_power_law(df, feature, axis):
     # raw values
     x_raw = df[feature].values
-    y_raw = df['M_tot'].values
+    y_raw = df['mf'].values
 
     # Initialize and fit the mixture profile
     fitter = LogNormalPowerLawFitter()
@@ -217,8 +219,8 @@ def log_normal_power_law(df, feature, axis):
 
     # labels and title
     axis.set_xlabel(r"$\log_{10}$ " + feature)
-    axis.set_ylabel(r"$\log_{10}$ M_tot ($M_\odot$)")
-    axis.set_title("Log-Normal Power-Law Mixture Fit of " + feature + " vs M_tot")
+    axis.set_ylabel(r"$\log_{10}$ mf ($M_\odot$)")
+    axis.set_title("Log-Normal Power-Law Mixture Fit of " + feature + " vs mf")
     axis.legend()
 
     # define residuals
@@ -274,7 +276,7 @@ def residual_comparision(energy):
 
 
     plt.tight_layout()
-    plt.savefig("figures/" + energy + "/" + energy + "_regression_plots.pdf", dpi=300)
+    #plt.savefig("figures/" + energy + "/" + energy + "_regression_plots.pdf", dpi=300)
     plt.show()
 
 
@@ -293,7 +295,7 @@ def residual_comparision(energy):
     plt.suptitle("Distribution of Residuals for different fits, " + energy)
 
     plt.tight_layout()
-    plt.savefig("figures/" + energy + "/" + energy + "_residuals_distribution.pdf", dpi=300)
+    #plt.savefig("figures/" + energy + "/" + energy + "_residuals_distribution.pdf", dpi=300)
     plt.show()
 
 
@@ -312,14 +314,14 @@ def residual_comparision(energy):
     plt.suptitle("Scatterplots of Residuals vs input, " + energy)
 
     plt.tight_layout()
-    plt.savefig("figures/" + energy + "/" + energy + "_residuals_vs_X.pdf", dpi=300)
+    #plt.savefig("figures/" + energy + "/" + energy + "_residuals_vs_X.pdf", dpi=300)
     plt.show()
 
 
 def mass_sliding_window(df, feature, window_num=10):
 
     # define DataFrame of interest
-    df_log = np.log10(df[[feature, 'M_tot']])
+    df_log = np.log10(df[[feature, 'mf']])
     # define windows from window size in feature space
     window_grid = np.linspace(df_log[feature].min(), df_log[feature].max(), window_num)
 
@@ -332,7 +334,7 @@ def mass_sliding_window(df, feature, window_num=10):
         # mask out values in the current window
         mask = (df_log[feature] >= window_grid[i]) & (df_log[feature] <= window_grid[i+1])
 
-        sample = df_log['M_tot'][mask]
+        sample = df_log['mf'][mask]
 
         # Calculate the means and standard deviations of the sample
         mean = np.mean(sample)
@@ -353,7 +355,7 @@ def mass_sliding_window(df, feature, window_num=10):
     ax1.set_title("Mean mass vs " + feature)
     ax1.set_xlabel(feature)
     ax1.set_ylabel(r'Mean $\log_{10}$ Mass ($M_\odot$)')
-    ax1.scatter(df_log[feature], df_log['M_tot'], alpha=0.3, c='gray')
+    ax1.scatter(df_log[feature], df_log['mf'], alpha=0.3, c='gray')
     ax1.plot(xs, means+stds, c='crimson', linestyle='--')
     ax1.plot(xs, means-stds, c='crimson', linestyle='--')
     ax1.plot(xs, means, c='r')
@@ -366,16 +368,16 @@ def mass_sliding_window(df, feature, window_num=10):
 
     plt.suptitle("Sliding Window of Means and Std of Mass vs " + feature)
     plt.tight_layout()
-    plt.savefig('figures/' + feature + '/' + feature + '_sliding_window.pdf', dpi=300)
+    #plt.savefig('figures/' + feature + '/' + feature + '_sliding_window.pdf', dpi=300)
     plt.show()
 
 
 
 if __name__ == "__main__":
 
-    #residual_comparision('sp_kin')
+    residual_comparision('sp_kin')
 
-    #residual_comparision('sp_mag')
+    residual_comparision('sp_mag')
 
     mass_sliding_window(df, 'sp_kin')
 
