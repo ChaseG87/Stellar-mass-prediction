@@ -49,7 +49,7 @@ def perform_2D_tsne(df, features):
     # Plot t-SNE results
     plt.figure(figsize=(10, 8))
     scatter = plt.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], s=10, c=df['mf'], cmap='viridis', alpha=0.7)
-    plt.colorbar(scatter, label=r'Total Mass ($M_\odot$) [log scale]')
+    plt.colorbar(scatter, label=r'Final Mass ($M_\odot$) [log scale]')
     plt.title(r't-SNE of Pre-Stellar Gas Property Distributions (features: $n_e$, T, B, $\rho$)')
     plt.xlabel('t-SNE 1')
     plt.ylabel('t-SNE 2')
@@ -89,7 +89,7 @@ def perform_3D_tsne(df, features):
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection='3d')
     scatter = ax.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], df_tsne['t-SNE 3'], c=df['mf'], cmap='viridis', alpha=0.7)
-    plt.colorbar(scatter, label=r'Total Mass ($M_\odot$) [log scale]')
+    plt.colorbar(scatter, label=r'Final Mass ($M_\odot$) [log scale]')
     ax.set_title(r'3D t-SNE of Pre-Stellar Gas Property Distributions (features: $n_e$, T, B, $\rho$)')
     ax.set_xlabel('t-SNE 1')
     ax.set_ylabel('t-SNE 2')

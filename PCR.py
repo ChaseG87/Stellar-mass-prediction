@@ -28,9 +28,6 @@ def perform_pca(df, three_d=False, n_components=21):
     - pca: PCA object containing the fitted model.
     - transformed_data: numpy array of shape (n_samples, n_components) containing the PCA-transformed data.
     '''
-
-    
-    features = ['Ne_std', 'B_std', 'T_std', 'rho_std']
     
     # Take the logarithm of the data to handle wide ranges and reduce skewness
     log_data = df[features]
@@ -49,7 +46,7 @@ def perform_pca(df, three_d=False, n_components=21):
     plt.xlabel('Principal Components')
     plt.title('Explained Variance Ratio by Principal Components')
     plt.xticks(range(1, n_components + 1))
-    #plt.savefig('figures/PCA/components_ratios.pdf', dpi=300)
+    plt.savefig('figures/PCA/components_ratios.pdf', dpi=300)
     plt.show()
 
     # Plot the cumulative explained variance
@@ -57,24 +54,24 @@ def perform_pca(df, three_d=False, n_components=21):
     plt.plot(range(1, n_components + 1), np.cumsum(pca.explained_variance_ratio_), marker='o', linestyle='--')
     plt.ylabel('Cumulative Explained Variance')
     plt.xticks(range(1, n_components + 1))
-    #plt.savefig('figures/PCA/cumulative_variance.pdf', dpi=300)
+    plt.savefig('figures/PCA/cumulative_variance.pdf', dpi=300)
     plt.show()
 
     # 2D scatter plot of the first two principal components colored by total mass
     plt.figure(figsize=(8, 5))
-    plt.scatter(transformed_data[:, 0], transformed_data[:, 1], s=7, c=df['M_tot'], cmap='viridis', alpha=0.7)
+    plt.scatter(transformed_data[:, 0], transformed_data[:, 1], s=7, c=df['mf'], cmap='viridis', alpha=0.7)
     plt.colorbar(label=r'Total Mass ($M_\odot$) [log scale]')
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
     plt.title(r'PCA of Pre-Stellar Gas Property Distributions (features: T, $n_e$, B, $\rho$)')
-    #plt.savefig('figures/pca_visualization.pdf', dpi=300, bbox_inches='tight')
+    plt.savefig('figures/PCA/pca_visualization.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
     if three_d:
         # 3D scatter plot of the first three principal components colored by total mass
         plt.figure(figsize=(10, 8))
         ax = plt.axes(projection='3d')
-        sc = ax.scatter(transformed_data[:, 0], transformed_data[:, 1], transformed_data[:, 2], s=10, c=df['M_tot'], cmap='viridis', alpha=0.7)
+        sc = ax.scatter(transformed_data[:, 0], transformed_data[:, 1], transformed_data[:, 2], s=10, c=df['mf'], cmap='viridis', alpha=0.7)
         plt.colorbar(sc, label=r'Total Mass ($M_\odot$) [log scale]')
         ax.set_xlabel('Principal Component 1')
         ax.set_ylabel('Principal Component 2')
@@ -96,7 +93,7 @@ def regression_analysis(transformed_data):
     - predictions: numpy array of shape (n_samples,) containing the predicted values.
     '''
 
-    target = df['M_tot']  # target variable (total mass of accreted gas)
+    target = df['mf']  # target variable (total mass of accreted gas)
     model = LinearRegression()
     model.fit(transformed_data, target)
     predictions = model.predict(transformed_data)
@@ -116,7 +113,7 @@ def lasso_pca_regression(transformed_data, alpha, pca=None, test=False):
     components = ['comp' + str(i+1) for i in range(len(transformed_data[0]))]
     df_pca = pd.DataFrame(transformed_data, columns=components)
     clean_df = df.reset_index()
-    df_pca['M_tot'] = clean_df['M_tot']
+    df_pca['mf'] = clean_df['mf']
 
 
     if test:
@@ -129,7 +126,7 @@ def lasso_pca_regression(transformed_data, alpha, pca=None, test=False):
 
         # define test dataframe
         df_test_pca = pd.DataFrame(test_transformed_data, columns=components)
-        df_test_pca['M_tot'] = df_test['M_tot']
+        df_test_pca['mf'] = df_test['mf']
 
     # initialize model and fit
     model = LassoAidedModelConstructor(df_pca, alpha=alpha)
@@ -149,7 +146,7 @@ def greedy_pca_regression(transformed_data, pca=None, test=False, n_preds=8):
     components = ['comp' + str(i+1) for i in range(len(transformed_data[0]))]
     df_pca = pd.DataFrame(transformed_data, columns=components)
     clean_df = df.reset_index()
-    df_pca['M_tot'] = clean_df['M_tot']
+    df_pca['mf'] = clean_df['mf']
 
 
     if test:
@@ -162,7 +159,7 @@ def greedy_pca_regression(transformed_data, pca=None, test=False, n_preds=8):
 
         # define test dataframe
         df_test_pca = pd.DataFrame(test_transformed_data, columns=components)
-        df_test_pca['M_tot'] = df_test['M_tot']
+        df_test_pca['mf'] = df_test['mf']
 
 
     # initialize model and fit
@@ -201,7 +198,7 @@ def blind_regression_analysis(df):
     # Take the logarithm of the data to handle wide ranges and reduce skewness
     log_data = df[features]
 
-    target = df['M_tot']  # target variable (total mass of accreted gas)
+    target = df['mf']  # target variable (total mass of accreted gas)
     model = LinearRegression()
 
     model.fit(log_data, target)

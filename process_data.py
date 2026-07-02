@@ -96,7 +96,8 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
     '''
 
     # order data by sink index
-    train = merge_snap_table(train, snap_table_df)
+    if 'mf' not in train.columns:
+        train = merge_snap_table(train.reset_index())
     train = train.set_index('sink_id').sort_index()
 
     # add standard error
@@ -110,7 +111,8 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
 
     if train_val:
         # apply the same process for validation data if train_val is called
-        val = merge_snap_table(val, snap_table_df)
+        if 'mf' not in val.columns:
+            val = merge_snap_table(val, snap_table_df)
         val = add_standard_error(val)
         val = val.set_index('sink_id').sort_index()
         df_val = np.log10(val[features])
@@ -122,7 +124,7 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
             return df_train, df_val
     
     if normalize:
-        return normalize(features=features, df_train=df_train)
+        return normalize_data(features=features, df_train=df_train)
     else:
         return df_train
 
