@@ -247,7 +247,7 @@ def rmse_comparison(train, val, preds):
     ax4.set_xticks(xs)
 
     plt.tight_layout()
-    plt.savefig('figures/model_RMSE_comparision.pdf', dpi=300)
+    plt.savefig('figures/model_RMSE_comparison.pdf', dpi=300)
     plt.show()
 
 

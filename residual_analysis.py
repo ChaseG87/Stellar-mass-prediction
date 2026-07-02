@@ -5,14 +5,17 @@ from sklearn.linear_model import LinearRegression
 import seaborn as sns
 from seaborn import heatmap
 from data_analysis_v2 import linear_fit, piecewise_fit, polynomial_fit, log_normal_power_law
+from process_data import merge_snap_table
 
 
 # Load pre-stellar gas data
 df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq').reset_index()
+df = df.drop(columns=['M_tot'])
+df = merge_snap_table(df)
 
-df['sp_kin'] = df['E_kin'] / df['M_tot']
-df['sp_mag'] = df['E_mag'] / df['M_tot']
-df['sp_int'] = df['E_int'] / df['M_tot']
+df['sp_kin'] = df['E_kin'] / df['mf']
+df['sp_mag'] = df['E_mag'] / df['mf']
+df['sp_int'] = df['E_int'] / df['mf']
 
 
 def get_residuals(df, feature, model):
@@ -66,8 +69,8 @@ def plot_residuals(df, feature, model='linear'):
     plt.figure(figsize=(8, 5))
     plt.scatter(np.log10(df[feature]), residuals, alpha=0.5)
     plt.xlabel(f'Log of {feature}')
-    plt.ylabel('Residuals (log(M_tot) - predicted log(M_tot))')
-    plt.title(f'Residual Plot for Linear Regression of log(M_tot) on log({feature}), model = ' + model)
+    plt.ylabel('Residuals (log(mf) - predicted log(mf))')
+    plt.title(f'Residual Plot for Linear Regression of log(mf) on log({feature}), model = ' + model)
     plt.show()
 
 
@@ -93,8 +96,8 @@ def plot_residual_correlation(df, res_feature, feature, model='linear'):
     plt.figure(figsize=(10, 6))
     plt.scatter(np.log10(df[feature]), residuals, alpha=0.5, label=feature)
     plt.xlabel('Log of Feature Value, ' + feature)
-    plt.ylabel('Residuals (log(M_tot) - predicted log(M_tot))')
-    plt.title(f'Residual Correlation Plot for Regression of log(M_tot) on log({res_feature}) r²={r_squared:.2f}, model = ' + model_str)
+    plt.ylabel('Residuals (log(mf) - predicted log(mf))')
+    plt.title(f'Residual Correlation Plot for Regression of log(mf) on log({res_feature}) r²={r_squared:.2f}, model = ' + model_str)
     plt.show()
 
 
@@ -127,7 +130,7 @@ def residual_regression_analysis(df, res_feature, features, model):
     vals = np.linspace(min(y), max(y), 100)
     plt.plot(vals, vals, linestyle='--', c='r')
 
-    plt.xlabel(f'Actual Residuals of log(M_tot) on log({res_feature})')
+    plt.xlabel(f'Actual Residuals of log(mf) on log({res_feature})')
     plt.ylabel('Predicted Residuals')
     R_squared = model.score(X, y)
     plt.title(f'Regression Analysis of Residuals R²: {R_squared:.2f}')
@@ -142,6 +145,9 @@ def cross_correlation_scatter(df, features):
     '''
 
     sns.pairplot(np.log10(df[features]), kind='hist')
+    plt.suptitle('Strongest Features vs Mass Pairplot')
+    plt.tight_layout()
+    plt.savefig('mass_vs_strong_features.png', dpi=300)
 
     plt.show()
 
@@ -154,7 +160,7 @@ def residual_heatmap(df, model):
     df['kin_res'] = get_residuals(df, 'sp_kin', model)
     df['mag_res'] = get_residuals(df, 'sp_mag', model)
 
-    chosen_log_labels = ['M_tot', 'T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
+    chosen_log_labels = ['mf', 'T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
                      'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std','snap'] 
     
 
@@ -171,6 +177,7 @@ def residual_heatmap(df, model):
 
 
 
+
 #plot_residual_correlation(df, 'sp_kin', 'B_84')
 
 #plot_residuals(df, 'sp_kin')
@@ -181,14 +188,16 @@ def residual_heatmap(df, model):
 #cross_correlation_scatter(df, ['Ne', 'Ne_med', 'Ne_16', 'Ne_84'])
 #cross_correlation_scatter(df, ['rho', 'rho_med', 'rho_16', 'rho_84'])
 #df = df.reset_index()
-cross_correlation_scatter(df, ['M_tot', 'sp_kin', 'sig_3D', 'T', 'sp_int'])
-#cross_correlation_scatter(df, ['M_tot', 'T_med', 'B_med', 'Ne_med', 'rho_med'])
-#cross_correlation_scatter(df, ['M_tot', 'T_16', 'B_16', 'Ne_16', 'rho_16'])
-#cross_correlation_scatter(df, ['M_tot', 'T_84', 'B_84', 'Ne_84', 'rho_84'])
+#cross_correlation_scatter(df, ['mf', 'sp_kin', 'sig_3D', 'T', 'sp_int'])
+#cross_correlation_scatter(df, ['mf', 'T_med', 'B_med', 'Ne_med', 'rho_med'])
+#cross_correlation_scatter(df, ['mf', 'T_16', 'B_16', 'Ne_16', 'rho_16'])
+#cross_correlation_scatter(df, ['mf', 'T_84', 'B_84', 'Ne_84', 'rho_84'])
 
-#cross_correlation_scatter(df, ['M_tot', 'T_std', 'B_std', 'Ne_std', 'rho_std'])
+cross_correlation_scatter(df, ['mf', 'T_med', 'Ne_std', 'rho_med'])
 
-#plot_residual_correlation(df, 'sp_mag', 'M_tot')
+
+#, 'rho', 'Ne_std', 'rho_std'
+#plot_residual_correlation(df, 'sp_mag', 'mf')
 
 #residual_regression_analysis(df, 'sp_kin', ['Ne_med', 'Ne_84', 'B'])
 
@@ -199,4 +208,4 @@ cross_correlation_scatter(df, ['M_tot', 'sp_kin', 'sig_3D', 'T', 'sp_int'])
 #residual_heatmap(df, model='piecewise')
 #residual_heatmap(df, model='lognormpower')
 
-#plot_residual_correlation(df, 'sp_kin', 'M_tot', model='piecewise')
+#plot_residual_correlation(df, 'sp_kin', 'mf', model='piecewise')
