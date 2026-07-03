@@ -207,6 +207,10 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 **7/1** - Removing low mass stars (less than 0.1 ($M_\odot$) increases the performance of the 0.01 pc cut model to an $R^2$ of 0.59. This operation eliminates 738 total stars which is about 1/3rd of the full dataset. However, the mass of these stars are in the brown dwarf zone which could explain their divergent behavior.
 
+
+###### **7/2** - The ground truth for the prior analysis has been incorrectly using M_tot, the total mass instead of mf, the final mass of the star. After fixing the preprocessing to shift the target over the results appear to be qualitatively the same in the prior analysis. The old plots will be stored in [figures_bad_target](figures_bad_target) and all future figures and regenerated figures with the correct figure will be in [figures](figures).
+
+
 **7/3** - Including the global potential energy to the model and comparing it to final mass yielded a small positive correlation of 0.16. When including it in both the LASSO and random forest models it had no additional benefit to the predictive performance. 
 
 
@@ -219,5 +223,4 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 * [x] 6. Investigate the connection between the global potential energy at the pre-sink snapshot and final mass
 * [ ] 7. Investigate the performace of validation partitions of 0.01 pc cut data (need data)
 
-**7/2** - The ground truth for the prior analysis has been incorrectly using M_tot, the total mass instead of mf, the final mass of the star. After fixing the preprocessing to shift the target over the results appear to be qualitatively the same in the prior analysis. The old plots will be stored in [figures_bad_target](figures_bad_target) and all future figures and regenerated figures with the correct figure will be in [figures](figures).
 
