@@ -170,7 +170,7 @@ def n_snaps_general(master_df, pre_df, n_snaps, val=False):
     return df
 
 
-def n_snaps_extract(features, n_snaps, train_val=False):
+def n_snaps_extract(n_snaps, train_val=False):
     '''
     Returns a train or train val pair of star gas data n_snaps before the pre-stellar snap
 
@@ -188,7 +188,6 @@ def n_snaps_extract(features, n_snaps, train_val=False):
 
         train_df = n_snaps_general(master_df=master_df_train, pre_df=raw_df_train, n_snaps=n_snaps)
         val_df = n_snaps_general(master_df=master_df_val, pre_df=raw_df_val, n_snaps=n_snaps, val=True)
-        train_df, val_df = log_data(features=features, train=train_df, val=val_df, train_val=True)
 
 
         return train_df, val_df
@@ -196,7 +195,6 @@ def n_snaps_extract(features, n_snaps, train_val=False):
     else:
             
         train_df = n_snaps_general(master_df=master_df_train, pre_df=raw_df_train, n_snaps=n_snaps)
-        train_df = log_data(features=features, train=train_df, train_val=False)
 
         return train_df
 

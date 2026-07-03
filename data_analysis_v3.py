@@ -186,9 +186,8 @@ def main():
         # n snaps pre-sink snap
         df_train_min, df_val_min = n_snaps_extract(n_snaps=args.random_forest, train_val=True)
 
-        # add standard error
-        df_train_min = add_standard_error(df_train_min)
-        df_val_min = add_standard_error(df_val_min)
+
+        print(df_train_min.isna().sum(), df_val_min.isna().sum())
 
         # log and normalize the data
         df_train_min, df_val_min = log_data(features=features, train=df_train_min, val=df_val_min, train_val=True, normalize=True)

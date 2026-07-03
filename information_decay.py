@@ -33,8 +33,8 @@ def regression_information_decay(features, snaps, model='linear'):
     for i in range(snaps):
 
         # extract data
-        train_df, val_df = n_snaps_extract(features=features, n_snaps=i, train_val=True)
-
+        train_df, val_df = n_snaps_extract(n_snaps=i, train_val=True)
+        train_df, val_df = log_data(features=features, train=train_df, val=val_df, train_val=True, normalize=True)
 
         X_train = train_df[features].values.reshape(-1, len(features))
         y_train = train_df['mf'].values
@@ -54,6 +54,10 @@ def regression_information_decay(features, snaps, model='linear'):
         c_r2_val = model_.score(X_val, y_val)
         r2s_val.append(c_r2_val)
 
+    
+    print(pd.DataFrame({'r2_val': np.exp(np.array(r2s_val)), 'snaps': np.arange(snaps)}).corr())
+        
+    # plotting
     plt.figure(figsize=(15, 8))
 
     # create a bar chart
@@ -63,6 +67,7 @@ def regression_information_decay(features, snaps, model='linear'):
     plt.xlabel('Snapshots Before Pre-Sink Snapshot')
     plt.ylabel(r'$R^2$ Score')
     plt.title(f'Information Decay - {model.capitalize()} Regression')
+
 
     plt.yscale('log')
     plt.legend()
