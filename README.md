@@ -250,7 +250,7 @@ $$
 R_{\text{eff}} \propto \left( \frac{M}{\rho} \right)^{1/3} \rightarrow
 R_{\text{eff}} \propto \left( \frac{M}{M^{-2.3}} \right)^{1/3} \rightarrow
 R_{\text{eff}} \propto \left( M^{3.3} \right)^{1/3} \rightarrow
-R_{\text{eff}} \propto M^{1.1}
+R_{\text{eff}} \propto M^{1.1} \approx M^{1.06}
 $$
 
 These power-law relationships represent a massive drop off in density and an effective radius scaling approximately proportionally to $M_\text{f}$ in agreement with Kaalva et al. The more massive a star is the more diffuse its mass is in the pre-stellar snapshot.
