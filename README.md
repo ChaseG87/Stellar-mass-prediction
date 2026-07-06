@@ -216,10 +216,10 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 ##### Next Steps:
 * [x] 1. Look at distribution of "safe" stars to select (168 are elminated by demanding at least 10 particles and a greater max distance than 0.005 pcs of the 2249 total)
-* [x] 2. Investigate correlation strength with final mass on "safe" subset of stars for the 0.01 pc patch ([figures/internal_gas_0.01_cut.pdf](figures/internal_gas_0.01_cut.pdf))
-* [x] 3. Investigate resulting changes in model performance ([figures/lasso_cv_0.01_cut.pdf](figures/lasso_cv_0.01_cut.pdf))
+* [x] 2. Investigate correlation strength with final mass on "safe" subset of stars for the 0.01 pc patch ([figures/heatmap_0.01_patch.pdf](figures/heatmap_0.01_patch.pdf))
+* [x] 3. Investigate resulting changes in model performance ([figures/lasso_cv_0.01_patch.pdf](figures/lasso_cv_0.01_patch.pdf))
 * [x] 4. Investigate the performace of random forest on the 0.01 pc patch data
-* [x] 5. Investigate the performance of angular velocity on 0.01 pc patch data ([figures/internal_gas_0.01_cut.pdf](figures/internal_gas_0.01_cut.pdf)* updated)
+* [x] 5. Investigate the performance of angular velocity on 0.01 pc patch data ([figures/internal_gas_0.01_patch.pdf](figures/internal_gas_0.01_patch.pdf)* updated)
 * [x] 6. Investigate the connection between the global potential energy at the pre-sink snapshot and final mass
 * [ ] 7. Investigate the performace of validation partitions of 0.01 pc patch data (need data)
 
