@@ -225,4 +225,16 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 ## Week 6 Notes
 
-**7/6** - 
+### Monte Carlo Resampling
+
+**7/6** - There is a wide range of the number of particles being used to derive the statisics used in the model. To understand the impact of sampling error on our predictive models I am using Monte Carlo Resampling. The standard error for each of the values will be used to generate the artificial data points.
+
+##### Next Steps:
+* [ ] 1. Generate a data set from monte carlo resampling in the training set
+* [ ] 2. Check the performance in the validation set and compare to model without resampling
+
+### Error Weighting 
+**7/6** - Due to the mass distribution in the data, the importance of predicting high mass stars is discounted due to the rarity of large stars. This results in the model spending its bandwidth on fitting to the plentiful low and mid mass stars due to their volume. To eliminate this bias, I propose a couple methods to improve the robustity of the analysis:
+
+* [ ] 1. Direct weighting in the training set (RMSE loss is weighted linearly based on mass directly)
+* [ ] 2. Monte Carlo Resampling (Use Monte Carlo Resampling to create a dataset with similar weights at different mass ranges)
