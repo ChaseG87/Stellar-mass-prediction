@@ -227,11 +227,11 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 ### Monte Carlo Resampling
 
-**7/6** - There is a wide range of the number of particles being used to derive the statisics used in the model. To understand the impact of sampling error on our predictive models I am using Monte Carlo Resampling. The standard error for each of the values will be used to generate the artificial data points. (Both for the patch data and full data)
+**7/6** - There is a wide range of the number of particles being used to derive the statisics used in the model. To understand the impact of sampling error on our predictive models I am using Monte Carlo Resampling. The standard error for each of the values will be used to generate the artificial data points. Monte Carlo Resampling requires a "kernel" underlying distribution (usually guassian) but I am unsure of the shape of the distributions of the underlying distributions (B, T, $\rho$, $n_e$). 
 
 ##### Next Steps:
-* [ ] 1. Generate a data set from monte carlo resampling in the training set 
-* [ ] 2. Check the performance in the validation set and compare to model without resampling
+* [ ] 1. Generate a data set from monte carlo resampling in the training set (Both for the patch data and full data)
+* [ ] 2. Check the performance in the validation set and compare to model without resampling (Both for the patch data and full data)
 
 ### Error Weighting 
 **7/6** - Due to the mass distribution in the data, the importance of predicting high mass stars is discounted due to the rarity of large stars. This results in the model spending its bandwidth on fitting to the plentiful low and mid mass stars due to their volume. To eliminate this bias, I propose a couple methods to improve the robustity of the analysis:
@@ -241,8 +241,7 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 ### $R_{\text{eff}}$, $M_{\text{f}}$, and $\rho$ relationship
 
-**7/6** - The power-law relationship found between $M_{\text{f}}$ and $\rho$ is $\rho \propto M_{\text{f}}^{-2.3}$. The power-law relationship between $R_{\text{eff}}$ and $M_{\text{f}}$ is 
-$R_{\text{eff}} \propto M_{\text{f}}^{1.06}$. Comparing the two measures using dimensional analysis we find agreement in the values even though $R_{\text{eff}}$ is a global view of the volume and the $\rho$ statistics are samples from the distribution of particles. 
+**7/6** - The power-law relationship found between $M_{\text{f}}$ and different $\rho$ statisics is approximately $\rho \propto M_{\text{f}}^{-2.3}$. The power-law relationship between $R_{\text{eff}}$ and $M_{\text{f}}$ is $R_{\text{eff}} \propto M_{\text{f}}^{1.06}$. Comparing the two measures using dimensional analysis we find agreement in the values even though $R_{\text{eff}}$ is a global view of the volume and the $\rho$ statistics are samples from the distribution of particles. 
 
 Using $\rho \propto M_{\text{f}}^{-2.3}$:
 
