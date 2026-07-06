@@ -12,8 +12,8 @@ from process_data import log_data, artificial_data
 
 
 # define features to be investigated
-features = ['T', 'T_med', 'T_16', 'T_84', 'T_std_er', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std_er',
-            'B', 'B_med', 'B_16', 'B_84', 'B_std_er', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std_er', 'snap'] 
+features = ['T', 'T_med', 'T_16', 'T_84', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84',
+            'B', 'B_med', 'B_16', 'B_84', 'rho', 'rho_med', 'rho_16', 'rho_84','snap'] 
 
 # pre-process data
 df, df_val = log_data(features = features, train_val = True, normalize = True)
@@ -411,12 +411,12 @@ if __name__ == '__main__':
 
         plt.scatter(y, pred, s=10, alpha=0.5)
         plt.plot(y, y, c='r', label=f'$R^2 = $ {r2:.2f}')
-        plt.title(f"LASSO 5-fold Cross-Validation - features = {len(coef_names)}")
-        plt.xlabel(r'Ground Truth Mass [$\log_{10}(M_\odot)$]')
+        plt.title(f"LASSO 5-fold Cross-Validation Pre-Stellar Snapshot - features = {len(coef_names)}")
+        plt.xlabel(r'Final Mass [$\log_{10}(M_\odot)$]')
         plt.ylabel(r'Predicted Mass [$\log_{10}(M_\odot)$]')
         plt.legend()
 
-        #plt.savefig('figures/lasso_cv_5_fold.pdf', dpi=300)
+        plt.savefig('figures/lasso_cv_5_fold_no_std.pdf', dpi=300)
         plt.show()
 
     
