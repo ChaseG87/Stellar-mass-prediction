@@ -174,24 +174,6 @@ def greedy_pca_regression(transformed_data, pca=None, test=False, n_preds=8):
         model.visualize(df=df_pca)
 
 
-def standardize_fit_pca(pca_model, df_train, df_test):
-    
-
-    log_train = df_train
-    log_test = df_test
-
-    mean = log_train.mean()
-    std = log_train.std()
-
-    # Standardize the train data wrt the train data
-    standardized_test = (log_test - mean) / std
-
-    transformed_test = pca_model.transform(standardized_test)
-
-    return transformed_test
-
-
-
 def blind_regression_analysis(df):
 
     
