@@ -199,13 +199,13 @@ For the random forest model I tuned the hyperparameters of max_features, max_dep
 
 ### Sampling influencing Standard Deviation
 
-**6/29** - The potential sampling problem with the standard deviation is being approached by replacing it with a different statistic that investigates how the star looking 0.01 parsecs around the center of mass of the star. To make sure the same sampling error isn't repeated a subset of stars may be excluded that are too small and be unreliable due to sampling issues. The 0.01 pc cut data is a lot less correlated than the data of the full pre-stellar cloud. When modelling a LASSO-CV model onto the cut data an $R^2$ of 0.38 is achieved with especially poor predictive capabilities for smaller stars. When including the magnitude of angular velocity the performance does not improve. 
+**6/29** - The potential sampling problem with the standard deviation is being approached by replacing it with a different statistic that investigates how the star looking 0.01 parsecs around the center of mass of the star. To make sure the same sampling error isn't repeated a subset of stars may be excluded that are too small and be unreliable due to sampling issues. The 0.01 pc patch data is a lot less correlated than the data of the full pre-stellar cloud. When modelling a LASSO-CV model onto the patch data an $R^2$ of 0.38 is achieved with especially poor predictive capabilities for smaller stars. When including the magnitude of angular velocity the performance does not improve. 
 
 **6/30** - The time series heatmaps show a consistent connection between the standard deviation of features and the total mass. This maintained correlation leads me to believe there is a sampling bias or some other bias connecting the standard deviations to a trival correlation to mass. Looking the standard error ($\frac{std}{\sqrt{n}}$) as you go back in time, the statistic becomes less correlated to the total mass. This is an expected behavior in the turbulent system of the STARFORGE simulation and further supports the view that standard deviation is subject to contamination of some kind.
 
 Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 particles reduces the total number of stars by 296. This reduction did not appear to improve the performance of the LASSO-CV model even with the inclusion of angular velocities and the magnitude of mass weighted angular velocity. 
 
-**7/1** - Removing low mass stars (less than 0.1 ($M_\odot$) increases the performance of the 0.01 pc cut model to an $R^2$ of 0.59. This operation eliminates 738 total stars which is about 1/3rd of the full dataset. However, the mass of these stars are in the brown dwarf zone which could explain their divergent behavior.
+**7/1** - Removing low mass stars (less than 0.1 ($M_\odot$) increases the performance of the 0.01 pc patch model to an $R^2$ of 0.59. This operation eliminates 738 total stars which is about 1/3rd of the full dataset. However, the mass of these stars are in the brown dwarf zone which could explain their divergent behavior.
 
 
 ###### **7/2** - The ground truth for the prior analysis has been incorrectly using M_tot, the total mass instead of mf, the final mass of the star. After fixing the preprocessing to shift the target over the results appear to be qualitatively the same in the prior analysis. The old plots will be stored in [figures_bad_target](figures_bad_target) and all future figures and regenerated figures with the correct figure will be in [figures](figures).
@@ -216,18 +216,18 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 ##### Next Steps:
 * [x] 1. Look at distribution of "safe" stars to select (168 are elminated by demanding at least 10 particles and a greater max distance than 0.005 pcs of the 2249 total)
-* [x] 2. Investigate correlation strength with final mass on "safe" subset of stars for the 0.01 pc cut ([figures/internal_gas_0.01_cut.pdf](figures/internal_gas_0.01_cut.pdf))
+* [x] 2. Investigate correlation strength with final mass on "safe" subset of stars for the 0.01 pc patch ([figures/internal_gas_0.01_cut.pdf](figures/internal_gas_0.01_cut.pdf))
 * [x] 3. Investigate resulting changes in model performance ([figures/lasso_cv_0.01_cut.pdf](figures/lasso_cv_0.01_cut.pdf))
-* [x] 4. Investigate the performace of random forest on the 0.01 pc cut data
-* [x] 5. Investigate the performance of angular velocity on 0.01 pc cut data ([figures/internal_gas_0.01_cut.pdf](figures/internal_gas_0.01_cut.pdf)* updated)
+* [x] 4. Investigate the performace of random forest on the 0.01 pc patch data
+* [x] 5. Investigate the performance of angular velocity on 0.01 pc patch data ([figures/internal_gas_0.01_cut.pdf](figures/internal_gas_0.01_cut.pdf)* updated)
 * [x] 6. Investigate the connection between the global potential energy at the pre-sink snapshot and final mass
-* [ ] 7. Investigate the performace of validation partitions of 0.01 pc cut data (need data)
+* [ ] 7. Investigate the performace of validation partitions of 0.01 pc patch data (need data)
 
 ## Week 6 Notes
 
 ### Monte Carlo Resampling
 
-**7/6** - There is a wide range of the number of particles being used to derive the statisics used in the model. To understand the impact of sampling error on our predictive models I am using Monte Carlo Resampling. The standard error for each of the values will be used to generate the artificial data points. (Both for the cut data and full data)
+**7/6** - There is a wide range of the number of particles being used to derive the statisics used in the model. To understand the impact of sampling error on our predictive models I am using Monte Carlo Resampling. The standard error for each of the values will be used to generate the artificial data points. (Both for the patch data and full data)
 
 ##### Next Steps:
 * [ ] 1. Generate a data set from monte carlo resampling in the training set 
