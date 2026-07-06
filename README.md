@@ -241,8 +241,7 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 ### $R_{\text{eff}}$, $M_{\text{f}}$, and $\rho$ relationship
 
-**7/6** - The power-law relationship found between $M_{\text{f}}$ and $\rho$ is $\rho \propto M_{\text{f}}^{-2.3}$. The power-law relationship between $R_{\text{eff}}$ and $M_{\text{f}}$ is 
-$R_{\text{eff}} \propto M_{\text{f}}^{1.06}$. Comparing the two measures using dimensional analysis we find agreement in the values even though $R_{\text{eff}}$ is a global view of the volume and the $\rho$ statistics are samples from the distribution of particles. 
+**7/6** - The power-law relationship found between $M_{\text{f}}$ and different $\rho$ statisics is approximately $\rho \propto M_{\text{f}}^{-2.3}$. The power-law relationship between $R_{\text{eff}}$ and $M_{\text{f}}$ is $R_{\text{eff}} \propto M_{\text{f}}^{1.06}$. Comparing the two measures using dimensional analysis we find agreement in the values even though $R_{\text{eff}}$ is a global view of the volume and the $\rho$ statistics are samples from the distribution of particles. 
 
 Using $\rho \propto M_{\text{f}}^{-2.3}$:
 
