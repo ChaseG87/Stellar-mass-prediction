@@ -223,4 +223,6 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 * [x] 6. Investigate the connection between the global potential energy at the pre-sink snapshot and final mass
 * [ ] 7. Investigate the performace of validation partitions of 0.01 pc cut data (need data)
 
+## Week 6 Notes
 
+**7/6** - 
