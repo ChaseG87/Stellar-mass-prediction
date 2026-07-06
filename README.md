@@ -227,17 +227,19 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 ### Monte Carlo Resampling
 
-**7/6** - There is a wide range of the number of particles being used to derive the statisics used in the model. To understand the impact of sampling error on our predictive models I am using Monte Carlo Resampling. The standard error for each of the values will be used to generate the artificial data points. Monte Carlo Resampling requires a "kernel" underlying distribution (usually guassian) but I am unsure of the shape of the distributions of the underlying distributions (B, T, $\rho$, $n_e$). 
+**7/6** - There is a wide range of the number of particles being used to derive the statisics used in the model. To understand the impact of sampling error on our predictive models I am using Monte Carlo Resampling. The standard error for each of the values will be used to generate the artificial data points. Monte Carlo Resampling requires a "kernel" underlying distribution (usually guassian) but I am unsure of the shape of the distributions of the underlying distributions (B, T, $\rho$, $n_e$). The resampling I carried out breaks the stars into five mass categories and computes a covariance matrix for each. Then, for each star the covariance matrix is divided by the number of particles used to generate the statistics. Finally the features are sampled from the multivariate gaussian space from the covariance matrix and mass is kept the same.
 
 ##### Next Steps:
-* [ ] 1. Generate a data set from monte carlo resampling in the training set (Both for the patch data and full data)
-* [ ] 2. Check the performance in the validation set and compare to model without resampling (Both for the patch data and full data)
+* [x] 1. Generate a data set from Monte Carlo Resampling in the training set for full data
+* [ ] 2. Generate a data set from Monte Carlo Resampling in the training set for the patch data
 
 ### Error Weighting 
 **7/6** - Due to the mass distribution in the data, the importance of predicting high mass stars is discounted due to the rarity of large stars. This results in the model spending its bandwidth on fitting to the plentiful low and mid mass stars due to their volume. To eliminate this bias, I propose a couple methods to improve the robustity of the analysis:
 
 * [ ] 1. Direct weighting in the training set (RMSE loss is weighted linearly based on mass directly)
-* [ ] 2. Monte Carlo Resampling (Use Monte Carlo Resampling to create a dataset with similar weights at different mass ranges)
+* [ ] 2. Monte Carlo Resampling (Use Monte Carlo resampling to create a dataset with similar weights at different mass ranges)
+
+For the second approch, I am considering sampling a set number of stars from each of the five compartments used in the generation of the Monte Carlo resampling and running a model on that subset as a type of weighting.
 
 ### $R_{\text{eff}}$, $M_{\text{f}}$, and $\rho$ relationship
 
