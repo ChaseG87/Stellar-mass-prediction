@@ -227,7 +227,7 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 ### Monte Carlo Resampling
 
-**7/6** - There is a wide range of the number of particles being used to derive the statisics used in the model. To understand the impact of sampling error on our predictive models I am using Monte Carlo Resampling. The standard error for each of the values will be used to generate the artificial data points. Monte Carlo Resampling requires a "kernel" underlying distribution (usually guassian) but I am unsure of the shape of the distributions of the underlying distributions (B, T, $\rho$, $\n_e$). 
+**7/6** - There is a wide range of the number of particles being used to derive the statisics used in the model. To understand the impact of sampling error on our predictive models I am using Monte Carlo Resampling. The standard error for each of the values will be used to generate the artificial data points. Monte Carlo Resampling requires a "kernel" underlying distribution (usually guassian) but I am unsure of the shape of the distributions of the underlying distributions (B, T, $\rho$, $n_e$). 
 
 ##### Next Steps:
 * [ ] 1. Generate a data set from monte carlo resampling in the training set (Both for the patch data and full data)
