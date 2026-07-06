@@ -227,10 +227,10 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 ### Monte Carlo Resampling
 
-**7/6** - There is a wide range of the number of particles being used to derive the statisics used in the model. To understand the impact of sampling error on our predictive models I am using Monte Carlo Resampling. The standard error for each of the values will be used to generate the artificial data points.
+**7/6** - There is a wide range of the number of particles being used to derive the statisics used in the model. To understand the impact of sampling error on our predictive models I am using Monte Carlo Resampling. The standard error for each of the values will be used to generate the artificial data points. (Both for the cut data and full data)
 
 ##### Next Steps:
-* [ ] 1. Generate a data set from monte carlo resampling in the training set
+* [ ] 1. Generate a data set from monte carlo resampling in the training set 
 * [ ] 2. Check the performance in the validation set and compare to model without resampling
 
 ### Error Weighting 
@@ -238,3 +238,19 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 * [ ] 1. Direct weighting in the training set (RMSE loss is weighted linearly based on mass directly)
 * [ ] 2. Monte Carlo Resampling (Use Monte Carlo Resampling to create a dataset with similar weights at different mass ranges)
+
+### $R_{\text{eff}}$, $M_{\text{f}}$, and $\rho$ relationship
+
+**7/6** - The power-law relationship found between $M_{\text{f}}$ and $\rho$ is $\rho \propto M_{f}^{-2.3}$. The power-law relationship between $R_{\text{eff}}$ and $M_{\text{f}}$ is 
+$R_{\text{eff}} \propto M_{\text{f}}^{1.06}$. Comparing the two measures using dimensional analysis we find agreement in the values even though $R_{\text{eff}}$ is a global view of the volume and the $\rho$ statistics are samples from the distribution of particles. 
+
+Using $\rho \propto M_{f}^{-2.3}$:
+
+$$
+R_{\text{eff}} \propto \left( \frac{M}{\rho} \right)^{1/3} \rightarrow
+R_{\text{eff}} \propto \left( \frac{M}{M^{-2.3}} \right)^{1/3} \rightarrow
+R_{\text{eff}} \propto \left( M^{3.3} \right)^{1/3} \rightarrow
+R_{\text{eff}} \propto M^{1.1}
+$$
+
+These power-law relationships represent a massive drop off in density and an effective radius scaling approximately proportionally to $M_\text{f}$ in agreement with Kaalva et al. The more massive a star is the more diffuse its mass is in the pre-stellar snapshot.
