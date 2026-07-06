@@ -8,7 +8,7 @@ from sklearn.linear_model import LassoCV
 import argparse
 from sklearn.preprocessing import StandardScaler
 from process_data import log_data, artificial_data
-
+from monte_carlo import monte_carlo_resample
 
 
 # define features to be investigated
@@ -363,6 +363,7 @@ if __name__ == '__main__':
     parser.add_argument('--lasso_cv', '-l_cv', action='store_true', help='Run the LASSO Cross-Validation model')
     parser.add_argument('--alpha', '-a', default=0.01, type=float, help='Coefficient for normalization in the LASSO model')
     parser.add_argument('--unit_test', '-ut', action='store_true', help='Runs Greedy model and LASSO on artificial dataset')
+    parser.add_argument('--monte_carlo', '-mc', action='store_true', help= 'Runs monte carlo version of lasso cv when called in tandem')
     args = parser.parse_args()
 
     # initialize predictor
@@ -394,6 +395,17 @@ if __name__ == '__main__':
 
     
     if args.lasso_cv:
+
+        if args.monte_carlo:
+            features = ['T', 'T_med', 'T_16', 'T_84', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84',
+                'B', 'B_med', 'B_16', 'B_84', 'rho', 'rho_med', 'rho_16', 'rho_84', 'N_inc'] 
+
+
+            train_df, val_df = log_data(features=features, train_val=True, normalize=True)
+
+            df = monte_carlo_resample(train_df=train_df, random_state=42)
+
+            features.pop()
 
         X = df[features].values
         y = df['mf'].values

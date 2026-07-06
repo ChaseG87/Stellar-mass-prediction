@@ -109,6 +109,9 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
     # pre-process taking the log of features
     df_train = np.log10(train[features])
 
+    if 'N_inc' in features:
+        df_train['N_inc'] = train['N_inc']
+
     # pre-process taking the log of the mass (target)
     df_train['mf'] = np.log10(train['mf'])
 
@@ -121,12 +124,17 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
         df_val = np.log10(val[features])
         df_val['mf'] = np.log10(val['mf'])
 
+        if 'N_inc' in features:
+            df_val['N_inc'] = val['N_inc']
+            features.remove('N_inc')
+
         if normalize:
             return normalize_data(features=features, df_train=df_train, df_val=df_val)
         else:
             return df_train, df_val
     
     if normalize:
+        features.remove('N_inc')
         return normalize_data(features=features, df_train=df_train)
     else:
         return df_train
