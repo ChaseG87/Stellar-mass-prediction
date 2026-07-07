@@ -23,11 +23,23 @@ df_first_snap = pd.read_parquet('star_data/first_snap_table.pq').reset_index()
 df_cut = pd.merge(df_cut, df_first_snap[['pid', 'mf']], left_on='sink_id', right_on='pid', how='outer')
 
 
+# same preprocessing for validation set
+df_cut_val = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_cut_test.pq').reset_index()
+df_cut_val.drop(columns=['M_tot'])
+df_cut_val['PE_global'] *= -1  # make potential energy positive for analysis
+
+df_first_snap_val = pd.read_parquet('star_data/first_snap_table_test.pq').reset_index()
+df_cut_val = pd.merge(df_cut_val, df_first_snap_val[['pid', 'mf']], left_on='sink_id', right_on='pid', how='outer')
+
+
 # add specific angular momentum
 df_cut['L_mag'] = np.sqrt(df_cut['L_vec_1']**2 + df_cut['L_vec_2']**2 + df_cut['L_vec_3']**2)
-
+df_cut_val['L_mag'] = np.sqrt(df_cut_val['L_vec_1']**2 + df_cut_val['L_vec_2']**2 + df_cut_val['L_vec_3']**2)
 
 df_clean_cut = df_cut[(df_cut['N_inc'] >= 10)  & (df_cut['mf'] > 0.1)]
+df_clean_val = df_cut_val[(df_cut_val['N_inc'] >= 10)  & (df_cut_val['mf'] > 0.1)]
+
+#print(df_clean_val['mf'].count(), df_cut_val['mf'].count())
 
 #print(df_cut['mf'].count() - df_clean_cut['mf'].count())
 # log taken within the function
@@ -39,6 +51,16 @@ df_clean_cut = df_cut[(df_cut['N_inc'] >= 10)  & (df_cut['mf'] > 0.1)]
 # take log of both
 X = np.log10(df_clean_cut[features].values.reshape(-1, len(features)))
 y = np.log10(df_clean_cut['mf'].values)
+
+# apply to validation set
+X_val = np.log10(df_clean_val[features].values.reshape(-1, len(features)))
+y_val = np.log10(df_clean_val['mf'].values)
+
+
+# standardize input data
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+X_val = scaler.transform(X_val)
 
 def mass_vs_n_inc():
     plt.figure(figsize=(10, 8))
@@ -53,10 +75,6 @@ def mass_vs_n_inc():
     plt.show()
 
 #mass_vs_n_inc()
-# standardize input data
-scaler = StandardScaler()
-X = scaler.fit_transform(X)
-
 
 def lasso_cv_analysis():
 
@@ -89,47 +107,88 @@ def lasso_cv_analysis():
 
 #lasso_cv_analysis()
 
+def lasso_cv_validation():
+    '''
+    Plots the training and validation scatter plots of a LASSO-CV model.
+    '''
+
+    model = LassoCV(cv=5, max_iter=10000).fit(X, y)
+
+    print(model.coef_)
+
+    pred_train = model.predict(X)
+    r2_train = model.score(X, y)
+
+    pred_val = model.predict(X_val)
+    r2_val = model.score(X_val, y_val)
+
+    fig = plt.figure(figsize=(16, 7))
+    ax1 = fig.add_subplot(121)
+    ax2 = fig.add_subplot(122)
+
+    ax1.scatter(y, pred_train, s=10, alpha=0.5)
+    ax1.plot(y, y, c='r')
+    ax1.set_xlabel(r'Ground Truth Mass ($\log_{10}M_\odot$)')
+    ax1.set_ylabel(r'Predicted Mass ($\log_{10}M_\odot$)')
+    ax1.set_title(f'LASSO-CV training set - $R^2 = ${r2_train:.2f}')
+
+    ax2.scatter(y_val, pred_val, s=10, alpha=0.5)
+    ax2.plot(y_val, y_val, c='r')
+    ax2.set_xlabel(r'Ground Truth Mass ($\log_{10}M_\odot$)')
+    ax2.set_ylabel(r'Predicted Mass ($\log_{10}M_\odot$)')
+    ax2.set_title(f'LASSO-CV validation set - $R^2 = ${r2_val:.2f}')
+
+    plt.suptitle('LASSO-CV Training and Validation - Patch Data')
+
+    plt.savefig('figures/patch_figures/lasso_cv_patch_validation.pdf', dpi=300)
+
+    plt.show()
+
+#lasso_cv_validation()
+
+
 
 def random_forest_analysis():
 
     best_params = {'max_depth': None, 'max_features': 0.5, 'min_samples_leaf': 2, 'min_samples_split': 2}
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
     model = RandomForestRegressor(**best_params)
-    model.fit(X_train, y_train)
+    model.fit(X, y)
 
-    pred = model.predict(X_test)
+    pred = model.predict(X_val)
 
-    r2 = model.score(X_test, y_test)
+    r2 = model.score(X_val, y_val)
 
     print(f'Random Forest Validation R^2: {r2:.4f}')
 
-    fig = plt.figure(figsize=(12, 6))
+    fig = plt.figure(figsize=(16, 7))
     ax1 = fig.add_subplot(121)
     ax2 = fig.add_subplot(122)
 
-    # plot prediction
-    ax1.scatter(y_test, pred, s=10, alpha=0.5)
-    ax1.plot(y_test, y_test, c='r')
+    # plot training
+    ax1.scatter(y, model.predict(X), s=10, alpha=0.5)
+    ax1.plot(y, y, c='r')
 
-    fig.suptitle(f'Random Forest applied to 0.01 pc cut')
-
+    ax1.set_title(f'Random Forest Train $R^2$ = {model.score(X, y):.2f}')
     ax1.set_xlabel(r'Ground Truth Mass ($\log_{10} M_\odot$)')
     ax1.set_ylabel(r'Prediction ($\log_{10} M_\odot$)')
-    ax1.set_title(f'Random Forest Validation $R^2$ = {r2:.2f}')
 
-    ax2.scatter(y_train, model.predict(X_train), s=10, alpha=0.5)
-    ax2.plot(y_train, y_train, c='r')
+    # plot validation
+    ax2.scatter(y_val, pred, s=10, alpha=0.5)
+    ax2.plot(y_val, y_val, c='r')
 
-    ax2.set_title(f'Random Forest Train $R^2$ = {model.score(X_train, y_train):.2f}')
     ax2.set_xlabel(r'Ground Truth Mass ($\log_{10} M_\odot$)')
     ax2.set_ylabel(r'Prediction ($\log_{10} M_\odot$)')
+    ax2.set_title(f'Random Forest Validation $R^2$ = {r2:.2f}')
 
-    #plt.savefig('figures/random_forest_0.01_patch.pdf', dpi=300)
+    fig.suptitle(f'Random Forest Training and Validation - Patch Data')
+
+    plt.savefig('figures/patch_figures/random_forest_patch_validation.pdf', dpi=300)
+
     plt.show()
 
-#random_forest_analysis()
+random_forest_analysis()
+
 
 def perform_monte_carlo():
 
@@ -165,8 +224,8 @@ def perform_monte_carlo():
     plt.xlabel(r'Ground Truth Mass ($\log_{10} M_\odot$)')
     plt.ylabel(r'Prediction ($\log_{10} M_\odot$)')
 
-    plt.savefig('figures/lasso_patch_monte_carlo.pdf', dpi=300)
+    plt.savefig('figures/patch_figures/lasso_patch_monte_carlo.pdf', dpi=300)
 
     plt.show()
 
-perform_monte_carlo()
+#perform_monte_carlo()
