@@ -124,20 +124,23 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
         df_val = np.log10(val[features])
         df_val['mf'] = np.log10(val['mf'])
 
-        if 'N_inc' in features:
-            df_val['N_inc'] = val['N_inc']
-            features.remove('N_inc')
-
         if normalize:
-            return normalize_data(features=features, df_train=df_train, df_val=df_val)
-        else:
-            return df_train, df_val
+
+            df_train, df_val = normalize_data(features=features, df_train=df_train, df_val=df_val)
+
+        if 'N_inc' in features:
+            df_train['N_inc'] = train['N_inc']
+            df_val['N_inc'] = val['N_inc']
+
+        return df_train, df_val
     
     if normalize:
-        features.remove('N_inc')
-        return normalize_data(features=features, df_train=df_train)
-    else:
-        return df_train
+        df_train = normalize_data(features=features, df_train=df_train)
+
+        if 'N_inc' in features:
+            df_train['N_inc'] = train['N_inc']
+
+    return df_train
 
 
 def n_snaps_general(master_df, pre_df, n_snaps, val=False):

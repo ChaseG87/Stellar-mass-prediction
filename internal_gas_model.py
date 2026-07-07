@@ -420,15 +420,19 @@ if __name__ == '__main__':
         coef_names = [features[i] for i in range(len(features)) if model.coef_[i]]
         print(coef_names)
 
-
-        plt.scatter(y, pred, s=10, alpha=0.5)
+        plt.figure(figsize=(12, 8))
+        plt.scatter(y, pred, s=10, alpha=0.2)
         plt.plot(y, y, c='r', label=f'$R^2 = $ {r2:.2f}')
-        plt.title(f"LASSO 5-fold Cross-Validation Pre-Stellar Snapshot - features = {len(coef_names)}")
         plt.xlabel(r'Final Mass [$\log_{10}(M_\odot)$]')
         plt.ylabel(r'Predicted Mass [$\log_{10}(M_\odot)$]')
         plt.legend()
 
-        plt.savefig('figures/lasso_cv_5_fold_no_std.pdf', dpi=300)
+        if args.monte_carlo:
+            plt.title(f"LASSO 5-fold Cross-Validation Pre-Stellar Snapshot - Monte Carlo Data")
+            plt.savefig('figures/lasso_cv_5_fold_monte_carlo.pdf', dpi=300)
+        else:
+            plt.title(f"LASSO 5-fold Cross-Validation Pre-Stellar Snapshot - features = {len(coef_names)}")
+            plt.savefig('figures/lasso_cv_5_fold_no_std.pdf', dpi=300)
         plt.show()
 
     

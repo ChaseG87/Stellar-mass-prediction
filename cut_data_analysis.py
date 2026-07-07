@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LassoCV
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
+from monte_carlo import monte_carlo_resample
 
 
 features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
@@ -30,7 +31,7 @@ df_clean_cut = df_cut[(df_cut['N_inc'] >= 10)  & (df_cut['mf'] > 0.1)]
 
 #print(df_cut['mf'].count() - df_clean_cut['mf'].count())
 # log taken within the function
-plot_intrinsic_gas_heatmap(df=df_clean_cut)
+#plot_intrinsic_gas_heatmap(df=df_clean_cut)
 
 # There are 108 stars that have less than 10 particles
 # 65 of those have a max_dist_peak less than 0.005 pcs
@@ -48,7 +49,7 @@ def mass_vs_n_inc():
     plt.xlabel(r'Final Mass ($M_\odot$)')
     plt.title(r'Total Mass vs Proportion of Mass in 0.01 pc sphere')
     plt.tight_layout()
-    plt.savefig('mass_vs_mass_proportion.png', dpi=300)
+    #plt.savefig('mass_vs_mass_proportion.png', dpi=300)
     plt.show()
 
 #mass_vs_n_inc()
@@ -83,10 +84,10 @@ def lasso_cv_analysis():
     plt.xlabel(r'Ground Truth Mass ($\log_{10} M_\odot$)')
     plt.ylabel(r'Prediction ($\log_{10} M_\odot$)')
 
-    #plt.savefig('lasso_cv_0.01_cut.pdf', dpi=300)
+    #plt.savefig('figures/lasso_cv_0.01_patch.pdf', dpi=300)
     plt.show()
 
-lasso_cv_analysis()
+#lasso_cv_analysis()
 
 
 def random_forest_analysis():
@@ -125,7 +126,47 @@ def random_forest_analysis():
     ax2.set_xlabel(r'Ground Truth Mass ($\log_{10} M_\odot$)')
     ax2.set_ylabel(r'Prediction ($\log_{10} M_\odot$)')
 
-    #plt.savefig('random_forest_0.01_cut.pdf', dpi=300)
+    #plt.savefig('figures/random_forest_0.01_patch.pdf', dpi=300)
     plt.show()
 
-random_forest_analysis()
+#random_forest_analysis()
+
+def perform_monte_carlo():
+
+    features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
+                'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'N_inc'] 
+    
+    features = ['T', 'T_med', 'T_16', 'T_84', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 
+                'B', 'B_med', 'B_16', 'B_84', 'rho', 'rho_med', 'rho_16', 'rho_84', 'N_inc'] 
+
+    # take the log of the cut down dataset
+    df = log_data(features=features, train=df_clean_cut, normalize=True)
+
+    slices = ((-1, 0), (0, 1), (1, 2))
+
+    # run the resample on the data
+    df_mc = monte_carlo_resample(df, features=features, slices=slices, random_state=42)
+
+    X = df_mc[features].values.reshape(-1, len(features))
+    y = df_mc['mf'].values
+
+    model = LassoCV(cv=5).fit(X, y)
+    pred = model.predict(X)
+
+    r2 = model.score(X, y)
+
+
+    plt.figure(figsize=(12, 8))
+    plt.scatter(y, pred, s=10, alpha=0.2)
+    plt.plot(y, y, c='r')
+
+    plt.title(f'LASSO-CV applied to 0.01 pc patch (monte-carlo), $R^2$ = {r2:.2f}')
+
+    plt.xlabel(r'Ground Truth Mass ($\log_{10} M_\odot$)')
+    plt.ylabel(r'Prediction ($\log_{10} M_\odot$)')
+
+    plt.savefig('figures/lasso_patch_monte_carlo.pdf', dpi=300)
+
+    plt.show()
+
+perform_monte_carlo()
