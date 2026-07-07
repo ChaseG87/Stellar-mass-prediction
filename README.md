@@ -231,7 +231,14 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 ##### Next Steps:
 * [x] 1. Generate a data set from Monte Carlo Resampling in the training set for full data
-* [ ] 2. Generate a data set from Monte Carlo Resampling in the training set for the patch data
+* [x] 2. Generate a data set from Monte Carlo Resampling in the training set for the patch data
+* [x] 3. Fit LASSO-CV model to Monte Carlo resample of full data
+* [x] 4. Fit LASSO-CV model to Monte Carlo resample of patch data
+* [ ] 5. Transform covariance matrix informing multivariate distribution by standard error
+
+**7/7** - For each data point, five samples of input features are taken from a multivariate distribution using the covariance of similarly sized stars regularized by the number of particles that make up a given star (mass is untouched). When fitting a LASSO-CV to the resulting the samples from the full data and patch data, a difference in the prediction variance is seen ([figures/lasso_cv_5_fold_monte_carlo](figures/lasso_cv_5_fold_monte_carlo) and [figures/lasso_patch_monte_carlo](figures/lasso_patch_monte_carlo)) to exhibit different behavior. In the full data case the variance in the prediction from the model for each star reduces for larger stars. I believe this is a reflection of the lower overall variance in the data due to the regularization based on sample size. In the patch data it appears that even for large stars the LASSO model's predictions have a high amount of variance for stars sampled from the same mass. This divergent behavior is either a result of a difference in overall variance for similarly sized stars in the patch data or a result of the patch model fitting to more noise. I believe it is likely the latter as the current Monte Carlo sampling machinery is not weighting variances by the standard error.
+
+###### A big caveat of using Monte Carlo Resampling in the way is that the assumed underlying distribution of these properties is log-normal (because the log is taken of the statisics, without it would be normal). If this assumption does not hold the method does not useful in informing the true behavior of the system. This property may need to be tested directly from the STARFORGE data.
 
 ### Error Weighting 
 **7/6** - Due to the mass distribution in the data, the importance of predicting high mass stars is discounted due to the rarity of large stars. This results in the model spending its bandwidth on fitting to the plentiful low and mid mass stars due to their volume. To eliminate this bias, I propose a couple methods to improve the robustity of the analysis:
