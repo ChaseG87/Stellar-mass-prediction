@@ -398,16 +398,22 @@ if __name__ == '__main__':
 
         if args.monte_carlo:
             features = ['T', 'T_med', 'T_16', 'T_84', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84',
-                'B', 'B_med', 'B_16', 'B_84', 'rho', 'rho_med', 'rho_16', 'rho_84', 'N_inc'] 
+                'B', 'B_med', 'B_16', 'B_84', 'rho', 'rho_med', 'rho_16', 'rho_84', 'N_inc',
+                'T_std_er', 'Ne_std_er', 'B_std_er', 'rho_std_er'] 
 
 
-            train_df, val_df = log_data(features=features, train_val=True, normalize=True)
+            train_df, val_df = log_data(features=features, train_val=True)
 
-            df = monte_carlo_resample(train_df=train_df, random_state=42)
+            df = monte_carlo_resample(train_df=train_df, random_state=42, std_er_cov=True)
 
-            features.pop()
+            features = ['T', 'T_med', 'T_16', 'T_84', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84',
+                'B', 'B_med', 'B_16', 'B_84', 'rho', 'rho_med', 'rho_16', 'rho_84']
+            
+            scaler = StandardScaler()
+            scaler.fit(train_df[features])
 
         X = df[features].values
+        X = scaler.transform(X)
         y = df['mf'].values
 
         model = LassoCV(cv=5).fit(X, y)
@@ -428,8 +434,8 @@ if __name__ == '__main__':
         plt.legend()
 
         if args.monte_carlo:
-            plt.title(f"LASSO 5-fold Cross-Validation Pre-Stellar Snapshot - Monte Carlo Data")
-            plt.savefig('figures/lasso_cv_5_fold_monte_carlo.pdf', dpi=300)
+            plt.title(f"LASSO 5-fold Cross-Validation Pre-Stellar Snapshot - Std_er informed Monte Carlo Data")
+            plt.savefig('figures/lasso_std_error_monte_carlo.pdf', dpi=300)
         else:
             plt.title(f"LASSO 5-fold Cross-Validation Pre-Stellar Snapshot - features = {len(coef_names)}")
             plt.savefig('figures/lasso_cv_5_fold_no_std.pdf', dpi=300)
