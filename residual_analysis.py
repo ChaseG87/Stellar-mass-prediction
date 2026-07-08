@@ -5,13 +5,14 @@ from sklearn.linear_model import LinearRegression
 import seaborn as sns
 from seaborn import heatmap
 from data_analysis_v2 import linear_fit, piecewise_fit, polynomial_fit, log_normal_power_law
-from process_data import merge_snap_table
+from process_data import merge_snap_table, add_standard_error
 
 
 # Load pre-stellar gas data
 df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq').reset_index()
 df = df.drop(columns=['M_tot'])
 df = merge_snap_table(df)
+df = add_standard_error(df)
 
 df['sp_kin'] = df['E_kin'] / df['mf']
 df['sp_mag'] = df['E_mag'] / df['mf']
@@ -145,9 +146,9 @@ def cross_correlation_scatter(df, features):
     '''
 
     sns.pairplot(np.log10(df[features]), kind='hist')
-    plt.suptitle('Strongest Features vs Mass Pairplot')
+    plt.suptitle('Standard Error vs Mass Pairplot')
     plt.tight_layout()
-    plt.savefig('mass_vs_strong_features.png', dpi=300)
+    #plt.savefig('figures/mass_vs_std_er.pdf', dpi=300)
 
     plt.show()
 
@@ -176,6 +177,28 @@ def residual_heatmap(df, model):
     
 
 
+def rho_coefficients():
+
+
+
+    model_rho = LinearRegression().fit(np.log10(df['rho'].values.reshape(-1, 1)), np.log10(df['mf'].values))
+    model_rho_med = LinearRegression().fit(np.log10(df['rho_med'].values.reshape(-1, 1)), np.log10(df['mf'].values))
+    model_rho_16 = LinearRegression().fit(np.log10(df['rho_16'].values.reshape(-1, 1)), np.log10(df['mf'].values))
+    model_rho_84 = LinearRegression().fit(np.log10(df['rho_84'].values.reshape(-1, 1)), np.log10(df['mf'].values))
+    model_r_eff = LinearRegression().fit(np.log10(df['R_eff'].values.reshape(-1, 1)), np.log10(df['mf'].values))
+    rho_geometry = df['mf'] / (df['R_eff']**3)
+    model_rho_geo = LinearRegression().fit(np.log10(rho_geometry.values.reshape(-1, 1)), np.log10(df['mf'].values))
+
+
+    print(f'Rho Coefficient: {model_rho.coef_[0]:.4f}, R²: {model_rho.score(np.log10(df["rho"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
+    print(f'Rho Median Coefficient: {model_rho_med.coef_[0]:.4f}, R²: {model_rho_med.score(np.log10(df["rho_med"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
+    print(f'Rho 16th Percentile Coefficient: {model_rho_16.coef_[0]:.4f}, R²: {model_rho_16.score(np.log10(df["rho_16"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
+    print(f'Rho 84th Percentile Coefficient: {model_rho_84.coef_[0]:.4f}, R²: {model_rho_84.score(np.log10(df["rho_84"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
+    print(f'R_eff Coefficient: {model_r_eff.coef_[0]:.4f}, R²: {model_r_eff.score(np.log10(df["R_eff"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
+    print(f'Rho Geometry Coefficient: {model_rho_geo.coef_[0]:.4f}, R²: {model_rho_geo.score(np.log10(rho_geometry.values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
+    
+#rho_coefficients()
+
 
 
 #plot_residual_correlation(df, 'sp_kin', 'B_84')
@@ -186,14 +209,17 @@ def residual_heatmap(df, model):
 #cross_correlation_scatter(df, ['B', 'B_med', 'B_16', 'B_84'])
 #cross_correlation_scatter(df, ['T', 'T_med', 'T_16', 'T_84'])
 #cross_correlation_scatter(df, ['Ne', 'Ne_med', 'Ne_16', 'Ne_84'])
-#cross_correlation_scatter(df, ['rho', 'rho_med', 'rho_16', 'rho_84'])
+#cross_correlation_scatter(df, ['mf','true_bulk_density', 'rho_med', 'rho_16', 'rho_84', 'R_eff'])
 #df = df.reset_index()
 #cross_correlation_scatter(df, ['mf', 'sp_kin', 'sig_3D', 'T', 'sp_int'])
 #cross_correlation_scatter(df, ['mf', 'T_med', 'B_med', 'Ne_med', 'rho_med'])
 #cross_correlation_scatter(df, ['mf', 'T_16', 'B_16', 'Ne_16', 'rho_16'])
 #cross_correlation_scatter(df, ['mf', 'T_84', 'B_84', 'Ne_84', 'rho_84'])
 
-cross_correlation_scatter(df, ['mf', 'T_med', 'Ne_std', 'rho_med'])
+#cross_correlation_scatter(df, ['mf', 'T_med', 'Ne_std', 'rho_med'])
+#cross_correlation_scatter(df, ['mf', 'T_std', 'rho_std', 'B_std', 'Ne_std'])
+
+cross_correlation_scatter(df, ['mf', 'T_std_er', 'B_std_er', 'Ne_std_er', 'rho_std_er'])
 
 
 #, 'rho', 'Ne_std', 'rho_std'
