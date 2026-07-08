@@ -5,9 +5,9 @@ import seaborn as sns
 from process_data import log_data, normalize_data
 from data_analysis_v1 import plot_intrinsic_gas_heatmap
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LassoCV
+from sklearn.linear_model import LassoCV, Lasso
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV, KFold
 from monte_carlo import monte_carlo_resample
 
 
@@ -187,7 +187,7 @@ def random_forest_analysis():
 
     plt.show()
 
-random_forest_analysis()
+#random_forest_analysis()
 
 
 def perform_monte_carlo():
@@ -199,12 +199,14 @@ def perform_monte_carlo():
                 'B', 'B_med', 'B_16', 'B_84', 'rho', 'rho_med', 'rho_16', 'rho_84', 'N_inc'] 
 
     # take the log of the cut down dataset
-    df = log_data(features=features, train=df_clean_cut, normalize=True)
+    df = log_data(features=features, train=df_clean_cut)
 
     slices = ((-1, 0), (0, 1), (1, 2))
 
     # run the resample on the data
     df_mc = monte_carlo_resample(df, features=features, slices=slices, random_state=42)
+
+    features.pop()
 
     X = df_mc[features].values.reshape(-1, len(features))
     y = df_mc['mf'].values
@@ -229,3 +231,73 @@ def perform_monte_carlo():
     plt.show()
 
 #perform_monte_carlo()
+
+def weighted_lasso(weight_method='sqrt'):
+    '''
+    Runs a lasso cv model that is weighted based on the mass of stars
+    '''
+
+    if weight_method == 'sqrt':
+        weight = np.sqrt(10**y)
+
+    elif weight_method == 'log':
+        weight = y - y.min() + 1
+
+    elif weight_method == 'none':
+        weight = 1
+
+    else:
+        raise ValueError("Invalid weighting methodology selected.")
+
+    # set up the alpha hyperparameter grid to search over
+    param_grid = {'alpha': np.logspace(-4, 1, 50)}
+
+    # initialize the base Lasso model and cross-validation strategy
+    lasso = Lasso(max_iter=10000)
+    cv = KFold(n_splits=5, shuffle=True, random_state=42)
+
+    # set up the Grid Search
+    grid_search = GridSearchCV(
+        estimator=lasso, 
+        param_grid=param_grid, 
+        cv=cv, 
+        scoring='neg_mean_squared_error'
+    )
+
+    # pass the weights to the fit method via fit_params
+    grid_search.fit(X, y, sample_weight=weight)
+
+    # Best alpha and model
+    best_alpha = grid_search.best_params_['alpha']
+    best_model = grid_search.best_estimator_
+
+    pred_train = best_model.predict(X)
+    r2_train = best_model.score(X, y)
+
+    pred_val = best_model.predict(X_val)
+    r2_val = best_model.score(X_val, y_val)
+
+    # plot results
+    fig = plt.figure(figsize=(16,7))
+    ax1 = fig.add_subplot(121)
+    ax2 = fig.add_subplot(122)
+
+
+    ax1.scatter(pred_train, y, s=10, alpha=0.7)
+    ax1.plot(y, y, c='r')
+    ax1.set_title(f'Training Performance - $R^2 =$ {r2_train:.2f}')
+    ax1.set_xlabel(r'Ground Truth Mass $M_\odot$')
+    ax1.set_ylabel(r'Predicted Mass $M_\odot$')
+
+    ax2.scatter(pred_val, y_val, s=10, alpha=0.7)
+    ax2.plot(y_val, y_val, c='r')
+    ax2.set_title(f'Validation Peformance - $R^2 =$ {r2_val:.2f}')
+    ax2.set_xlabel(r'Ground Truth Mass $M_\odot$')
+    ax2.set_ylabel(r'Predicted Mass $M_\odot$')
+
+    plt.suptitle(f'Weighted LASSO-CV model - 0.01 Patch - weight_method = {weight_method}')
+    plt.savefig('figures/patch_figures/weighted_lasso/lasso_cv_0.01_patch_weighted_' + weight_method + '.pdf', dpi=300)
+
+    plt.show()
+
+weighted_lasso(weight_method='log')
