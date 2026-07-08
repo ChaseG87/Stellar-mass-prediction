@@ -13,7 +13,7 @@ from process_data import log_data
 
 # Select input features 
 features = ['Ne', 'Ne_med', 'Ne_84', 'Ne_16', 'T', 'T_med', 'T_84', 'T_16',
-            'B', 'B_med', 'B_84', 'B_16', 'rho', 'rho_med', 'rho_84', 'rho_16', 'Ne_std', 'B_std', 'T_std', 'rho_std']  
+            'B', 'B_med', 'B_84', 'B_16', 'rho', 'rho_med', 'rho_84', 'rho_16']  
 
 # load pre-stellar data
 df = log_data(features=features, train_val=False)
@@ -105,10 +105,19 @@ def main():
     argparser = argparse.ArgumentParser(description='Perform t-SNE analysis and correlation heatmap on pre-stellar gas properties.')
     argparser.add_argument('--tsne_2d', '-2d', action='store_true', help='Perform 2D t-SNE analysis and visualization.')
     argparser.add_argument('--tsne_3d', '-3d', action='store_true', help='Perform 3D t-SNE analysis and visualization.')
+    argparser.add_argument('--patch', '-p', action='store_true', help='Run a patch t-SNE when called in tandem with --tsne_2d')
     args = argparser.parse_args()
 
     if args.tsne_2d:
-        perform_2D_tsne(df, features)
+
+        if args.patch:
+
+            df_cut = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_cut.pq').reset_index()
+            df_cut = log_data(train=df_cut, features=features)
+
+            perform_2D_tsne(df_cut, features)
+        else:
+            perform_2D_tsne(df, features)
     if args.tsne_3d:
         perform_3D_tsne(df, features)
     if sys.argv[1:] == []:
