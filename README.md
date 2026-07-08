@@ -251,7 +251,7 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 **7/6** - Due to the mass distribution in the data, the importance of predicting high mass stars is discounted due to the rarity of large stars. This results in the model spending its bandwidth on fitting to the plentiful low and mid mass stars due to their volume. To eliminate this bias, I propose a couple methods to improve the robustity of the analysis:
 
 * [ ] 1. Direct weighting in the training set (RMSE loss is weighted linearly based on mass directly)
-* [ ] 2. Monte Carlo Resampling (Use Monte Carlo resampling to create a dataset with similar weights at different mass ranges)
+* [x] 2. Monte Carlo Resampling (Use Monte Carlo resampling to create a dataset with similar weights at different mass ranges)
 
 For the second approch, I am considering sampling a set number of stars from each of the five compartments used in the generation of the Monte Carlo resampling and running a model on that subset as a type of weighting.
 
