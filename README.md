@@ -255,7 +255,7 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 For the second approch, I am considering sampling a set number of stars from each of the five compartments used in the generation of the Monte Carlo resampling and running a model on that subset as a type of weighting.
 
-**7/7** - The direct weighting approach weighting by the squareroot of the true mass of the stars and log of the mass of the stars (shifted for numerical reasons) both yielded similarly poor results for predicting the stellar mass using the properties in the 0.01 patch data. ([figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso))
+**7/8** - The direct weighting approach weighting by the squareroot of the true mass of the stars and log of the mass of the stars (shifted for numerical reasons) both yielded similarly poor results for predicting the stellar mass using the properties in the 0.01 patch data. ([figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso))
 
 ### $R_{\text{eff}}$, $M_{\text{f}}$, and $\rho$ relationship
 
