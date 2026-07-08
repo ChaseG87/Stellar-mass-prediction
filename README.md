@@ -47,7 +47,13 @@ Usage:
   4. --greedy or -gr flag runs the greedy PCA model with 8 components
   5. --lasso or -l flag runs the LASSO-aided PCA model with 8 components
 
+#### information_decay.py
+Python file containing code used to visualize the rate of information loss with respect to the number of snapshots back from the pre-sink snapshot. 
 
+Usage:
+  1. --linear or -l flag visualizes the $R^2$ values of training and validation sets as you move back in time for a linear regression model
+  2. --random_forest or -rf flag visualizes the $R^2$ values of training and validation sets as you move back in time for a random forest model
+  3. --rf_grid_search or -rf_gs flag runs a grid search of random forest hyperparameters and determines the best parameters using cross validation on the pre-sink snapshot
 
 #### t-SNE.py
 Python file containing code used to generate [figures/tsne_visualization.pdf](figures/tsne_visualization.pdf). t-SNE is applied to the internal pre-stellar gas properties and colored by final mass. 
@@ -55,6 +61,7 @@ Python file containing code used to generate [figures/tsne_visualization.pdf](fi
 Usage:
   1. --tsne_2d or -2d flag visualizes the 2d t-SNE
   2. --tsne_3d or -3d flag visualizes the 3d t-SNE
+  3. --patch or -p flag called in tandem with --tsne_2d visualizes a 2d t-SNE using the 0.01 parsec patch data
 
 #### model_comparision.py
 Python file that creates visual comparisions of the train and validation RMSE of different complexities of models on pre-stellar gas and the consistency of their coefficients. 
@@ -66,6 +73,9 @@ Usage:
 
 #### process_data.py
 Python file which preprocesses train and validation datasets for analysis. 
+
+#### monte_carlo.py
+Python file which computes a Monte Carlo resampling of a provided data set using the standard errors of a particular star to inform the resampling.
 
 ## star_data
 
