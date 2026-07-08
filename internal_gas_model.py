@@ -8,12 +8,14 @@ from sklearn.linear_model import LassoCV
 import argparse
 from sklearn.preprocessing import StandardScaler
 from process_data import log_data, artificial_data
-from monte_carlo import monte_carlo_resample
+from monte_carlo import monte_carlo_resample, sample_from_mc
 
 
 # define features to be investigated
 features = ['T', 'T_med', 'T_16', 'T_84', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84',
             'B', 'B_med', 'B_16', 'B_84', 'rho', 'rho_med', 'rho_16', 'rho_84','snap'] 
+
+#features = ['T', 'T_med', 'Ne', 'Ne_med', 'B', 'B_med', 'rho', 'rho_med']
 
 # pre-process data
 df, df_val = log_data(features = features, train_val = True, normalize = True)
@@ -405,6 +407,7 @@ if __name__ == '__main__':
             train_df, val_df = log_data(features=features, train_val=True)
 
             df = monte_carlo_resample(train_df=train_df, random_state=42, std_er_cov=True)
+            #df = sample_from_mc(train_df, sub_sample=1000)
 
             features = ['T', 'T_med', 'T_16', 'T_84', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84',
                 'B', 'B_med', 'B_16', 'B_84', 'rho', 'rho_med', 'rho_16', 'rho_84']
@@ -412,9 +415,13 @@ if __name__ == '__main__':
             scaler = StandardScaler()
             scaler.fit(train_df[features])
 
-        X = df[features].values
-        X = scaler.transform(X)
-        y = df['mf'].values
+            X = df[features].values
+            X = scaler.transform(X)
+            y = df['mf'].values
+        
+        else:
+            X = df[features].values
+            y = df['mf']
 
         model = LassoCV(cv=5).fit(X, y)
         print(model.coef_, model.alpha_)
@@ -434,8 +441,8 @@ if __name__ == '__main__':
         plt.legend()
 
         if args.monte_carlo:
-            plt.title(f"LASSO 5-fold Cross-Validation Pre-Stellar Snapshot - Std_er informed Monte Carlo Data")
-            plt.savefig('figures/lasso_std_error_monte_carlo.pdf', dpi=300)
+            plt.title(f"LASSO 5-fold Cross-Validation Pre-Stellar Snapshot - 1,000 stars per quartile")
+            plt.savefig('figures/lasso_monte_carlo_quartile_sampling.pdf', dpi=300)
         else:
             plt.title(f"LASSO 5-fold Cross-Validation Pre-Stellar Snapshot - features = {len(coef_names)}")
             plt.savefig('figures/lasso_cv_5_fold_no_std.pdf', dpi=300)
