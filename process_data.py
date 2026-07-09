@@ -21,6 +21,12 @@ snap_table_df = pd.read_parquet('star_data/first_snap_table.pq').reset_index()
 # load val snap table
 val_snap_table_df = pd.read_parquet('star_data/first_snap_table_test.pq').reset_index()
 
+# load train multiplicity data
+df_mult = pd.read_parquet('star_data/max_mults.pq')
+
+# load val multipliticy data
+df_mult_val = pd.read_parquet('star_data/test_max_mults.pq')
+
 
 def merge_snap_table(df, snap_table=snap_table_df):
     '''
@@ -36,6 +42,22 @@ def merge_snap_table(df, snap_table=snap_table_df):
 
     merged_df = pd.merge(left=df, right=snap_table[['pid', 'mf']], left_on='sink_id', right_on='pid', how='outer')
     return merged_df
+
+
+def merge_max_mults(df, mults=df_mult):
+    '''
+    Merges the multiplicity df with the given DataFrame based on the 'sink_id' column.
+    
+    inputs:
+    - df: pandas DataFrame containing the data to be merged.
+    - snap_table: pandas DataFrame containing multiplicity data.
+    
+    returns:
+    - merged_df: pandas DataFrame resulting from merging df and mults on the 'sink_id' column.
+    '''
+
+    merged_df = pd.merge(left=df, right=mults[['pid', 'max_mult']], left_on='sink_id', right_on='pid', how='outer')
+    return merged_df 
 
 
 def normalize_data(features, df_train, df_val=None):
@@ -86,7 +108,7 @@ def add_standard_error(df):
     return df
 
 
-def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, normalize=False):
+def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, normalize=False, multiplicity=False):
     '''
     inputs:
         - train: DataFrame of the raw training data
@@ -109,8 +131,10 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
     # pre-process taking the log of features
     df_train = np.log10(train[features])
 
-    if 'N_inc' in features:
-        df_train['N_inc'] = train['N_inc']
+
+    if multiplicity:
+        df_train = merge_max_mults(df=df_train.reset_index(), mults=df_mult).set_index('sink_id').sort_index()
+        df_train.drop(columns='pid')
 
     # pre-process taking the log of the mass (target)
     df_train['mf'] = np.log10(train['mf'])
@@ -123,6 +147,10 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
         val = val.set_index('sink_id').sort_index()
         df_val = np.log10(val[features])
         df_val['mf'] = np.log10(val['mf'])
+        
+        if multiplicity:
+            df_val = merge_max_mults(df=df_val.reset_index(), mults=df_mult_val).set_index('sink_id').sort_index()
+            df_val.drop(columns='pid')
 
         if normalize:
 
@@ -137,8 +165,8 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
     if normalize:
         df_train = normalize_data(features=features, df_train=df_train)
 
-        if 'N_inc' in features:
-            df_train['N_inc'] = train['N_inc']
+    if 'N_inc' in features:
+        df_train['N_inc'] = train['N_inc']
 
     return df_train
 
