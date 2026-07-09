@@ -301,6 +301,8 @@ These power-law relationships represent a massive drop off in density and an eff
 
 ### Multiplicity Investigation
 
-**7/9** - In the [visualization of multiplicity](figures/lasso_cv_multiplicity.pdf) on the LASSO-CV model there does not appear to be a clear separation of stars based on multiplicity besides the tendency of the largest stars to have a high multiplicity (4+). The model appears to be biased in underestimating the mass of these stars which could also be a product of the low count of these stars.
+**7/9** - In the [visualization of multiplicity](figures/lasso_cv_multiplicity.pdf) on the LASSO-CV model, for the full data there does not appear to be a clear separation of stars based on multiplicity besides the tendency of the largest stars to have a high multiplicity (4+). The model appears to be biased in underestimating the mass of these stars which could also be a product of the low count of these stars. In the patch data colored by multiplicity ([figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso)) the trend appears to be an overestimating of low multiplicity and an underestimation of high multiplicity stars.
 
 ###### I added a t-sne with the masses colored for the patch data in [figures/patch_figures/patch_tsne_visualization.pdf](figures/patch_data_patch_tsne_visualization.pdf)
+
+
