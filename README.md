@@ -298,3 +298,7 @@ These power-law relationships represent a massive drop off in density and an eff
 * [x] 2. Examine more reduced combinations for variables.
 
 **7/9** - Using just the four median values from each of the distributions yields a training $R^2$ of 0.79 and a validation $R^2$ of 0.78. Removing the median $n_e$ actually increases the validation performce very marginally. Removing $T_{\text{med}}$ or $B_{\text{med}}$ reduces the training and validation $R^2$ by about 0.04. Eliminating both of them plummets the validation $R^2$ to 0.47. This makes me think they are describing about the same variance in mass which is further supported by their cross correlation of 0.65. Dropping $\rho_{\text{med}}$ reduces the validation $R^2$ to 0.66. The plot of the validation performance is in [figures/lasso_validation_small_model.pdf](figures/lasso_validation_small_model.pdf)
+
+### Multiplicity Investigation
+
+**7/9** - In the [visualization of multiplicity](figures/lasso_cv_multiplicity.pdf) on the LASSO-CV model there does not appear to be a clear separation of stars based on multiplicity besides the tendency of the largest stars to have a high multiplicity (4+). The model appears to be biased in underestimating the mass of these stars which could also be a product of the low count of these stars.
