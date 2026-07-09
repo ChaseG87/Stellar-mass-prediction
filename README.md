@@ -263,9 +263,11 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 * [x] 1. Direct weighting in the training set (RMSE loss is weighted linearly based on mass directly)
 * [x] 2. Monte Carlo Resampling (Use Monte Carlo resampling to create a dataset with similar weights at different mass ranges)
 
+
 For the second approch, I am considering sampling a set number of stars from each of the five compartments used in the generation of the Monte Carlo resampling and running a model on that subset as a type of weighting.
 
 **7/8** - The direct weighting approach weighting by the squareroot of the true mass of the stars and log of the mass of the stars (shifted for numerical reasons) both yielded similarly poor results for predicting the stellar mass using the properties in the 0.01 patch data. ([figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso))
+
 
 ### $R_{\text{eff}}$, $M_{\text{f}}$, and $\rho$ relationship
 
@@ -282,6 +284,8 @@ $$
 
 These power-law relationships represent a massive drop off in density and an effective radius scaling approximately proportionally to $M_\text{f}$ in agreement with Kaalva et al. The more massive a star is the more diffuse its mass is in the pre-stellar snapshot.
 
+**7/9** - Investigating the free electron abundance ($n_e$) vs mass the skew in the underlying distribution results in very different power law relations for the mean and median values ($n_e$ mean $\propto M^{3.84}$ and $n_e$ median $\propto M^{1.29}$ with $R^2$ values of 0.49 and 0.51 respectively) in the full data. This discrepency could be an indicator of volume sampling bias though I am not sure how to interpret it. 
+
 ### Validation Set of Patch
 
 **7/7** - Applying the same data reduction in the 0.01 parsec patch data of requiring the mass to be greater than 0.1 $M_\odot$ and the count of particles to be greater than 10 reduces the validation set from 1966 stars to 1508. Looking at both the results of the [LASSO-CV](figures/patch_figures/lasso_cv_patch_validation.pdf) and [random forest](figures/patch_figures/random_forest_patch_validation.pdf) model results, the signal seperating large stars from smaller stars using all the gas properties appears to be poor with validation $R^2$ values of 0.29 and 0.27 respectively.
@@ -291,4 +295,7 @@ These power-law relationships represent a massive drop off in density and an eff
 **7/8** - Looking at only the mean and median values for each of the four predictors (T, B, $n_e$, and $\rho$) the model performs still incredibly well ($R^2$ = 0.81) and all eight features are selected in the LASSO-CV process (can be seen in [figures/lasso_cv_5_mean_and_median.pdf](figures/lasso_cv_5_mean_and_median.pdf)). This reduction of features I believe eliminates the concern of predicting the mass through data leakage from the sample size of the standard deviations, 84th and 16th percentiles. 
 
 ##### Next Steps:
-* [ ] 1. Examine validation set performance of mean and median only model.
+* [x] 1. Examine validation set performance of mean and median only model.
+* [ ] 2. Examine more reduced combinations for variables.
+
+**7/9** - Using just the four median values from each of the distributions yields a training $R^2$ of 0.79 and a validation $R^2$ of 0.78. Removing the median $n_e$ actually increases the validation performce very marginally. Removing $T_{\text{med}}$ or $B_{\text{med}}$ reduces the training and validation $R^2$ by about 0.04. Eliminating both of them plummets the validation $R^2$ to 0.47. This makes me think they are describing about the same variance in mass which is further supported by their cross correlation of 0.65. Dropping $\rho_{\text{med}}$ reduces the validation $R^2$ to 0.66. The plot of the validation performance is in [figures/lasso_validation_small_model.pdf](figures/lasso_validation_small_model.pdf)
