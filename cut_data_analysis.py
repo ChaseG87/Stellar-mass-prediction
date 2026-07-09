@@ -283,21 +283,21 @@ def weighted_lasso(weight_method='sqrt'):
     ax2 = fig.add_subplot(122)
 
 
-    ax1.scatter(pred_train, y, s=10, alpha=0.7)
+    ax1.scatter(y, pred_train, s=10, alpha=0.7)
     ax1.plot(y, y, c='r')
     ax1.set_title(f'Training Performance - $R^2 =$ {r2_train:.2f}')
     ax1.set_xlabel(r'Ground Truth Mass $M_\odot$')
     ax1.set_ylabel(r'Predicted Mass $M_\odot$')
 
-    ax2.scatter(pred_val, y_val, s=10, alpha=0.7)
+    ax2.scatter(y_val, pred_val, s=10, alpha=0.7)
     ax2.plot(y_val, y_val, c='r')
     ax2.set_title(f'Validation Peformance - $R^2 =$ {r2_val:.2f}')
-    ax2.set_xlabel(r'Ground Truth Mass $M_\odot$')
-    ax2.set_ylabel(r'Predicted Mass $M_\odot$')
+    ax2.set_xlabel(r'Ground Truth Mass $\log_{10}M_\odot$')
+    ax2.set_ylabel(r'Predicted Mass $\log_{10}M_\odot$')
 
     plt.suptitle(f'Weighted LASSO-CV model - 0.01 Patch - weight_method = {weight_method}')
     plt.savefig('figures/patch_figures/weighted_lasso/lasso_cv_0.01_patch_weighted_' + weight_method + '.pdf', dpi=300)
 
     plt.show()
 
-weighted_lasso(weight_method='log')
+weighted_lasso(weight_method='sqrt')
