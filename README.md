@@ -231,7 +231,7 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 * [x] 4. Investigate the performace of random forest on the 0.01 pc patch data
 * [x] 5. Investigate the performance of angular velocity on 0.01 pc patch data ([figures/internal_gas_0.01_patch.pdf](figures/internal_gas_0.01_patch.pdf)* updated)
 * [x] 6. Investigate the connection between the global potential energy at the pre-sink snapshot and final mass
-* [x] 7. Investigate the performace of validation partitions of 0.01 pc patch data ([figures/patch_figures/lasso_cv_validation.pdf](figures/patch_figures/lasso_cv_validation.pdf))
+* [x] 7. Investigate the performace of validation partitions of 0.01 pc patch data ([figures/patch_figures/lasso_cv_patch_validation.pdf](figures/patch_figures/lasso_cv_patch_validation.pdf))
 ## Week 6 Notes
 
 ### Monte Carlo Resampling
