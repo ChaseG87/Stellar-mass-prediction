@@ -285,3 +285,10 @@ These power-law relationships represent a massive drop off in density and an eff
 ### Validation Set of Patch
 
 **7/7** - Applying the same data reduction in the 0.01 parsec patch data of requiring the mass to be greater than 0.1 $M_\odot$ and the count of particles to be greater than 10 reduces the validation set from 1966 stars to 1508. Looking at both the results of the [LASSO-CV](figures/patch_figures/lasso_cv_patch_validation.pdf) and [random forest](figures/patch_figures/random_forest_patch_validation.pdf) model results, the signal seperating large stars from smaller stars using all the gas properties appears to be poor with validation $R^2$ values of 0.29 and 0.27 respectively.
+
+### Mean and Median Full Data
+
+**7/8** - Looking at only the mean and median values for each of the four predictors (T, B, $n_e$, and $\rho$) the model performs still incredibly well ($R^2$ = 0.81) and all eight features are selected in the LASSO-CV process (can be seen in [figures/lasso_cv_5_mean_and_median.pdf](figures/lasso_cv_5_mean_and_median.pdf)). This reduction of features I believe eliminates the concern of predicting the mass through data leakage from the sample size of the standard deviations, 84th and 16th percentiles. 
+
+##### Next Steps:
+* [ ] 1. Examine validation set performance of mean and median only model.
