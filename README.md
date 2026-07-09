@@ -295,4 +295,7 @@ These power-law relationships represent a massive drop off in density and an eff
 **7/8** - Looking at only the mean and median values for each of the four predictors (T, B, $n_e$, and $\rho$) the model performs still incredibly well ($R^2$ = 0.81) and all eight features are selected in the LASSO-CV process (can be seen in [figures/lasso_cv_5_mean_and_median.pdf](figures/lasso_cv_5_mean_and_median.pdf)). This reduction of features I believe eliminates the concern of predicting the mass through data leakage from the sample size of the standard deviations, 84th and 16th percentiles. 
 
 ##### Next Steps:
-* [ ] 1. Examine validation set performance of mean and median only model.
+* [x] 1. Examine validation set performance of mean and median only model.
+* [ ] 2. Examine more reduced combinations for variables.
+
+**7/9** - Using just the four median values from each of the distributions yields a training $R^2$ of 0.79 and a validation $R^2$ of 0.78. Removing the median $n_e$ actually increases the validation performce very marginally. Removing $T_{\text{med}}$ or $B_{\text{med}}$ reduces the training and validation $R^2$ by about 0.04. Eliminating both of them plummets the validation $R^2$ to 0.47. This makes me think they are describing about the same variance in mass which is further supported by their cross correlation of 0.65. Dropping $\rho_{\text{med}}$ reduces the validation $R^2$ to 0.66. The plot of the validation performance is in [figures/lasso_validation_small_model.pdf](figures/lasso_validation_small_model.pdf)
