@@ -22,6 +22,9 @@ df_cut['PE_global'] *= -1  # make potential energy positive for analysis
 df_first_snap = pd.read_parquet('star_data/first_snap_table.pq').reset_index()
 df_cut = pd.merge(df_cut, df_first_snap[['pid', 'mf']], left_on='sink_id', right_on='pid', how='outer')
 
+df_mult = pd.read_parquet('star_data/max_mults.pq')
+df_cut = pd.merge(df_cut, df_mult[['pid', 'max_mult']], left_on='sink_id', right_on='pid', how='outer')
+
 
 # same preprocessing for validation set
 df_cut_val = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_cut_test.pq').reset_index()
@@ -30,6 +33,9 @@ df_cut_val['PE_global'] *= -1  # make potential energy positive for analysis
 
 df_first_snap_val = pd.read_parquet('star_data/first_snap_table_test.pq').reset_index()
 df_cut_val = pd.merge(df_cut_val, df_first_snap_val[['pid', 'mf']], left_on='sink_id', right_on='pid', how='outer')
+
+df_mult_val = pd.read_parquet('star_data/test_max_mults.pq')
+df_cut_val = pd.merge(df_cut_val, df_mult_val[['pid', 'max_mult']], left_on='sink_id', right_on='pid', how='outer')
 
 
 # add specific angular momentum
@@ -122,25 +128,27 @@ def lasso_cv_validation():
     pred_val = model.predict(X_val)
     r2_val = model.score(X_val, y_val)
 
-    fig = plt.figure(figsize=(16, 7))
+    fig = plt.figure(figsize=(16, 6))
     ax1 = fig.add_subplot(121)
     ax2 = fig.add_subplot(122)
 
-    ax1.scatter(y, pred_train, s=10, alpha=0.5)
+    scatter1 = ax1.scatter(y, pred_train, s=10, alpha=0.5, c=df_clean_cut['max_mult'])
     ax1.plot(y, y, c='r')
     ax1.set_xlabel(r'Ground Truth Mass ($\log_{10}M_\odot$)')
     ax1.set_ylabel(r'Predicted Mass ($\log_{10}M_\odot$)')
     ax1.set_title(f'LASSO-CV training set - $R^2 = ${r2_train:.2f}')
 
-    ax2.scatter(y_val, pred_val, s=10, alpha=0.5)
+    scatter2 = ax2.scatter(y_val, pred_val, s=10, alpha=0.5, c=df_clean_val['max_mult'])
     ax2.plot(y_val, y_val, c='r')
     ax2.set_xlabel(r'Ground Truth Mass ($\log_{10}M_\odot$)')
     ax2.set_ylabel(r'Predicted Mass ($\log_{10}M_\odot$)')
     ax2.set_title(f'LASSO-CV validation set - $R^2 = ${r2_val:.2f}')
 
     plt.suptitle('LASSO-CV Training and Validation - Patch Data')
+    plt.colorbar(scatter1)
+    plt.colorbar(scatter2)
 
-    plt.savefig('figures/patch_figures/lasso_cv_patch_validation.pdf', dpi=300)
+    #plt.savefig('figures/patch_figures/lasso_cv_patch_validation.pdf', dpi=300)
 
     plt.show()
 
@@ -182,6 +190,7 @@ def random_forest_analysis():
     ax2.set_title(f'Random Forest Validation $R^2$ = {r2:.2f}')
 
     fig.suptitle(f'Random Forest Training and Validation - Patch Data')
+    
 
     plt.savefig('figures/patch_figures/random_forest_patch_validation.pdf', dpi=300)
 
@@ -278,18 +287,18 @@ def weighted_lasso(weight_method='sqrt'):
     r2_val = best_model.score(X_val, y_val)
 
     # plot results
-    fig = plt.figure(figsize=(16,7))
+    fig = plt.figure(figsize=(16,5))
     ax1 = fig.add_subplot(121)
     ax2 = fig.add_subplot(122)
 
 
-    ax1.scatter(y, pred_train, s=10, alpha=0.7)
+    scatter1 = ax1.scatter(y, pred_train, s=10, alpha=0.7, c=df_clean_cut['max_mult'])
     ax1.plot(y, y, c='r')
     ax1.set_title(f'Training Performance - $R^2 =$ {r2_train:.2f}')
     ax1.set_xlabel(r'Ground Truth Mass $M_\odot$')
     ax1.set_ylabel(r'Predicted Mass $M_\odot$')
 
-    ax2.scatter(y_val, pred_val, s=10, alpha=0.7)
+    scatter2 = ax2.scatter(y_val, pred_val, s=10, alpha=0.7, c=df_clean_val['max_mult'])
     ax2.plot(y_val, y_val, c='r')
     ax2.set_title(f'Validation Peformance - $R^2 =$ {r2_val:.2f}')
     ax2.set_xlabel(r'Ground Truth Mass $\log_{10}M_\odot$')
@@ -297,7 +306,9 @@ def weighted_lasso(weight_method='sqrt'):
 
     plt.suptitle(f'Weighted LASSO-CV model - 0.01 Patch - weight_method = {weight_method}')
     plt.savefig('figures/patch_figures/weighted_lasso/lasso_cv_0.01_patch_weighted_' + weight_method + '.pdf', dpi=300)
+    plt.colorbar(scatter1)
+    plt.colorbar(scatter2)
 
     plt.show()
 
-weighted_lasso(weight_method='sqrt')
+weighted_lasso(weight_method='log')
