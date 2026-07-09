@@ -15,10 +15,10 @@ from monte_carlo import monte_carlo_resample, sample_from_mc
 features = ['T', 'T_med', 'T_16', 'T_84', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84',
             'B', 'B_med', 'B_16', 'B_84', 'rho', 'rho_med', 'rho_16', 'rho_84','snap'] 
 
-#features = ['T', 'T_med', 'Ne', 'Ne_med', 'B', 'B_med', 'rho', 'rho_med']
+#features = ['T_med', 'B_med', 'rho_med']
 
 # pre-process data
-df, df_val = log_data(features = features, train_val = True, normalize = True)
+df, df_val = log_data(features = features, train_val = True, normalize = True, multiplicity=True)
 
 
 class GreedyModelConstructor:
@@ -427,15 +427,21 @@ if __name__ == '__main__':
         print(model.coef_, model.alpha_)
         r2 = model.score(X, y)
 
+        X_val = df_val[features].values
+        y_val = df_val['mf'].values
+
         print(r2)
-        pred = model.predict(X)
+        pred_val = model.predict(X_val)
+        r2_val = model.score(X_val, y_val)
+        print(r2_val)
 
         coef_names = [features[i] for i in range(len(features)) if model.coef_[i]]
         print(coef_names)
 
         plt.figure(figsize=(12, 8))
-        plt.scatter(y, pred, s=10, alpha=0.2)
-        plt.plot(y, y, c='r', label=f'$R^2 = $ {r2:.2f}')
+        scatter = plt.scatter(y_val, pred_val, s=10, alpha=0.5, c=df_val['max_mult'])
+        plt.colorbar(scatter, label=r'Max Multiplicity')
+        plt.plot(y_val, y_val, c='r', label=f'$R^2 = $ {r2:.2f}')
         plt.xlabel(r'Final Mass [$\log_{10}(M_\odot)$]')
         plt.ylabel(r'Predicted Mass [$\log_{10}(M_\odot)$]')
         plt.legend()
@@ -444,8 +450,8 @@ if __name__ == '__main__':
             plt.title(f"LASSO 5-fold Cross-Validation Pre-Stellar Snapshot - 1,000 stars per quartile")
             plt.savefig('figures/lasso_monte_carlo_quartile_sampling.pdf', dpi=300)
         else:
-            plt.title(f"LASSO 5-fold Cross-Validation Pre-Stellar Snapshot - features = {len(coef_names)}")
-            plt.savefig('figures/lasso_cv_5_fold_no_std.pdf', dpi=300)
+            plt.title(f"LASSO-CV Pre-Stellar Snapshot with Multiplicity - features = {len(coef_names)}")
+            plt.savefig('figures/lasso_cv_multiplicity.pdf', dpi=300)
         plt.show()
 
     
