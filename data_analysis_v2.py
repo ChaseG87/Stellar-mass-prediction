@@ -229,12 +229,6 @@ def log_normal_power_law(df, feature, axis):
     return np.log10(x_raw), residuals
 
 
-def chi_squared_comparison(df, feature):
-    # can only compare linear models with linear parameters (no log_normal_power_law or piecewise)
-
-
-    pass
-
 
 def gaussian_residuals_check(x, residuals, title, axis):
 
@@ -276,7 +270,7 @@ def residual_comparision(energy):
 
 
     plt.tight_layout()
-    #plt.savefig("figures/" + energy + "/" + energy + "_regression_plots.pdf", dpi=300)
+    plt.savefig("figures/" + energy + "/" + energy + "_regression_plots.pdf", dpi=300)
     plt.show()
 
 
@@ -295,7 +289,7 @@ def residual_comparision(energy):
     plt.suptitle("Distribution of Residuals for different fits, " + energy)
 
     plt.tight_layout()
-    #plt.savefig("figures/" + energy + "/" + energy + "_residuals_distribution.pdf", dpi=300)
+    plt.savefig("figures/" + energy + "/" + energy + "_residuals_distribution.pdf", dpi=300)
     plt.show()
 
 
@@ -314,7 +308,7 @@ def residual_comparision(energy):
     plt.suptitle("Scatterplots of Residuals vs input, " + energy)
 
     plt.tight_layout()
-    #plt.savefig("figures/" + energy + "/" + energy + "_residuals_vs_X.pdf", dpi=300)
+    plt.savefig("figures/" + energy + "/" + energy + "_residuals_vs_X.pdf", dpi=300)
     plt.show()
 
 
@@ -368,7 +362,7 @@ def mass_sliding_window(df, feature, window_num=10):
 
     plt.suptitle("Sliding Window of Means and Std of Mass vs " + feature)
     plt.tight_layout()
-    #plt.savefig('figures/' + feature + '/' + feature + '_sliding_window.pdf', dpi=300)
+    plt.savefig('figures/' + feature + '/' + feature + '_sliding_window.pdf', dpi=300)
     plt.show()
 
 

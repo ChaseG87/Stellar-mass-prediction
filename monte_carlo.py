@@ -135,17 +135,61 @@ def monte_carlo_resample(
     return df_resampled
 
 
-def sample_from_mc(sub_sample=100):
+def sample_from_mc(df, sub_sample=100, slices=slices):
     # Sample from the produced monte carlo training data set a subset that represents each of the 5 slices
 
-    pass
+    full_data = []
+
+    for slice in slices:
+        for i in range(sub_sample):
+            
+            sub_df = df[(df['mf'] >= slice[0]) & (df['mf'] < slice[1])].reset_index().drop(columns=['sink_id'])
+
+            features_clean = features.copy()
+
+            for str in ['N_inc', 'T_std_er', 'Ne_std_er', 'B_std_er', 'rho_std_er']:
+                features_clean.remove(str) if str in features else features_clean
+
+            sample_idx = np.random.choice(len(sub_df))
+
+            row = sub_df.iloc[sample_idx]
+
+            mean_vector = row[features_clean]
+
+            corr_matrix = sub_df[features_clean].corr().values
+
+            cov_matrix_sp = calculate_local_covariance(global_corr=corr_matrix, row=row)
+
+            resampled_features = np.random.multivariate_normal(mean=mean_vector, cov=cov_matrix_sp, size=1)
+
+            row_dict = {}
+
+            for col_name, val in zip(features_clean, resampled_features[0]):
+                row_dict[col_name] = val
+
+            row_dict['mf'] = sub_df.iloc[sample_idx]['mf']
+
+            full_data.append(row_dict)
+
+
+    df_resampled = pd.DataFrame(full_data)
+
+    features_clean.append('mf')
+
+    df_resampled = df_resampled.reindex(columns=features_clean)
+
+    return df_resampled
+     
+
+
 
 def main():
 
     resampled_df = monte_carlo_resample(train_df, n_clones=5, random_state=42)
     print(resampled_df.head())
 
-
+    df_resampled = sample_from_mc(train_df)
+    print(len(df_resampled), df_resampled.head())
 
 if __name__ == '__main__':
     main()

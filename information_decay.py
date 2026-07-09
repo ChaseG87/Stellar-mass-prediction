@@ -13,6 +13,8 @@ from sklearn.linear_model import LinearRegression
 features = ['T', 'T_med', 'T_16', 'T_84', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84',       
             'B', 'B_med', 'B_16', 'B_84', 'rho', 'rho_med', 'rho_16', 'rho_84'] 
 
+#features = ['T', 'T_med', 'Ne', 'Ne_med', 'B', 'B_med', 'rho', 'rho_med'] # uncomment to look at only means and medians
+
 best_params = {'max_depth': None, 'max_features': 0.5, 'min_samples_leaf': 2, 'min_samples_split': 2}
 
 
