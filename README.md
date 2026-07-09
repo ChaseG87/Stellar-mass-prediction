@@ -263,9 +263,11 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 * [x] 1. Direct weighting in the training set (RMSE loss is weighted linearly based on mass directly)
 * [x] 2. Monte Carlo Resampling (Use Monte Carlo resampling to create a dataset with similar weights at different mass ranges)
 
+
 For the second approch, I am considering sampling a set number of stars from each of the five compartments used in the generation of the Monte Carlo resampling and running a model on that subset as a type of weighting.
 
 **7/8** - The direct weighting approach weighting by the squareroot of the true mass of the stars and log of the mass of the stars (shifted for numerical reasons) both yielded similarly poor results for predicting the stellar mass using the properties in the 0.01 patch data. ([figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso))
+
 
 ### $R_{\text{eff}}$, $M_{\text{f}}$, and $\rho$ relationship
 
@@ -281,6 +283,8 @@ R_{\text{eff}} \propto M^{1.1} \approx M^{1.06}
 $$
 
 These power-law relationships represent a massive drop off in density and an effective radius scaling approximately proportionally to $M_\text{f}$ in agreement with Kaalva et al. The more massive a star is the more diffuse its mass is in the pre-stellar snapshot.
+
+**7/9** - Investigating the free electron abundance ($n_e$) vs mass the skew in the underlying distribution results in very different power law relations for the mean and median values ($n_e$ mean $\propto M^{3.84}$ and $n_e$ median $\propto M^{1.29}$ with $R^2$ values of 0.49 and 0.51 respectively) in the full data. This discrepency could be an indicator of volume sampling bias though I am not sure how to interpret it. 
 
 ### Validation Set of Patch
 
