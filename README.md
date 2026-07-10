@@ -299,7 +299,7 @@ These power-law relationships represent a massive drop off in density and an eff
 * [x] 1. Examine validation set performance of mean and median only model.
 * [x] 2. Examine more reduced combinations for variables.
 * [x] 3. Investigate the coefficients of the reduced model with just the medians for the full data.
-* [ ] 4. Investigate the residual correlations with $\rho_{med}$ as the first variable of interest.
+* [ ] 4. Investigate the residual correlations with $\rho_{\text{med}}$ as the first variable of interest.
 
 **7/9** - Using just the four median values from each of the distributions yields a training $R^2$ of 0.79 and a validation $R^2$ of 0.78. Removing the median $n_e$ actually increases the validation performce very marginally. Removing $T_{\text{med}}$ or $B_{\text{med}}$ reduces the training and validation $R^2$ by about 0.04. Eliminating both of them plummets the validation $R^2$ to 0.47. This makes me think they are describing about the same variance in mass which is further supported by their cross correlation of 0.65. Dropping $\rho_{\text{med}}$ reduces the validation $R^2$ to 0.66. The plot of the validation performance is in [figures/lasso_validation_small_model.pdf](figures/lasso_validation_small_model.pdf)
 
