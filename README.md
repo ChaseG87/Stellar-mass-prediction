@@ -296,8 +296,16 @@ These power-law relationships represent a massive drop off in density and an eff
 ##### Next Steps:
 * [x] 1. Examine validation set performance of mean and median only model.
 * [x] 2. Examine more reduced combinations for variables.
+* [ ] 3. Investigate the coefficients of the reduced model with just the medians for the full data.
+* [ ] 4. Investigate the residual correlations with $\rho_{med}$ as the first variable of interest.
 
 **7/9** - Using just the four median values from each of the distributions yields a training $R^2$ of 0.79 and a validation $R^2$ of 0.78. Removing the median $n_e$ actually increases the validation performce very marginally. Removing $T_{\text{med}}$ or $B_{\text{med}}$ reduces the training and validation $R^2$ by about 0.04. Eliminating both of them plummets the validation $R^2$ to 0.47. This makes me think they are describing about the same variance in mass which is further supported by their cross correlation of 0.65. Dropping $\rho_{\text{med}}$ reduces the validation $R^2$ to 0.66. The plot of the validation performance is in [figures/lasso_validation_small_model.pdf](figures/lasso_validation_small_model.pdf)
+
+**7/10** - The high predictive ability of the full data and poor predictive ability of the 0.01 patch data leads me to believe that the sampling of far out gas is important to the success of the full data models. Investigating at the specific coefficients and $R^2$ values of $T_{\text{med}}$ and $B_{\text{med}}$, the coefficient of $T_{\text{med}} = 0.48$ and $B_{\text{med}} = -0.40$. They both independently have weak correlations with mass with $R^2$ values of 0.08 and 0.10 respectively. Note that the coefficient of $B_{\text{med}}$ is very similar to that of $\rho_{\text{med}} = -0.41$ and their covariance is 0.85. It is interesting then with such minor direct predictive abilities of mass that the when removing both from the reduced model the validation $R^2$ drops from 0.78 to 0.47.
+
+Another interesting feature of the data is the discrepency in the power-law from the fit to $T_{\text{mean}}$ versus $T_{\text{med}}$ as $T_{\text{mean}} \propto M^{1.4}$ and $T_{\text{med}} \propto M^{2.1}$. This could be a result of small variations in data having high impacts on the coefficients due to the low $R^2$ values but it could also be a characteristic separation of the scaling of the mean and median implying a non-log-normal distribution in temperature.
+
+
 
 ### Multiplicity Investigation
 
