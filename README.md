@@ -182,6 +182,8 @@ Notes on figures:
 
 For the random forest model I tuned the hyperparameters of max_features, max_depth, min_samples_split, and min_samples_leaf. I am concerned that the training performance way overperforms the validation data in old snapshots but this appears to be a feature of random forests with many trees.
 
+**7/10** - The half-life of information loss (the rate of $R^2$ decay in predicting the final mass) is about 14 snapshots which equates to about 345,800 years. I am curious if this aligns with some other sense of information loss rate due to turbulence in the simulation.
+
 ##### Next Steps:
 * [x] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots ([time series heatmaps](figures/time_series_heatmaps))
 * [x] 2. Analyze $R^2$ decay as time evolves using linear regression ([figures/information_decay_linear_regression.pdf](figures/information_decay_linear_regression.pdf))
