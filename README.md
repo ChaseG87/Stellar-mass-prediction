@@ -256,7 +256,7 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 **7/8** - Looking at the plot of [mass vs the standard errors](figures/mass_vs_std_er.pdf) of the different properties for the full cloud data, $T$ and $n_e$ appear to have positive correlations with the mass while $B$ and $\rho$ exhibit a negative correlation. These combinations of conflicting error relations are reflected in the behavior of the variance seen in Monte Carlo resampled stars which have a similar spread for both small and large stars. There is a concern that using the correlation matrix between the group of stars as the basis for covariance matrix along with the standard errors is not reflective of the correlation of the intrastellar gas properties. That is to say that the correlation of properties between stars could be different than the correlation of properties of the particles making up an individual star.
 
 ##### Next Steps:
-* [x] 1. Investigate the relation $\dfrac{\sigma}{\sqrt{N_{\text{inc}}}}$ as a function of mass
+* [x] 1. Investigate the relation $\dfrac{\sigma}{\sqrt{N_{\text{inc}}}}$ (SE) as a function of mass
 
 ### Error Weighting 
 **7/6** - Due to the mass distribution in the data, the importance of predicting high mass stars is discounted due to the rarity of large stars. This results in the model spending its bandwidth on fitting to the plentiful low and mid mass stars due to their volume. To eliminate this bias, I propose a couple methods to improve the robustity of the analysis:
