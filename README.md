@@ -346,7 +346,7 @@ In a scenario where you have a large star forming and a smaller star forming a b
 ##### Next Steps:
 * [x] 1. Create a heatmap of the 0.5 patch data ([figures/patch_figures_0.5/correlation_heatmap_0.5_patch.pdf](figures/patch_figures/correlation_heatmap_0.5_patch.pdf))
 * [x] 2. Create a t-SNE map of the 0.5 patch features with mass colored ([figures/patch_figures_0.5/tsne_visualization_0.5_patch.pdf](figures/patch_figures_0.5/tsne_visualization_0.5_patch.pdf))
-* [x] 3. Create a LASSO-CV model to investigate the linear (in log-log space) perdictability of the 0.5 parsec dataset ([figures/patch_figures_0.5/lasso_cv_0.5_patch.pdf](figures/patch_figures_0.5/lasso_cv_0.5_patch.pdf]))
+* [x] 3. Create a LASSO-CV model to investigate the linear (in log-log space) perdictability of the 0.5 parsec dataset ([figures/patch_figures_0.5/lasso_cv_0.5_patch.pdf](figures/patch_figures_0.5/lasso_cv_0.5_patch.pdf))
 
 
 
