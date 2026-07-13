@@ -332,6 +332,15 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 * [ ] 3. Investigate the use of a vector target using both mass and multiplicity
 * [ ] 4. Investigate t-SNE model coloring by multiplicity
 
+### 0.5 Parsec Patch Investigation
+
+**7/13** - I am running the 0.5 parsec patch data through the pipeline that I have from analyzing the other two data sets to see how it performs at predicting the mass.
+
+##### Next Steps:
+* [ ] 1. Create a heatmap of the 0.5 patch data
+* [ ] 2. Create a t-SNE map of the 0.5 patch features with mass colored
+* [ ] 3. Create a LASSO-CV model and investigate performance
+
 
 
 
