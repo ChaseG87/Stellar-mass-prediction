@@ -6,6 +6,8 @@ from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
 from seaborn import heatmap
 from sklearn.manifold import TSNE
+import sys
+import argparse
 
 # define features
 features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
@@ -20,26 +22,26 @@ df_patch ['PE_global'] *= -1
 df_patch['num_stars'] += 1 
 
 # log and normalize data
-df_patch_log = log_data(features=features, train=df_patch, train_val=False, normalize=True)
+df_patch_log = log_data(features=features, train=df_patch, train_val=False, normalize=True, multiplicity=True)
 
 df_patch = df_patch.set_index('sink_id')
 
-# reshape data into numpy arrays for regression
-X = df_patch_log[features].values.reshape(-1, len(features))
-y = df_patch_log['mf'].values
 
-def correlation_heatmap(df):
+# define  asubset of the data with only stars that are single
+df_single = df_patch_log[df_patch_log['max_mult'] == 1]
+
+def plot_correlation_heatmap(df):
 
     correlation_matrix = df_patch_log.corr()
     plt.figure(figsize=(15, 12))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-    plt.title('Correlation Heatmap of Accreted Gas Properties (all log)')
+    plt.title('Correlation Heatmap of Accreted Gas Properties (all log - single stars)')
 
     plt.tight_layout()
-    plt.savefig('figures/patch_figures_0.5/correlation_heatmap_0.5_patch.pdf', dpi=300, bbox_inches='tight')
+
+    #plt.savefig('figures/patch_figures_0.5/correlation_heatmap_0.5_patch.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
-#correlation_heatmap(df=df_patch_log)
 
 def plot_tsne(df):
 
@@ -61,10 +63,9 @@ def plot_tsne(df):
     plt.title(r't-SNE of 0.5 Pcs Patch Properties (features: $n_e$, T, B, $\rho$, $PE_{global}$, snap, num_stars)')
     plt.xlabel('t-SNE 1')
     plt.ylabel('t-SNE 2')
-    plt.savefig('figures/patch_figures_0.5/tsne_visualization_0.5_patch.pdf', dpi=300, bbox_inches='tight')
+    #plt.savefig('figures/patch_figures_0.5/tsne_visualization_0.5_patch.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
-#plot_tsne(df=df_patch_log)
 
 def plot_lasso_cv(X_train, y_train):
 
@@ -83,10 +84,37 @@ def plot_lasso_cv(X_train, y_train):
     plt.xlabel(r'Ground Truth Mass [$\log_{10}M_\odot$]')
     plt.ylabel(r'Predicted Mass [$\log_{10}M_\odot$]')
     plt.title(f'LASSO-CV model of 0.5 parsec patch - $R^2 =$ {r2:.2f} - features = {len(chosen_features)}')
-    plt.savefig('figures/patch_figures_0.5/lasso_cv_0.5_patch.pdf', dpi=300)
+    #plt.savefig('figures/patch_figures_0.5/lasso_cv_0.5_patch.pdf', dpi=300)
 
     plt.show()
 
-plot_lasso_cv(X_train=X, y_train=y)
-
     
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--heatmap', '-hm', action='store_true', help='Plots a heatmap of the 0.5 patch data')
+    parser.add_argument('--tsne', action='store_true', help='plots a t-SNE of the 0.5 patch features colored with final mass')
+    parser.add_argument('--lasso_cv', '-l', action='store_true', help='plots a LASSO-CV model predicting the final mass of the 0.5 patch data')
+    parser.add_argument('--single', '-s', action='store_true', help='uses only singular data to plot figures')
+    args = parser.parse_args()
+
+    if args.single:
+        df = df_single
+    else:
+        df = df_patch_log
+
+    if args.heatmap:
+        plot_correlation_heatmap(df=df)
+
+    if args.tsne:
+        plot_tsne(df=df)
+
+    if args.lasso_cv:
+        X = df[features].values.reshape(-1, len(features))
+        y = df['mf'].values
+
+        plot_lasso_cv(X_train=X, y_train=y)
+
+
+
+if __name__ == '__main__':
+    main()
