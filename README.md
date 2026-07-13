@@ -336,9 +336,11 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 
 **7/13** - I am running the 0.5 parsec pre-stellar sink snapshot patch data through the pipeline that I have from analyzing the other two data sets to see how it performs at predicting the mass. Looking at the correlation heatmap, the features appear to have even worse correlation to the final mass then the 0.01 patch data. This includes the direct correlation between final mass and num_stars which is the number of stars within the 0.5 parsec sphere at the time the snapshot was taken. This weak correlation could mean that the size of a forming star depends very weakly on the number of stars that are in its neighborhood at the time of formation or that the 0.5 parsec sphere encapsulates a definition of neighborhood too large or too small to detect the connection.
 
+The t-SNE plot displayed the same story of uncorrelated data when coloring by the mass of the stars on the 0.5 pre-stellar snapshot patch data.
+
 ##### Next Steps:
 * [x] 1. Create a heatmap of the 0.5 patch data ([figures/patch_figures_0.5/correlation_heatmap_0.5_patch.pdf](figures/patch_figures/correlation_heatmap_0.5_patch.pdf))
-* [ ] 2. Create a t-SNE map of the 0.5 patch features with mass colored
+* [x] 2. Create a t-SNE map of the 0.5 patch features with mass colored ([figures/patch_figure_0.5/tsne_visualization_0.5_patch.pdf](figures/patch_figure_0.5/tsne_visualization_0.5_patch.pdf))
 * [ ] 3. Create a LASSO-CV model and investigate performance
 
 
