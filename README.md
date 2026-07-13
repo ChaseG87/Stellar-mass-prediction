@@ -182,6 +182,8 @@ Notes on figures:
 
 For the random forest model I tuned the hyperparameters of max_features, max_depth, min_samples_split, and min_samples_leaf. I am concerned that the training performance way overperforms the validation data in old snapshots but this appears to be a feature of random forests with many trees.
 
+**7/10** - The half-life of information loss (the rate of $R^2$ decay in predicting the final mass) is about 14 snapshots which equates to about 345,800 years. I am curious if this aligns with some other sense of information loss rate due to turbulence in the simulation.
+
 ##### Next Steps:
 * [x] 1. Produce heatmaps of internal gas properties of different pre-sink snapshots ([time series heatmaps](figures/time_series_heatmaps))
 * [x] 2. Analyze $R^2$ decay as time evolves using linear regression ([figures/information_decay_linear_regression.pdf](figures/information_decay_linear_regression.pdf))
@@ -254,7 +256,7 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 **7/8** - Looking at the plot of [mass vs the standard errors](figures/mass_vs_std_er.pdf) of the different properties for the full cloud data, $T$ and $n_e$ appear to have positive correlations with the mass while $B$ and $\rho$ exhibit a negative correlation. These combinations of conflicting error relations are reflected in the behavior of the variance seen in Monte Carlo resampled stars which have a similar spread for both small and large stars. There is a concern that using the correlation matrix between the group of stars as the basis for covariance matrix along with the standard errors is not reflective of the correlation of the intrastellar gas properties. That is to say that the correlation of properties between stars could be different than the correlation of properties of the particles making up an individual star.
 
 ##### Next Steps:
-* [x] 1. Investigate the relation $\dfrac{\sigma}{\sqrt{N_{\text{inc}}}}$ as a function of mass
+* [x] 1. Investigate the relation $\dfrac{\sigma}{\sqrt{N_{\text{inc}}}}$ (SE) as a function of mass
 
 ### Error Weighting 
 **7/6** - Due to the mass distribution in the data, the importance of predicting high mass stars is discounted due to the rarity of large stars. This results in the model spending its bandwidth on fitting to the plentiful low and mid mass stars due to their volume. To eliminate this bias, I propose a couple methods to improve the robustity of the analysis:
@@ -296,11 +298,22 @@ These power-law relationships represent a massive drop off in density and an eff
 ##### Next Steps:
 * [x] 1. Examine validation set performance of mean and median only model.
 * [x] 2. Examine more reduced combinations for variables.
+* [x] 3. Investigate the coefficients of the reduced model with just the medians for the full data.
+* [ ] 4. Investigate the residual correlations with $\rho_{\text{med}}$ as the first variable of interest.
 
 **7/9** - Using just the four median values from each of the distributions yields a training $R^2$ of 0.79 and a validation $R^2$ of 0.78. Removing the median $n_e$ actually increases the validation performce very marginally. Removing $T_{\text{med}}$ or $B_{\text{med}}$ reduces the training and validation $R^2$ by about 0.04. Eliminating both of them plummets the validation $R^2$ to 0.47. This makes me think they are describing about the same variance in mass which is further supported by their cross correlation of 0.65. Dropping $\rho_{\text{med}}$ reduces the validation $R^2$ to 0.66. The plot of the validation performance is in [figures/lasso_validation_small_model.pdf](figures/lasso_validation_small_model.pdf)
 
+**7/10** - The high predictive ability of the full data and poor predictive ability of the 0.01 patch data leads me to believe that the sampling of far out gas is important to the success of the full data models. Investigating at the specific coefficients and $R^2$ values of $T_{\text{med}}$ and $B_{\text{med}}$, the coefficient of $T_{\text{med}} = 0.48$ and $B_{\text{med}} = -0.40$. They both independently have weak correlations with mass with $R^2$ values of 0.08 and 0.10 respectively. Note that the coefficient of $B_{\text{med}}$ is very similar to that of $\rho_{\text{med}} = -0.41$ and their covariance is 0.85. It is interesting then with such minor direct predictive abilities of mass that the when removing both from the reduced model the validation $R^2$ drops from 0.78 to 0.47.
+
+Another interesting feature of the data is the discrepency in the power-law from the fit to $T_{\text{mean}}$ versus $T_{\text{med}}$ as $T_{\text{mean}} \propto M^{1.4}$ and $T_{\text{med}} \propto M^{2.1}$. This could be a result of small variations in data having high impacts on the coefficients due to the low $R^2$ values but it could also be a characteristic separation of the scaling of the mean and median implying a non-log-normal distribution in temperature.
+
+Investigating the coefficients of the LASSO-CV model and Post-LASSO models with only $T_{\text{med}}$, $B_{\text{med}}$, and $\rho{\text{med}}$ as selectable features, the coefficient of $T_{\text{med}}$ is very similar to it's univariate coefficient while the sign of $B_{\text{med}}$ flips and $\rho{\text{med}}$ is magnified to approximately twice the size. [figures/lasso_reduced_coefficient_comp.pdf](figures/lasso_reduced_coefficient_comp.pdf)
+
+
 ### Multiplicity Investigation
 
-**7/9** - In the [visualization of multiplicity](figures/lasso_cv_multiplicity.pdf) on the LASSO-CV model there does not appear to be a clear separation of stars based on multiplicity besides the tendency of the largest stars to have a high multiplicity (4+). The model appears to be biased in underestimating the mass of these stars which could also be a product of the low count of these stars.
+**7/9** - In the [visualization of multiplicity](figures/lasso_cv_multiplicity.pdf) on the LASSO-CV model, for the full data there does not appear to be a clear separation of stars based on multiplicity besides the tendency of the largest stars to have a high multiplicity (4+). The model appears to be biased in underestimating the mass of these stars which could also be a product of the low count of these stars. In the patch data colored by multiplicity ([figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso)) the trend appears to be an overestimating of low multiplicity and an underestimation of high multiplicity stars.
 
 ###### I added a t-sne with the masses colored for the patch data in [figures/patch_figures/patch_tsne_visualization.pdf](figures/patch_data_patch_tsne_visualization.pdf)
+
+
