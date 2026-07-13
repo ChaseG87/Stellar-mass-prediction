@@ -320,7 +320,7 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 
 ### Weighting 0.01 Parsec Patch Data
 
-**7/13** - The performance of weighted models is similarly poor for both the LASSO and random forest (seen in [figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso) and [figures/patch_figures/weighted_random_forest](figures/patch_figures/wieghted_random_forest) respectively). The weighted and standard $R^2$ values track much more closely in the random forest model for both the training and validation sets when compared to the LASSO results. Through each application of weights the case for the features in the 0.01 parsec patch around the peak density in the pre-stellar snap being poor predictors of the final mass is further supported.
+**7/13** - The performance of weighted models is similarly poor for both the LASSO and random forest (seen in [figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso) and [figures/patch_figures/weighted_random_forest](figures/patch_figures/weighted_random_forest) respectively). The weighted and standard $R^2$ values track much more closely in the random forest model for both the training and validation sets when compared to the LASSO results. Through each application of weights the case for the features in the 0.01 parsec patch around the peak density in the pre-stellar snap being poor predictors of the final mass is further supported.
 
 ##### Next Steps:
 * [x] 1. Investigate weighted $R^2$ to weighted LASSO-CV patch for training and validation
