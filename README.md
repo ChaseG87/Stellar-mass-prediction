@@ -337,7 +337,7 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 **7/13** - I am running the 0.5 parsec patch data through the pipeline that I have from analyzing the other two data sets to see how it performs at predicting the mass.
 
 ##### Next Steps:
-* [ ] 1. Create a heatmap of the 0.5 patch data
+* [x] 1. Create a heatmap of the 0.5 patch data ([figures/patch_figures_0.5/correlation_heatmap_0.5_patch.pdf](figures/patch_figures/correlation_heatmap_0.5_patch.pdf))
 * [ ] 2. Create a t-SNE map of the 0.5 patch features with mass colored
 * [ ] 3. Create a LASSO-CV model and investigate performance
 
