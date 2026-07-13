@@ -288,7 +288,7 @@ These power-law relationships represent a massive drop off in density and an eff
 
 ### Validation Set of Patch
 
-**7/7** - Applying the same data reduction in the 0.01 parsec patch data of requiring the mass to be greater than 0.1 $M_\odot$ and the count of particles to be greater than 10 reduces the validation set from 1966 stars to 1508. Looking at both the results of the [LASSO-CV](figures/patch_figures/lasso_cv_patch_validation.pdf) and [random forest](figures/patch_figures/random_forest_patch_validation.pdf) model results, the signal seperating large stars from smaller stars using all the gas properties appears to be poor with validation $R^2$ values of 0.29 and 0.27 respectively.
+**7/7** - Applying the same data reduction in the 0.01 parsec patch data of requiring the mass to be greater than 0.1 $M_\odot$ and the count of particles to be greater than 10 reduces the validation set from 1966 stars to 1508. Looking at both the results of the [LASSO-CV](figures/patch_figures/lasso_cv_patch_validation.pdf) and [random forest](figures/patch_figures/random_forest_patch_validation.pdf) model results, the signal separating large stars from smaller stars using all the gas properties appears to be poor with validation $R^2$ values of 0.29 and 0.27 respectively.
 
 ### Mean and Median Full Data
 
@@ -330,7 +330,7 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 **7/13** - The multiplicity appears to be highly correlated with mass for larger stars and a pure scatter for smaller stars. Investigating how it is predicted by the gas properties could yield physical insight into the kinds of stars that end up with higher multiplicity.
 
 ##### Next Steps:
-* [ ] 1. Examine results of different multiplicities seperately for the reduced model on the full data
+* [ ] 1. Examine results of different multiplicities separately for the reduced model on the full data
 * [ ] 2. Examine results of different multiplicities for the 0.01 patch data
 * [ ] 3. Investigate the use of a vector target using both mass and multiplicity
 * [ ] 4. Investigate t-SNE model coloring by multiplicity
@@ -343,13 +343,13 @@ The t-SNE plot displayed the same story of uncorrelated data when coloring by th
 
 In a scenario where you have a large star forming and a smaller star forming a bit later in the large star's proto stellar disc, the gas that is around them is almost entirely the same. In a model trying to predict the final mass of a star, the model will look at two instances of roughly the exact same gas and two different masses. The minor residual difference between the two defined spheres is all the model would have to go off of in differentiating the stars which would also be near the furtherest extreme away from the stars. This problem is futher exasperated by the structure of GMCs in which stars form in filaments of higher density material, packing potential star formation locations closer together. (Use distance weighted properties to create more separation?)
 
-The LASSO-CV model was trained on all of the internal gas feature statistics including the standard deviations as well as the snap, PE_global, and num_stars. The $R^2 = 0.12$ displaying an incredibly poor ability to predict the final mass using a linear model (in log-log space) for the features chosen. 
+The LASSO-CV model was trained on all of the internal gas feature statistics including the standard deviations as well as the snap, PE_global, and num_stars. The $R^2 = 0.12$ displaying an incredibly poor ability to predict the final mass using a linear model (in log-log space) for the features chosen. Looking at just the single multiplicity stars the $R^2$ improves to 0.23 though this is still a very poor fit and the individual correlations of features is still poor. There is an interesting separation in the [t-SNE of the singles](figures/patch_figures_0.5/tsne_visualization_0.5_patch_singles.pdf) 
 
 ##### Next Steps:
 * [x] 1. Create a heatmap of the 0.5 patch data ([figures/patch_figures_0.5/correlation_heatmap_0.5_patch.pdf](figures/patch_figures/correlation_heatmap_0.5_patch.pdf))
 * [x] 2. Create a t-SNE map of the 0.5 patch features with mass colored ([figures/patch_figures_0.5/tsne_visualization_0.5_patch.pdf](figures/patch_figures_0.5/tsne_visualization_0.5_patch.pdf))
 * [x] 3. Create a LASSO-CV model to investigate the linear (in log-log space) perdictability of the 0.5 parsec dataset ([figures/patch_figures_0.5/lasso_cv_0.5_patch.pdf](figures/patch_figures_0.5/lasso_cv_0.5_patch.pdf))
-* [x] 4. Investigate singular stars only to control for the "partnered star effect"
+* [x] 4. Investigate singular stars only to control for the "partnered star effect" (in [figures/patch_figures_0.5](figures/patch_figures_0.5))
 
 
 
