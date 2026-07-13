@@ -77,6 +77,9 @@ Python file which preprocesses train and validation datasets for analysis.
 #### monte_carlo.py
 Python file which computes a Monte Carlo resampling of a provided data set using the standard errors of a particular star to inform the resampling.
 
+#### large_patch_analysis.py
+Python file producing figures analyzing the 0.5 parsec pre-stellar snapshot patch dataset. 
+
 ## star_data
 
 #### [star_data/data_properties.pdf](star_data/data_properties.pdf)
@@ -338,10 +341,12 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 
 The t-SNE plot displayed the same story of uncorrelated data when coloring by the mass of the stars on the 0.5 pre-stellar snapshot patch data.
 
+In a scenario where you have a large star forming and a smaller star forming a bit later in the large star's proto stellar disc, the gas that is around them is almost entirely the same. In a model trying to predict the final mass of a star, the model will look at two instances of roughly the exact same gas and two different masses. The minor residual difference between the two defined spheres is all the model would have to go off of in differentiating the stars which would also be near the furtherest extreme away from the stars.
+
 ##### Next Steps:
 * [x] 1. Create a heatmap of the 0.5 patch data ([figures/patch_figures_0.5/correlation_heatmap_0.5_patch.pdf](figures/patch_figures/correlation_heatmap_0.5_patch.pdf))
-* [x] 2. Create a t-SNE map of the 0.5 patch features with mass colored ([figures/patch_figure_0.5/tsne_visualization_0.5_patch.pdf](figures/patch_figure_0.5/tsne_visualization_0.5_patch.pdf))
-* [ ] 3. Create a LASSO-CV model and investigate performance
+* [x] 2. Create a t-SNE map of the 0.5 patch features with mass colored ([figures/patch_figures_0.5/tsne_visualization_0.5_patch.pdf](figures/patch_figures_0.5/tsne_visualization_0.5_patch.pdf))
+* [x] 3. Create a LASSO-CV model to investigate the linear (in log-log space) perdictability of the 0.5 parsec dataset 
 
 
 
