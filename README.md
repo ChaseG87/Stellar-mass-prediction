@@ -316,4 +316,26 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 
 ###### I added a t-sne with the masses colored for the patch data in [figures/patch_figures/patch_tsne_visualization.pdf](figures/patch_data_patch_tsne_visualization.pdf)
 
+## Week 7 Notes
+
+### Weighting 0.01 Parsec Patch Data
+
+**7/13** - The performance of weighted models is similarly poor for both the LASSO and random forest (seen in [figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso) and [figures/patch_figures/weighted_random_forest](figures/patch_figures/wieghted_random_forest) respectively). The weighted and standard $R^2$ values track much more closely in the random forest model for both the training and validation sets when compared to the LASSO results. Through each application of weights the case for the features in the 0.01 parsec patch around the peak density in the pre-stellar snap being poor predictors of the final mass is further supported.
+
+##### Next Steps:
+* [x] 1. Investigate weighted $R^2$ to weighted LASSO-CV patch for training and validation
+* [x] 2. Investigate weighted random forest performance on patch data (train and val with both $R^2$ values)
+
+### Multiplicity Continued
+
+**7/13** - The multiplicity appears to be highly correlated with mass for larger stars and a pure scatter for smaller stars. Investigating how it is predicted by the gas properties could yield physical insight into the kinds of stars that end up with higher multiplicity.
+
+##### Next Steps:
+* [ ] 1. Examine results of different multiplicities seperately for the reduced model on the full data
+* [ ] 2. Examine results of different multiplicities for the 0.01 patch data
+* [ ] 3. Investigate the use of a vector target using both mass and multiplicity
+* [ ] 4. Investigate t-SNE model coloring by multiplicity
+
+
+
 
