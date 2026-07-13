@@ -142,7 +142,6 @@ Notes on figures:
 * [x] 1. Create a pre-stellar snap minus n snaps function to investigate the different datasets
 * [x] 2. Analyze the connection between the pre-stellar snap features and the features at minus 3 snaps
 
-##
 
 ### Pre-Stellar Continuation
 **6/22** - B, $n_e$, T, $\rho$ statistics and the pre-stellar snap have weak correlation independently with mass but collectively have predictive power of the mass in linear regression. The two models being employed to select the most important features in predicting final mass are the LASSO-aided model and a greedy residual model both in feature coordinates and PCA coordinates. The validation set of data from a simulation run with different initial conditions is fit well by the training dataset further supporting a meaningful connection between the variables. 
@@ -160,8 +159,6 @@ Notes on figures:
 **6/24** - The first seven features selected by the greedy model in order are T_std, rho_med, T_med, B_std, rho, Ne_std, rho_std. The standard deviation of temperature I think can be connected to the gas being more disperate in larger stars while smaller stars only have local gas (Kaalva et al.). The 6th choice, Ne_std, is the second most correlated as a single variable. There are two clusters that appear to form in the $n_e$ statistics. This should be investigated.
 
 **6/25** - The "LASSO-aided" model where I have been running LASSO to choose features then running a linear regression is known as Post-LASSO. It aims to create sparse models while getting rid of regularization biased placed on features you are interested in using as predictors. There appear to be some statistical problems when performing hypothesis testing on Post-LASSO. Debiased-LASSO is another methd taht behaves in a similar way but hypothesis tests and error estimation methods remain valid. The LASSO CV model with 5-folds for cross validation resulted in the selection of 12 features.
-
-##
 
 ### Unit Testing of Model
 **6/22** - I created artificial linearly correlated data in **process_data.py** with noise to test the LASSO and greedy models in **internal_gas_model.py**. The models appear to be able to use the correlations to parse good fits even with low signal to noise ratios. I am unsure how to evaluate the theoretical $R^2$ values of the models. I am planning on creating different highly collinear dimensions and see how the values are selected (desiring the models to select un-correlated predictors more often).
@@ -191,7 +188,6 @@ For the random forest model I tuned the hyperparameters of max_features, max_dep
 * [x] 4. Analyze $R^2$ decay as time evolves using random forest ([figures/information_decay_random_forest.pdf](figures/information_decay_random_forest.pdf))
 * [x] 5. Investigate results of decay vs. time plots to discover potentially exponential or power-law relationships (appears to be exponential in both linear and random forest)
 
-##
 
 ### Pre-Stellar Continuation 
 
@@ -315,5 +311,27 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 **7/9** - In the [visualization of multiplicity](figures/lasso_cv_multiplicity.pdf) on the LASSO-CV model, for the full data there does not appear to be a clear separation of stars based on multiplicity besides the tendency of the largest stars to have a high multiplicity (4+). The model appears to be biased in underestimating the mass of these stars which could also be a product of the low count of these stars. In the patch data colored by multiplicity ([figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso)) the trend appears to be an overestimating of low multiplicity and an underestimation of high multiplicity stars.
 
 ###### I added a t-sne with the masses colored for the patch data in [figures/patch_figures/patch_tsne_visualization.pdf](figures/patch_data_patch_tsne_visualization.pdf)
+
+## Week 7 Notes
+
+### Weighting 0.01 Parsec Patch Data
+
+**7/13** - The performance of weighted models is similarly poor for both the LASSO and random forest (seen in [figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso) and [figures/patch_figures/weighted_random_forest](figures/patch_figures/weighted_random_forest) respectively). The weighted and standard $R^2$ values track much more closely in the random forest model for both the training and validation sets when compared to the LASSO results. Through each application of weights the case for the features in the 0.01 parsec patch around the peak density in the pre-stellar snap being poor predictors of the final mass is further supported.
+
+##### Next Steps:
+* [x] 1. Investigate weighted $R^2$ to weighted LASSO-CV patch for training and validation
+* [x] 2. Investigate weighted random forest performance on patch data (train and val with both $R^2$ values)
+
+### Multiplicity Continued
+
+**7/13** - The multiplicity appears to be highly correlated with mass for larger stars and a pure scatter for smaller stars. Investigating how it is predicted by the gas properties could yield physical insight into the kinds of stars that end up with higher multiplicity.
+
+##### Next Steps:
+* [ ] 1. Examine results of different multiplicities seperately for the reduced model on the full data
+* [ ] 2. Examine results of different multiplicities for the 0.01 patch data
+* [ ] 3. Investigate the use of a vector target using both mass and multiplicity
+* [ ] 4. Investigate t-SNE model coloring by multiplicity
+
+
 
 
