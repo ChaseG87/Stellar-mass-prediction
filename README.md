@@ -142,7 +142,6 @@ Notes on figures:
 * [x] 1. Create a pre-stellar snap minus n snaps function to investigate the different datasets
 * [x] 2. Analyze the connection between the pre-stellar snap features and the features at minus 3 snaps
 
-##
 
 ### Pre-Stellar Continuation
 **6/22** - B, $n_e$, T, $\rho$ statistics and the pre-stellar snap have weak correlation independently with mass but collectively have predictive power of the mass in linear regression. The two models being employed to select the most important features in predicting final mass are the LASSO-aided model and a greedy residual model both in feature coordinates and PCA coordinates. The validation set of data from a simulation run with different initial conditions is fit well by the training dataset further supporting a meaningful connection between the variables. 
@@ -160,8 +159,6 @@ Notes on figures:
 **6/24** - The first seven features selected by the greedy model in order are T_std, rho_med, T_med, B_std, rho, Ne_std, rho_std. The standard deviation of temperature I think can be connected to the gas being more disperate in larger stars while smaller stars only have local gas (Kaalva et al.). The 6th choice, Ne_std, is the second most correlated as a single variable. There are two clusters that appear to form in the $n_e$ statistics. This should be investigated.
 
 **6/25** - The "LASSO-aided" model where I have been running LASSO to choose features then running a linear regression is known as Post-LASSO. It aims to create sparse models while getting rid of regularization biased placed on features you are interested in using as predictors. There appear to be some statistical problems when performing hypothesis testing on Post-LASSO. Debiased-LASSO is another methd taht behaves in a similar way but hypothesis tests and error estimation methods remain valid. The LASSO CV model with 5-folds for cross validation resulted in the selection of 12 features.
-
-##
 
 ### Unit Testing of Model
 **6/22** - I created artificial linearly correlated data in **process_data.py** with noise to test the LASSO and greedy models in **internal_gas_model.py**. The models appear to be able to use the correlations to parse good fits even with low signal to noise ratios. I am unsure how to evaluate the theoretical $R^2$ values of the models. I am planning on creating different highly collinear dimensions and see how the values are selected (desiring the models to select un-correlated predictors more often).
@@ -191,7 +188,6 @@ For the random forest model I tuned the hyperparameters of max_features, max_dep
 * [x] 4. Analyze $R^2$ decay as time evolves using random forest ([figures/information_decay_random_forest.pdf](figures/information_decay_random_forest.pdf))
 * [x] 5. Investigate results of decay vs. time plots to discover potentially exponential or power-law relationships (appears to be exponential in both linear and random forest)
 
-##
 
 ### Pre-Stellar Continuation 
 
