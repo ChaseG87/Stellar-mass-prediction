@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LassoCV, Lasso
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split, GridSearchCV, KFold
+from sklearn.metrics import r2_score
 from monte_carlo import monte_carlo_resample
 
 
@@ -45,10 +46,7 @@ df_cut_val['L_mag'] = np.sqrt(df_cut_val['L_vec_1']**2 + df_cut_val['L_vec_2']**
 df_clean_cut = df_cut[(df_cut['N_inc'] >= 10)  & (df_cut['mf'] > 0.1)]
 df_clean_val = df_cut_val[(df_cut_val['N_inc'] >= 10)  & (df_cut_val['mf'] > 0.1)]
 
-#print(df_clean_val['mf'].count(), df_cut_val['mf'].count())
-
-#print(df_cut['mf'].count() - df_clean_cut['mf'].count())
-# log taken within the function
+# log taken within heatmap function
 #plot_intrinsic_gas_heatmap(df=df_clean_cut)
 
 # There are 108 stars that have less than 10 particles
@@ -241,19 +239,27 @@ def perform_monte_carlo():
 
 #perform_monte_carlo()
 
-def weighted_lasso(weight_method='sqrt'):
+def weighted_lasso(X_train, y_train, X_validation, y_validation, weight_method='sqrt'):
     '''
     Runs a lasso cv model that is weighted based on the mass of stars
     '''
 
+
     if weight_method == 'sqrt':
-        weight = np.sqrt(10**y)
+        weight = np.sqrt(10**y_train)
+        weight_val = np.sqrt(10**y_validation)
 
     elif weight_method == 'log':
-        weight = y - y.min() + 1
+        weight = y_train - y_train.min() + 1
+        weight_val = y_validation - y_validation.min() + 1
 
     elif weight_method == 'none':
-        weight = 1
+        weight = np.ones(len(y_train))
+        weight_val = np.ones(len(y_validation))
+
+    elif weight_method =='linear':
+        weight = 10**y_train
+        weight_val = 10**y_validation
 
     else:
         raise ValueError("Invalid weighting methodology selected.")
@@ -274,17 +280,20 @@ def weighted_lasso(weight_method='sqrt'):
     )
 
     # pass the weights to the fit method via fit_params
-    grid_search.fit(X, y, sample_weight=weight)
+    grid_search.fit(X_train, y_train, sample_weight=weight)
 
     # Best alpha and model
     best_alpha = grid_search.best_params_['alpha']
     best_model = grid_search.best_estimator_
 
-    pred_train = best_model.predict(X)
-    r2_train = best_model.score(X, y)
+    pred_train = best_model.predict(X_train)
+    r2_train_w = r2_score(y_train, pred_train, sample_weight=weight)
+    r2_train = r2_score(y_train, pred_train)
 
-    pred_val = best_model.predict(X_val)
-    r2_val = best_model.score(X_val, y_val)
+
+    pred_val = best_model.predict(X_validation)
+    r2_val_w = r2_score(y_validation, pred_val, sample_weight=weight_val)
+    r2_val = r2_score(y_validation, pred_val)
 
     # plot results
     fig = plt.figure(figsize=(16,5))
@@ -292,23 +301,99 @@ def weighted_lasso(weight_method='sqrt'):
     ax2 = fig.add_subplot(122)
 
 
-    scatter1 = ax1.scatter(y, pred_train, s=10, alpha=0.7, c=df_clean_cut['max_mult'])
-    ax1.plot(y, y, c='r')
-    ax1.set_title(f'Training Performance - $R^2 =$ {r2_train:.2f}')
+    scatter1 = ax1.scatter(y_train, pred_train, s=10, alpha=0.7, c=df_clean_cut['max_mult'])
+    ax1.plot(y_train, y_train, c='r')
+    ax1.set_title(f'Training Performance - $R_w^2 =$ {r2_train_w:.2f}, $R^2 =$ {r2_train:.2f}')
     ax1.set_xlabel(r'Ground Truth Mass $M_\odot$')
     ax1.set_ylabel(r'Predicted Mass $M_\odot$')
 
-    scatter2 = ax2.scatter(y_val, pred_val, s=10, alpha=0.7, c=df_clean_val['max_mult'])
-    ax2.plot(y_val, y_val, c='r')
-    ax2.set_title(f'Validation Peformance - $R^2 =$ {r2_val:.2f}')
+    scatter2 = ax2.scatter(y_validation, pred_val, s=10, alpha=0.7, c=df_clean_val['max_mult'])
+    ax2.plot(y_validation, y_validation, c='r')
+    ax2.set_title(f'Validation Peformance - $R_w^2 =$ {r2_val_w:.2f}, $R^2 =$ {r2_val:.2f}')
     ax2.set_xlabel(r'Ground Truth Mass $\log_{10}M_\odot$')
     ax2.set_ylabel(r'Predicted Mass $\log_{10}M_\odot$')
 
     plt.suptitle(f'Weighted LASSO-CV model - 0.01 Patch - weight_method = {weight_method}')
-    plt.savefig('figures/patch_figures/weighted_lasso/lasso_cv_0.01_patch_weighted_' + weight_method + '.pdf', dpi=300)
+
     plt.colorbar(scatter1)
     plt.colorbar(scatter2)
 
+    plt.savefig('figures/patch_figures/weighted_lasso/lasso_cv_0.01_patch_weighted_' + weight_method + '.pdf', dpi=300)
+
     plt.show()
 
-weighted_lasso(weight_method='log')
+
+#weighted_lasso(X_train=X, y_train=y, X_validation=X_val, y_validation=y_val, weight_method='none')
+
+def weighted_random_forest(X_train, y_train, X_validation, y_validation, weight_method='sqrt'):
+    '''
+    Runs a random forest model that is weighted based on the mass of stars
+    '''
+
+    if weight_method == 'sqrt':
+        weight = np.sqrt(10**y_train)
+        weight_val = np.sqrt(10**y_validation)
+
+    elif weight_method == 'log':
+        weight = y_train - y_train.min() + 1
+        weight_val = y_validation - y_validation.min() + 1
+
+    elif weight_method == 'none':
+        weight = np.ones(len(y_train))
+        weight_val = np.ones(len(y_validation))
+
+    elif weight_method =='linear':
+        weight = 10**y_train
+        weight_val = 10**y_validation
+
+    else:
+        raise ValueError("Invalid weighting methodology selected.")
+
+    # define the random forest parameters
+    best_params = {'max_depth': None, 'max_features': 0.5, 'min_samples_leaf': 2, 'min_samples_split': 2}
+
+    # initialize random forest
+    model = RandomForestRegressor(**best_params)
+
+    # fit model
+    model.fit(X, y, sample_weight=weight)
+
+    # predict and extract metrics
+    pred_train = model.predict(X_train)
+    r2_train_w = r2_score(y_train, pred_train, sample_weight=weight)
+    r2_train = r2_score(y_train, pred_train)
+
+
+    pred_val = model.predict(X_validation)
+    r2_val_w = r2_score(y_validation, pred_val, sample_weight=weight_val)
+    r2_val = r2_score(y_validation, pred_val)
+
+    # plot results
+    fig = plt.figure(figsize=(16,5))
+    ax1 = fig.add_subplot(121)
+    ax2 = fig.add_subplot(122)
+
+
+    scatter1 = ax1.scatter(y_train, pred_train, s=10, alpha=0.7, c=df_clean_cut['max_mult'])
+    ax1.plot(y_train, y_train, c='r')
+    ax1.set_title(f'Training Performance - $R_w^2 =$ {r2_train_w:.2f}, $R^2 =$ {r2_train:.2f}')
+    ax1.set_xlabel(r'Ground Truth Mass $M_\odot$')
+    ax1.set_ylabel(r'Predicted Mass $M_\odot$')
+
+    scatter2 = ax2.scatter(y_validation, pred_val, s=10, alpha=0.7, c=df_clean_val['max_mult'])
+    ax2.plot(y_validation, y_validation, c='r')
+    ax2.set_title(f'Validation Peformance - $R_w^2 =$ {r2_val_w:.2f}, $R^2 =$ {r2_val:.2f}')
+    ax2.set_xlabel(r'Ground Truth Mass $\log_{10}M_\odot$')
+    ax2.set_ylabel(r'Predicted Mass $\log_{10}M_\odot$')
+
+    plt.suptitle(f'Weighted Random Forest model - 0.01 Patch - weight_method = {weight_method}')
+
+    plt.colorbar(scatter1)
+    plt.colorbar(scatter2)
+
+    plt.savefig('figures/patch_figures/weighted_random_forest/random_forest_0.01_patch_weighted_' + weight_method + '.pdf', dpi=300)
+
+    plt.show()
+
+
+weighted_random_forest(X_train=X, y_train=y, X_validation=X_val, y_validation=y_val, weight_method='log')
