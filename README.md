@@ -80,6 +80,12 @@ Python file which computes a Monte Carlo resampling of a provided data set using
 #### large_patch_analysis.py
 Python file producing figures analyzing the 0.5 parsec pre-stellar snapshot patch dataset. 
 
+Usage:
+  1. --heatmap or -hm flag visualizes a heatmap of the 0.5 parsec patch data
+  2. --tsne flag visualizes a tsne using the provided features colored by mass
+  3. --lasso_cv or -l flag plots a lasso-cv model on the 0.5 parsec patch data predicting for final mass
+  4. --single or -s flag uses only the singular data to plot figures for the selected visualization 
+
 ## star_data
 
 #### [star_data/data_properties.pdf](star_data/data_properties.pdf)
