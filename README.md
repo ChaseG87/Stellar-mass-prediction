@@ -298,7 +298,7 @@ These power-law relationships represent a massive drop off in density and an eff
 * [x] 1. Examine validation set performance of mean and median only model.
 * [x] 2. Examine more reduced combinations for variables.
 * [x] 3. Investigate the coefficients of the reduced model with just the medians for the full data.
-* [ ] 4. Investigate the residual correlations with $\rho_{\text{med}}$ as the first variable of interest.
+* [x] 4. Investigate the residual correlations with $\rho_{\text{med}}$ as the first variable of interest.
 
 **7/9** - Using just the four median values from each of the distributions yields a training $R^2$ of 0.79 and a validation $R^2$ of 0.78. Removing the median $n_e$ actually increases the validation performce very marginally. Removing $T_{\text{med}}$ or $B_{\text{med}}$ reduces the training and validation $R^2$ by about 0.04. Eliminating both of them plummets the validation $R^2$ to 0.47. This makes me think they are describing about the same variance in mass which is further supported by their cross correlation of 0.65. Dropping $\rho_{\text{med}}$ reduces the validation $R^2$ to 0.66. The plot of the validation performance is in [figures/lasso_validation_small_model.pdf](figures/lasso_validation_small_model.pdf)
 
@@ -307,6 +307,8 @@ These power-law relationships represent a massive drop off in density and an eff
 Another interesting feature of the data is the discrepency in the power-law from the fit to $T_{\text{mean}}$ versus $T_{\text{med}}$ as $T_{\text{mean}} \propto M^{1.4}$ and $T_{\text{med}} \propto M^{2.1}$. This could be a result of small variations in data having high impacts on the coefficients due to the low $R^2$ values but it could also be a characteristic separation of the scaling of the mean and median implying a non-log-normal distribution in temperature.
 
 Investigating the coefficients of the LASSO-CV model and Post-LASSO models with only $T_{\text{med}}$, $B_{\text{med}}$, and $\rho{\text{med}}$ as selectable features, the coefficient of $T_{\text{med}}$ is very similar to it's univariate coefficient while the sign of $B_{\text{med}}$ flips and $\rho{\text{med}}$ is magnified to approximately twice the size. [figures/lasso_reduced_coefficient_comp.pdf](figures/lasso_reduced_coefficient_comp.pdf)
+
+**7/14** - The correlation of the residuals of the univariate $\rho_{\text{med}}$ to the second chosen feature of $T_{\text{med}}$ is 0.69 which is much higher than the direct correlation between $T_{\text{med}}$ and the final mass of 0.28. The correlation of residuals of the two-variable model to the next chosen feature of $B_{\text{med}}$ is just 0.12. This results in a very minor bump in performace of the overall model.
 
 
 ### Multiplicity Investigation
@@ -333,7 +335,9 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 * [ ] 1. Examine results of different multiplicities separately for the reduced model on the full data
 * [ ] 2. Examine results of different multiplicities for the 0.01 patch data
 * [ ] 3. Investigate the use of a vector target using both mass and multiplicity
-* [ ] 4. Investigate t-SNE model coloring by multiplicity
+* [x] 4. Investigate t-SNE coloring by multiplicity
+
+**7/14** - Coloring t-SNE on gas properties by multiplity for the full data reveals separaration in proportion of higher multiplicity stars in different regions but there is not a clear separation dividing low and high multiplicity stars. ([figures/multiplicity_tsne_visualization.pdf](figures/multiplicity_tsne_visualization.pdf))
 
 ### 0.5 Parsec Patch Investigation
 
