@@ -347,11 +347,13 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 
 **7/15** - Examining the 0.01 pc patch broken up by multiplicity for the training and validation datasets, the $R^2$ values of stars with multiplicities of 1 and 2 are 0.12 and 0.13, respectively. The multiplicity 3 and 4 stars have $R^2$ values of 0.26 and 0.28, respectively. The validation set shows similar performace for each multiplicity besides the multiplicity 1 set which has a negative $R^2$ value ([figures/multiplicity_figures](figures/multiplicity_figures)). 
 
-Looking at the reduced linear model performance broken up by multiplicity, there is a clear underprediction of the highest mass stars with a multiplicity of four. I believe this could either be due to a non-linear (in log-log space so power-law) behavior, A underweighting of more massive stars due to their rarity, or little distinguishing the large mass stars are massive stars in the gas properties.
+Looking at the reduced linear model performance broken up by multiplicity, there is a clear underprediction of the highest mass stars with a multiplicity of four ([figures/multiplicity_figures/lin_reg_train_multiplicity.pdf](figures/multiplicity_figures/lin_reg_train_multiplicity.pdf)). I believe this could either be due to a non-linear (in log-log space so power-law) behavior, A underweighting of more massive stars due to their rarity, or little distinguishing the large mass stars are massive stars in the gas properties.
 
 ##### Next Steps:
 * [ ] 1. Investigate the performance of a random forest on full data broken up by multiplicity (to check if the kink is non-linear)
-* [ ] 2. Weight masses directly on full data broken up by multiplicity
+* [x] 2. Weight masses directly on full data broken up by multiplicity
+
+**7/15** - The linear regression of the reduced model weighted by the squareroot of the mass and separated by multiplicity can be seen in [figures/multiplicity_figures](figures/multiplicity_figures). Even with aggressive weighting applied the largest stars still appear to be underestimated by the model. This leads me to believe that the that the poor fitting is either due to a poor ability to fit to non-linear data or a insignificant difference between the gas properties of large and massive stars. 
 
 ### 0.5 Parsec Patch Investigation
 
