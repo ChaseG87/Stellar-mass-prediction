@@ -375,5 +375,13 @@ The LASSO-CV model was trained on all of the internal gas feature statistics inc
 
 **7/15** - Upon initial inspection, of the t-SNE, LASSO-CV, and heatmap of the 0.1 parsec patch for both single stars, the predictive power appears to be similar to the 0.5 with a slight increase the LASSO-CV of the single multiplicity only subset. 
 
+### Justification of the Use of Medians
+
+**7/15** - If the assumption of a underlying log-normal distribution is true for $B$, $T$, and $\rho$, then the physical meaning of the use of the median is the tracking the mean of the logarithm of the distribution. Due to the extreme skew of a log-normal distribution, the mean is a combination of the underlying mean of the normal distribution in log space and the variance. I believe the uncorrupted nature of the median by the variance of the underlying log distribution yields a more "pure" understanding of the average value of the distribution to the skew strongly influencing the arithmetic mean. However, I am unsure if the assumption of a underlying log-normal holds for these properties.
+
+### Temperature Mass Connection
+
+**7/15** - 
+
 
 
