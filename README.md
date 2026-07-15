@@ -338,12 +338,12 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 **7/13** - The multiplicity appears to be highly correlated with mass for larger stars and a pure scatter for smaller stars. Investigating how it is predicted by the gas properties could yield physical insight into the kinds of stars that end up with higher multiplicity.
 
 ##### Next Steps:
-* [ ] 1. Examine results of different multiplicities separately for the reduced model on the full data
+* [x] 1. Examine results of different multiplicities separately for the reduced model on the full data
 * [ ] 2. Examine results of different multiplicities for the 0.01 patch data
 * [ ] 3. Investigate the use of a vector target using both mass and multiplicity
 * [x] 4. Investigate t-SNE coloring by multiplicity
 
-**7/14** - Coloring t-SNE on gas properties by multiplity for the full data reveals separaration in proportion of higher multiplicity stars in different regions but there is not a clear separation dividing low and high multiplicity stars. ([figures/multiplicity_tsne_visualization.pdf](figures/multiplicity_tsne_visualization.pdf))
+**7/14** - Coloring t-SNE on gas properties by multiplity for the full data reveals separaration in proportion of higher multiplicity stars in different regions but there is not a clear separation dividing low and high multiplicity stars ([figures/multiplicity_figures/multiplicity_tsne_visualization.pdf](figures/multiplicity_figures/multiplicity_tsne_visualization.pdf)). Investigating the full data linear regression model with the features of $\rho_{\text{med}}$, $T_{\text{med}}$, and $B_{\text{med}}$, stars with different multiplicities don't appear to perform differently from each other in either the training or validation set (seen in [figures/multiplicity_figures](figures/multiplicity_figures)). 
 
 ### 0.5 Parsec Patch Investigation
 
