@@ -373,6 +373,7 @@ The LASSO-CV model was trained on all of the internal gas feature statistics inc
 
 ### 0.1 Parsec Patch Investigation
 
+**7/15** - Upon initial inspection, of the t-SNE, LASSO-CV, and heatmap of the 0.1 parsec patch for both single stars, the predictive power appears to be similar to the 0.5 with a slight increase the LASSO-CV of the single multiplicity only subset. 
 
 
 
