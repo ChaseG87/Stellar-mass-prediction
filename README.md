@@ -373,7 +373,7 @@ The LASSO-CV model was trained on all of the internal gas feature statistics inc
 
 ### 0.1 Parsec Patch Investigation
 
-**7/15** - Upon initial inspection, of the t-SNE, LASSO-CV, and heatmap of the 0.1 parsec patch for both single stars, the predictive power appears to be similar to the 0.5 with a slight increase the LASSO-CV of the single multiplicity only subset. 
+**7/15** - Upon initial inspection, of the t-SNE, LASSO-CV, and heatmap of the 0.1 parsec patch for both single stars, the predictive power appears to be similar to the 0.5 with a slight increase the LASSO-CV of the single multiplicity only subset. All of the figures can be seen in the folder ([figures/patch_figures_0.1](figures/patch_figures_0.1)).
 
 ### Justification of the Use of Medians
 
@@ -381,7 +381,7 @@ The LASSO-CV model was trained on all of the internal gas feature statistics inc
 
 ### Temperature Mass Connection
 
-**7/15** - 
+**7/15** - The Jeans Mass of a star being proportional to temperature to the 3/2 and rho to the -1/2, $M_J \propto T^{3/2} \rho^{-1/2}$, may be the reason we see correlations between the temperature and density of the pre-stellar gas clouds of stars. If a clould of gas is hot and going to turn into a star, it must be massive enough to still collapse under its own gravity. Additionally, if a gas cloud has a low density and is going to turn into a star, the mass making up the cloud must be high. The univariate fit of $M_f \propto \rho_{\text{med}}^{-0.41}$ ($R^2 = 0.48$) is somewhat in line with this analysis. However, the data-driven power-law of $M_f \propto T_{\text{med}}^{0.48}$ ($R^2 = 0.08$) is not well aligned to this conception.  
 
 
 
