@@ -347,6 +347,12 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 
 **7/15** - Examining the 0.01 pc patch broken up by multiplicity for the training and validation datasets, the $R^2$ values of stars with multiplicities of 1 and 2 are 0.12 and 0.13, respectively. The multiplicity 3 and 4 stars have $R^2$ values of 0.26 and 0.28, respectively. The validation set shows similar performace for each multiplicity besides the multiplicity 1 set which has a negative $R^2$ value ([figures/multiplicity_figures](figures/multiplicity_figures)). 
 
+Looking at the reduced linear model performance broken up by multiplicity, there is a clear underprediction of the highest mass stars with a multiplicity of four. I believe this could either be due to a non-linear (in log-log space so power-law) behavior, A underweighting of more massive stars due to their rarity, or little distinguishing the large mass stars are massive stars in the gas properties.
+
+##### Next Steps:
+* [ ] 1. Investigate the performance of a random forest on full data broken up by multiplicity (to check if the kink is non-linear)
+* [ ] 2. Weight masses directly on full data broken up by multiplicity
+
 ### 0.5 Parsec Patch Investigation
 
 **7/13** - I am running the 0.5 parsec pre-stellar sink snapshot patch data through the pipeline that I have from analyzing the other two data sets to see how it performs at predicting the mass. Looking at the correlation heatmap, the features appear to have even worse correlation to the final mass then the 0.01 patch data. This includes the direct correlation between final mass and num_stars which is the number of stars within the 0.5 parsec sphere at the time the snapshot was taken. This weak correlation could mean that the size of a forming star depends very weakly on the number of stars that are in its neighborhood at the time of formation or that the 0.5 parsec sphere encapsulates a definition of neighborhood too large or too small to detect the connection.
