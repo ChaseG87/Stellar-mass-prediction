@@ -86,12 +86,12 @@ def separate_linear_model(df=df, df_val=df_val, features=features_reduced, val=F
         ax.set_ylabel(r'Predicted Mass ($\log_{10}M_\odot$)')
 
     if not val:
-        plt.suptitle(r'Linear Regression on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity Weighted by $\sqrt{M}$ (Training Data)')
+        plt.suptitle(r'Linear Regression on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity Weighted by $\sqrt{M_f}$ (Training Data)')
         #plt.suptitle(r'Linear Regression on 0.01 Parsec Patch Separated by Multiplicity (Training Data)')
         plt.tight_layout(pad=1.5)
         #plt.savefig('figures/multiplicity_figures/lin_reg_train_multiplicity_weighted.pdf', dpi=300)
     else:
-        plt.suptitle(r'Linear Regression on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity Weighted by $\sqrt{M}$ (Validation Data)')
+        plt.suptitle(r'Linear Regression on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity Weighted by $\sqrt{M_f}$ (Validation Data)')
         #plt.suptitle(r'Linear Regression on 0.01 Parsec Patch Separated by Multiplicity (Validation Data)')
         plt.tight_layout(pad=1.5)
         #plt.savefig('figures/multiplicity_figures/lin_reg_validation_multiplicity_weighted.pdf', dpi=300)
