@@ -21,9 +21,13 @@ df_cut_val =  pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_cut
 
 df_cut, df_cut_val = log_data(train=df_cut, val=df_cut_val, features=features + ['N_inc'], train_val=True, multiplicity=True)
 
+print(len(df_cut))
+
 # cut out stars that have too low of a mass or too low sample size
-df_cut = df_cut[(df_cut['N_inc'] >= 10)  & (df_cut['mf'] > 0.1)]
-df_cut_val = df_cut_val[(df_cut_val['N_inc'] >= 10)  & (df_cut_val['mf'] > 0.1)]
+df_cut = df_cut[(df_cut['N_inc'] >= 10)  & (10**df_cut['mf'] > 0.1)]
+df_cut_val = df_cut_val[(df_cut_val['N_inc'] >= 10)  & (10**df_cut_val['mf'] > 0.1)]
+
+print(len(df_cut))
 
 
 def multiplicity_tsne(features):
@@ -55,7 +59,7 @@ def separate_linear_model(df=df, df_val=df_val, features=features_reduced, val=F
     X_train = df[features].values.reshape(-1, len(features))
     y_train = df['mf'].values
 
-    model = LinearRegression().fit(X=X_train, y=y_train)
+    model = LinearRegression().fit(X=X_train, y=y_train, sample_weight=np.sqrt(10**(y_train)))
     
     plt.figure(figsize=(15, 15))
 
@@ -82,13 +86,15 @@ def separate_linear_model(df=df, df_val=df_val, features=features_reduced, val=F
         ax.set_ylabel(r'Predicted Mass ($\log_{10}M_\odot$)')
 
     if not val:
-        plt.suptitle(r'Linear Regression on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity (Training Data)')
+        plt.suptitle(r'Linear Regression on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity Weighted by $\sqrt{M}$ (Training Data)')
+        #plt.suptitle(r'Linear Regression on 0.01 Parsec Patch Separated by Multiplicity (Training Data)')
         plt.tight_layout(pad=1.5)
-        plt.savefig('figures/multiplicity_figures/lin_reg_train_multiplicity.pdf', dpi=300)
+        #plt.savefig('figures/multiplicity_figures/lin_reg_train_multiplicity_weighted.pdf', dpi=300)
     else:
-        plt.suptitle(r'Linear Regression on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity (Validation Data)')
+        plt.suptitle(r'Linear Regression on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity Weighted by $\sqrt{M}$ (Validation Data)')
+        #plt.suptitle(r'Linear Regression on 0.01 Parsec Patch Separated by Multiplicity (Validation Data)')
         plt.tight_layout(pad=1.5)
-        plt.savefig('figures/multiplicity_figures/lin_reg_validation_multiplicity.pdf', dpi=300)
+        #plt.savefig('figures/multiplicity_figures/lin_reg_validation_multiplicity_weighted.pdf', dpi=300)
 
     plt.show()
 
