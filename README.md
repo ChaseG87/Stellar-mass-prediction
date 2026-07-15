@@ -339,11 +339,13 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 
 ##### Next Steps:
 * [x] 1. Examine results of different multiplicities separately for the reduced model on the full data
-* [ ] 2. Examine results of different multiplicities for the 0.01 patch data
+* [x] 2. Examine results of different multiplicities for the 0.01 patch data
 * [ ] 3. Investigate the use of a vector target using both mass and multiplicity
 * [x] 4. Investigate t-SNE coloring by multiplicity
 
 **7/14** - Coloring t-SNE on gas properties by multiplity for the full data reveals separaration in proportion of higher multiplicity stars in different regions but there is not a clear separation dividing low and high multiplicity stars ([figures/multiplicity_figures/multiplicity_tsne_visualization.pdf](figures/multiplicity_figures/multiplicity_tsne_visualization.pdf)). Investigating the full data linear regression model with the features of $\rho_{\text{med}}$, $T_{\text{med}}$, and $B_{\text{med}}$, stars with different multiplicities don't appear to perform differently from each other in either the training or validation set (seen in [figures/multiplicity_figures](figures/multiplicity_figures)). 
+
+**7/15** - Examining the 0.01 pc patch broken up by multiplicity for the training and validation datasets, the $R^2$ values of stars with multiplicities of 1 and 2 are 0.12 and 0.13, respectively. The multiplicity 3 and 4 stars have $R^2$ values of 0.26 and 0.28, respectively. The validation set shows similar performace for each multiplicity besides the multiplicity 1 set which has a negative $R^2$ value ([figures/multiplicity_figures](figures/multiplicity_figures)). 
 
 ### 0.5 Parsec Patch Investigation
 
@@ -360,6 +362,8 @@ The LASSO-CV model was trained on all of the internal gas feature statistics inc
 * [x] 2. Create a t-SNE map of the 0.5 patch features with mass colored ([figures/patch_figures_0.5/tsne_visualization_0.5_patch.pdf](figures/patch_figures_0.5/tsne_visualization_0.5_patch.pdf))
 * [x] 3. Create a LASSO-CV model to investigate the linear (in log-log space) perdictability of the 0.5 parsec dataset ([figures/patch_figures_0.5/lasso_cv_0.5_patch.pdf](figures/patch_figures_0.5/lasso_cv_0.5_patch.pdf))
 * [x] 4. Investigate singular stars only to control for the "partnered star effect" (in [figures/patch_figures_0.5](figures/patch_figures_0.5))
+
+### 0.1 Parsec Patch Investigation
 
 
 
