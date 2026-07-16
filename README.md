@@ -172,9 +172,6 @@ Notes on figures:
 ### Unit Testing of Model
 **6/22** - I created artificial linearly correlated data in **process_data.py** with noise to test the LASSO and greedy models in **internal_gas_model.py**. The models appear to be able to use the correlations to parse good fits even with low signal to noise ratios. I am unsure how to evaluate the theoretical $R^2$ values of the models. I am planning on creating different highly collinear dimensions and see how the values are selected (desiring the models to select un-correlated predictors more often).
 
-##### Next steps:
-* 1. [ ] Test **internal_gas_model.py** with collinear data.
-
 
 ## Week 5 Notes
 
@@ -388,6 +385,13 @@ The LASSO-CV model was trained on all of the internal gas feature statistics inc
 **7/15** - The Jeans Mass of a star being proportional to temperature to the 3/2 and rho to the -1/2, $M_J \propto T^{3/2} \rho^{-1/2}$, may be the reason we see correlations between the temperature and density of the pre-stellar gas clouds of stars. If a clould of gas is hot and going to turn into a star, it must be massive enough to still collapse under its own gravity. Additionally, if a gas cloud has a low density and is going to turn into a star, the mass making up the cloud must be high. The univariate fit of $M_f \propto \rho_{\text{med}}^{-0.41}$ ($R^2 = 0.48$) is somewhat in line with this analysis. However, the data-driven power-law of $M_f \propto T_{\text{med}}^{0.48}$ ($R^2 = 0.08$) is not well aligned to this conception.  
 
 ### 0.01 Parsec Patch All Gas Investigation
+
+**7/16** - Investigating the 0.01 parsec patch around the peak density of the pre-stellar snapshot (0.01b patch) with the same sampling limitations as applied to the 0.01a parsec patch ($M_f > 0.1 M_\odot$ and $N_{\text{inc}} \geq 10$) the $R^2$ value of the LASSO-CV model 0.25 with a similar shape to the original 0.01a parsec patch cut (which had a greater $R^2$ of 0.35). When comparing the 0.01b parsec patch to the 0.1 and 0.5 parsec patchs, the 0.01b (without sampling limitations) LASSO-CV model yields an $R^2$ of 0.27 compared to the 0.1 and 0.5's, 0.18 and 0.12, respectively. There appears to be a trend of increasing performance as the radius is shrunk. It is possible that the optimal radius has been overshot as from the 0.1 parsec patch to the 0.01 parsec patch the sampled volume has been reduced by a factor of 1,000 (or the sampled volume may still be too large). (figures in [figures/patch_figures_0.01b](figures/patch_figures/0.01b))
+
+##### Next Steps:
+* [ ] 1. Investigate at sample weighted version of the 0.01b patch.
+* [ ] 2. Investigate the performance of the 0.01b patch on singles alone.
+
 
 
 
