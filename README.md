@@ -388,6 +388,8 @@ The LASSO-CV model was trained on all of the internal gas feature statistics inc
 
 The nature of the data describing the floor of the mass could also explain why the power-laws do not appear to fall in line with the Jeans Mass assumption directly. The time dependency of this relationship could be investigated to see if the trend survives time steps that are older than the pre-stellar snapshot.
 
+###### Another idea is that if the temperature and density are showing us the floor of the mass, if we subtract this value out what explain the rest of the variance in how much more massive a star will be than its fundamental mass?
+
 ##### Next Steps:
 * [ ] 1. Look at older snapshots for the Jeans Mass 3D analysis
 * [ ] 2. Figure out intercept for Jeans Mass plane (coefficient in linear-space)
