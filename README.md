@@ -389,5 +389,12 @@ The LASSO-CV model was trained on all of the internal gas feature statistics inc
 
 ### 0.01 Parsec Patch All Gas Investigation
 
+**7/16** - Investigating the 0.01 parsec patch around the peak density of the pre-stellar snapshot (0.01b patch) with the same sampling limitations as applied to the 0.01a parsec patch ($M_f > 0.1 M_\odot$ and $N_{\text{inc}} \geq 10$) the $R^2$ value of the LASSO-CV model 0.25 with a similar shape to the original 0.01a parsec patch cut (which had a greater $R^2$ of 0.35). When comparing the 0.01b parsec patch to the 0.1 and 0.5 parsec patchs, the 0.01b (without sampling limitations) LASSO-CV model yields an $R^2$ of 0.27 compared to the 0.1 and 0.5's, 0.18 and 0.12, respectively. There appears to be a trend of increasing performance as the radius is shrunk. It is possible that the optimal radius has been overshot as from the 0.1 parsec patch to the 0.01 parsec patch the sampled volume has been reduced by a factor of 1,000 (or the sampled volume may still be too large). (figures in [figures/patch_figures_0.01b](figures/patch_figures/0.01b))
+
+##### Next Steps:
+* [ ] 1. Investigate at sample weighted version of the 0.01b patch.
+* [ ] 2. Investigate the performance of the 0.01b patch on singles alone.
+
+
 
 
