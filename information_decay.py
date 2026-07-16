@@ -10,12 +10,13 @@ from sklearn.model_selection import GridSearchCV, KFold
 from sklearn.linear_model import LinearRegression
 
 
+
 features = ['T', 'T_med', 'T_16', 'T_84', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84',       
             'B', 'B_med', 'B_16', 'B_84', 'rho', 'rho_med', 'rho_16', 'rho_84'] 
 
-#features = ['T', 'T_med', 'Ne', 'Ne_med', 'B', 'B_med', 'rho', 'rho_med'] # uncomment to look at only means and medians
+features = ['T_med', 'B_med', 'rho_med'] # uncomment to look at reduced model
 
-best_params = {'max_depth': None, 'max_features': 0.5, 'min_samples_leaf': 2, 'min_samples_split': 2}
+best_params = {'max_depth': 20, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 5} # best for reduced model
 
 
 def regression_information_decay(features, snaps, model='linear'):
@@ -31,6 +32,7 @@ def regression_information_decay(features, snaps, model='linear'):
 
     r2s_train = []
     r2s_val = []
+
 
     for i in range(snaps):
 
@@ -68,7 +70,7 @@ def regression_information_decay(features, snaps, model='linear'):
     plt.xticks(np.arange(0, snaps, 5))
     plt.xlabel('Snapshots Before Pre-Sink Snapshot')
     plt.ylabel(r'$R^2$ Score')
-    plt.title(f'Information Decay - {model.capitalize()} Regression')
+    plt.title(r'Information Decay of Reduced Model ($\rho_{med}$, $B_{med}$, and $T_{med}$) - ' + model.capitalize() + ' Regression')
 
 
     plt.yscale('log')
