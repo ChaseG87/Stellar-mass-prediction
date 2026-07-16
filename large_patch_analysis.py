@@ -14,7 +14,10 @@ features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_
         'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'PE_global', 'snap', 'num_stars'] 
 
 #df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.5_patch.pq').reset_index()
-df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.1.pq').reset_index()
+#df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.1.pq').reset_index()
+df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.01b.pq').reset_index()
+
+df_patch = df_patch[df_patch['N_inc'] >= 10]
 
 # flip sign of potential energy to be strictly positive
 df_patch ['PE_global'] *= -1
@@ -25,22 +28,23 @@ df_patch['num_stars'] += 1
 # log and normalize data
 df_patch_log = log_data(features=features, train=df_patch, train_val=False, normalize=True, multiplicity=True)
 
-df_patch = df_patch.set_index('sink_id')
+df_patch_log = df_patch_log[10**df_patch_log['mf'] >= 0.1]
 
 
 # define  asubset of the data with only stars that are single
 df_single = df_patch_log[df_patch_log['max_mult'] == 1]
+
 
 def plot_correlation_heatmap(df):
 
     correlation_matrix = df.corr()
     plt.figure(figsize=(15, 12))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-    plt.title('Correlation Heatmap of Accreted Gas Properties (all log, singles only)')
+    plt.title('Correlation Heatmap of Accreted Gas Properties (all log)')
 
     plt.tight_layout()
 
-    plt.savefig('figures/patch_figures_0.1/correlation_heatmap_0.1_patch_singles.pdf', dpi=300, bbox_inches='tight')
+    plt.savefig('figures/patch_figures_0.01b/correlation_heatmap_0.01b_patch.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -61,10 +65,10 @@ def plot_tsne(df):
     plt.figure(figsize=(10, 8))
     scatter = plt.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], s=10, c=df['mf'], cmap='viridis', alpha=0.5)
     plt.colorbar(scatter, label=r'Final Mass ($M_\odot$) [log scale]')
-    plt.title(r't-SNE of 0.1 Pcs Patch Singles Properties (features: $n_e$, T, B, $\rho$, $PE_{global}$, snap, num_stars)')
+    plt.title(r't-SNE of 0.01 Pcs Patch Properties (features: $n_e$, T, B, $\rho$, $PE_{global}$, snap, num_stars)')
     plt.xlabel('t-SNE 1')
     plt.ylabel('t-SNE 2')
-    plt.savefig('figures/patch_figures_0.1/tsne_visualization_0.1_patch_singles.pdf', dpi=300, bbox_inches='tight')
+    plt.savefig('figures/patch_figures_0.01b/tsne_visualization_0.01b_patch.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -84,8 +88,8 @@ def plot_lasso_cv(X_train, y_train):
     plt.plot(y_train, y_train, c='r')
     plt.xlabel(r'Ground Truth Mass [$\log_{10}M_\odot$]')
     plt.ylabel(r'Predicted Mass [$\log_{10}M_\odot$]')
-    plt.title(f'LASSO-CV model of 0.1 parsec patch singles - $R^2 =$ {r2:.2f} - features = {len(chosen_features)}')
-    plt.savefig('figures/patch_figures_0.1/lasso_cv_0.1_patch_singles.pdf', dpi=300)
+    plt.title(f'LASSO-CV model of 0.01 parsec patch - $R^2 =$ {r2:.2f} - features = {len(chosen_features)}')
+    plt.savefig('figures/patch_figures_0.01b/lasso_cv_0.01b_patch.pdf', dpi=300)
 
     plt.show()
 
