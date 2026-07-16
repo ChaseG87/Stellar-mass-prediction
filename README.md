@@ -230,12 +230,12 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 ##### Next Steps:
 * [x] 1. Look at distribution of "safe" stars to select (168 are elminated by demanding at least 10 particles and a greater max distance than 0.005 pcs of the 2249 total)
-* [x] 2. Investigate correlation strength with final mass on "safe" subset of stars for the 0.01a pc patch ([figures/patch_figures_0.01/heatmap_0.01_patch.pdf](figures/patch_figures_0.01/heatmap_0.01_patch.pdf))
-* [x] 3. Investigate resulting changes in model performance ([figures/patch_figures_0.01/lasso_cv_0.01_patch.pdf](figures/patch_figures_0.01/lasso_cv_0.01_patch.pdf))
+* [x] 2. Investigate correlation strength with final mass on "safe" subset of stars for the 0.01a pc patch ([figures/patch_figures_0.01a/heatmap_0.01_patch.pdf](figures/patch_figures_0.01a/heatmap_0.01_patch.pdf))
+* [x] 3. Investigate resulting changes in model performance ([figures/patch_figures_0.01a/lasso_cv_0.01_patch.pdf](figures/patch_figures_0.01a/lasso_cv_0.01_patch.pdf))
 * [x] 4. Investigate the performace of random forest on the 0.01 pc patch data
-* [x] 5. Investigate the performance of angular velocity on 0.01 pc patch data ([figures/patch_figures_0.01/internal_gas_0.01_patch.pdf](figures/patch_figures_0.01/internal_gas_0.01_patch.pdf)* updated)
+* [x] 5. Investigate the performance of angular velocity on 0.01 pc patch data ([figures/patch_figures_0.01a/internal_gas_0.01_patch.pdf](figures/patch_figures_0.01a/internal_gas_0.01_patch.pdf)* updated)
 * [x] 6. Investigate the connection between the global potential energy at the pre-sink snapshot and final mass
-* [x] 7. Investigate the performace of validation partitions of 0.01 pc patch data ([figures/patch_figures_0.01/lasso_cv_patch_validation.pdf](figures/patch_figures_0.01/lasso_cv_patch_validation.pdf))
+* [x] 7. Investigate the performace of validation partitions of 0.01 pc patch data ([figures/patch_figures_0.01a/lasso_cv_patch_validation.pdf](figures/patch_figures_0.01a/lasso_cv_patch_validation.pdf))
 ## Week 6 Notes
 
 ### Monte Carlo Resampling
@@ -269,7 +269,7 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 For the second approch, I am considering sampling a set number of stars from each of the five compartments used in the generation of the Monte Carlo resampling and running a model on that subset as a type of weighting.
 
-**7/8** - The direct weighting approach weighting by the squareroot of the true mass of the stars and log of the mass of the stars (shifted for numerical reasons) both yielded similarly poor results for predicting the stellar mass using the properties in the 0.01 patch data. ([figures/patch_figures_0.01/weighted_lasso](figures/patch_figures_0.01/weighted_lasso))
+**7/8** - The direct weighting approach weighting by the squareroot of the true mass of the stars and log of the mass of the stars (shifted for numerical reasons) both yielded similarly poor results for predicting the stellar mass using the properties in the 0.01 patch data. ([figures/patch_figures_0.01a/weighted_lasso](figures/patch_figures_0.01a/weighted_lasso))
 
 
 ### $R_{\text{eff}}$, $M_{\text{f}}$, and $\rho$ relationship
@@ -291,7 +291,7 @@ These power-law relationships represent a massive drop off in density and an eff
 
 ### Validation Set of Patch
 
-**7/7** - Applying the same data reduction in the 0.01 parsec patch data of requiring the mass to be greater than 0.1 $M_\odot$ and the count of particles to be greater than 10 reduces the validation set from 1966 stars to 1508. Looking at both the results of the [LASSO-CV](figures/patch_figures_0.01/lasso_cv_patch_validation.pdf) and [random forest](figures/patch_figures_0.01/random_forest_patch_validation.pdf) model results, the signal separating large stars from smaller stars using all the gas properties appears to be poor with validation $R^2$ values of 0.29 and 0.27 respectively.
+**7/7** - Applying the same data reduction in the 0.01 parsec patch data of requiring the mass to be greater than 0.1 $M_\odot$ and the count of particles to be greater than 10 reduces the validation set from 1966 stars to 1508. Looking at both the results of the [LASSO-CV](figures/patch_figures_0.01a/lasso_cv_patch_validation.pdf) and [random forest](figures/patch_figures_0.01a/random_forest_patch_validation.pdf) model results, the signal separating large stars from smaller stars using all the gas properties appears to be poor with validation $R^2$ values of 0.29 and 0.27 respectively.
 
 ### Mean and Median Full Data
 
@@ -316,7 +316,7 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 
 ### Multiplicity Investigation
 
-**7/9** - In the [visualization of multiplicity](figures/lasso_cv_multiplicity.pdf) on the LASSO-CV model, for the full data there does not appear to be a clear separation of stars based on multiplicity besides the tendency of the largest stars to have a high multiplicity (4+). The model appears to be biased in underestimating the mass of these stars which could also be a product of the low count of these stars. In the patch data colored by multiplicity ([figures/patch_figures/weighted_lasso](figures/patch_figures_0.01/weighted_lasso)) the trend appears to be an overestimating of low multiplicity and an underestimation of high multiplicity stars.
+**7/9** - In the [visualization of multiplicity](figures/lasso_cv_multiplicity.pdf) on the LASSO-CV model, for the full data there does not appear to be a clear separation of stars based on multiplicity besides the tendency of the largest stars to have a high multiplicity (4+). The model appears to be biased in underestimating the mass of these stars which could also be a product of the low count of these stars. In the patch data colored by multiplicity ([figures/patch_figures_0.01a/weighted_lasso](figures/patch_figures_0.01a/weighted_lasso)) the trend appears to be an overestimating of low multiplicity and an underestimation of high multiplicity stars.
 
 ###### I added a t-sne with the masses colored for the patch data in [figures/patch_figures/patch_tsne_visualization.pdf](figures/patch_data_patch_tsne_visualization.pdf)
 
@@ -324,7 +324,7 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 
 ### Weighting 0.01a Parsec Patch Data
 
-**7/13** - The performance of weighted models is similarly poor for both the LASSO and random forest (seen in [figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso) and [figures/patch_figures/weighted_random_forest](figures/patch_figures/weighted_random_forest) respectively). The weighted and standard $R^2$ values track much more closely in the random forest model for both the training and validation sets when compared to the LASSO results. Through each application of weights the case for the features in the 0.01a parsec patch around the peak density in the pre-stellar snap being poor predictors of the final mass is further supported.
+**7/13** - The performance of weighted models is similarly poor for both the LASSO and random forest (seen in [figures/patch_figures_0.01a/weighted_lasso](figures/patch_figures_0.01a/weighted_lasso) and [figures/patch_figures_0.01a/weighted_random_forest](figures/patch_figures_0.01a/weighted_random_forest) respectively). The weighted and standard $R^2$ values track much more closely in the random forest model for both the training and validation sets when compared to the LASSO results. Through each application of weights the case for the features in the 0.01a parsec patch around the peak density in the pre-stellar snap being poor predictors of the final mass is further supported.
 
 ##### Next Steps:
 * [x] 1. Investigate weighted $R^2$ to weighted LASSO-CV patch for training and validation
@@ -395,7 +395,7 @@ The nature of the data describing the floor of the mass could also explain why t
 
 ### 0.01 Parsec Patch All Gas Investigation
 
-**7/16** - Investigating the 0.01 parsec patch around the peak density of the pre-stellar snapshot (0.01b patch) with the same sampling limitations as applied to the 0.01a parsec patch ($M_f > 0.1 M_\odot$ and $N_{\text{inc}} \geq 10$) the $R^2$ value of the LASSO-CV model 0.25 with a similar shape to the original 0.01a parsec patch cut (which had a greater $R^2$ of 0.35). When comparing the 0.01b parsec patch to the 0.1 and 0.5 parsec patchs, the 0.01b (without sampling limitations) LASSO-CV model yields an $R^2$ of 0.27 compared to the 0.1 and 0.5's, 0.18 and 0.12, respectively. There appears to be a trend of increasing performance as the radius is shrunk. It is possible that the optimal radius has been overshot as from the 0.1 parsec patch to the 0.01 parsec patch the sampled volume has been reduced by a factor of 1,000 (or the sampled volume may still larger than the optimal). (figures in [figures/patch_figures_0.01b](figures/patch_figures/0.01b))
+**7/16** - Investigating the 0.01 parsec patch around the peak density of the pre-stellar snapshot (0.01b patch) with the same sampling limitations as applied to the 0.01a parsec patch ($M_f > 0.1 M_\odot$ and $N_{\text{inc}} \geq 10$) the $R^2$ value of the LASSO-CV model 0.25 with a similar shape to the original 0.01a parsec patch cut (which had a greater $R^2$ of 0.35). When comparing the 0.01b parsec patch to the 0.1 and 0.5 parsec patchs, the 0.01b (without sampling limitations) LASSO-CV model yields an $R^2$ of 0.27 compared to the 0.1 and 0.5's, 0.18 and 0.12, respectively. There appears to be a trend of increasing performance as the radius is shrunk. It is possible that the optimal radius has been overshot as from the 0.1 parsec patch to the 0.01 parsec patch the sampled volume has been reduced by a factor of 1,000 (or the sampled volume may still larger than the optimal). (figures in [figures/patch_figures_0.01b](figures/patch_figures_0.01b))
 
 ##### Next Steps:
 * [ ] 1. Investigate at sample weighted version of the 0.01b patch
