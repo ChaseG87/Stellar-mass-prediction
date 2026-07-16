@@ -173,7 +173,7 @@ Notes on figures:
 **6/22** - I created artificial linearly correlated data in **process_data.py** with noise to test the LASSO and greedy models in **internal_gas_model.py**. The models appear to be able to use the correlations to parse good fits even with low signal to noise ratios. I am unsure how to evaluate the theoretical $R^2$ values of the models. I am planning on creating different highly collinear dimensions and see how the values are selected (desiring the models to select un-correlated predictors more often).
 
 
-## Week 5 Notes
+# Week 5 Notes
 
 ### Time Series Investigation
 
@@ -236,7 +236,9 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 * [x] 5. Investigate the performance of angular velocity on 0.01 pc patch data ([figures/patch_figures_0.01a/internal_gas_0.01_patch.pdf](figures/patch_figures_0.01a/internal_gas_0.01_patch.pdf)* updated)
 * [x] 6. Investigate the connection between the global potential energy at the pre-sink snapshot and final mass
 * [x] 7. Investigate the performace of validation partitions of 0.01 pc patch data ([figures/patch_figures_0.01a/lasso_cv_patch_validation.pdf](figures/patch_figures_0.01a/lasso_cv_patch_validation.pdf))
-## Week 6 Notes
+
+
+# Week 6 Notes
 
 ### Monte Carlo Resampling
 
@@ -320,7 +322,7 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 
 ###### I added a t-sne with the masses colored for the patch data in [figures/patch_figures/patch_tsne_visualization.pdf](figures/patch_data_patch_tsne_visualization.pdf)
 
-## Week 7 Notes
+# Week 7 Notes
 
 ### Weighting 0.01a Parsec Patch Data
 
