@@ -350,10 +350,14 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 Looking at the reduced linear model performance broken up by multiplicity, there is a clear underprediction of the highest mass stars with a multiplicity of four ([figures/multiplicity_figures/lin_reg_train_multiplicity.pdf](figures/multiplicity_figures/lin_reg_train_multiplicity.pdf)). I believe this could either be due to a non-linear (in log-log space so power-law) behavior, A underweighting of more massive stars due to their rarity, or little distinguishing the large mass stars are massive stars in the gas properties.
 
 ##### Next Steps:
-* [ ] 1. Investigate the performance of a random forest on full data broken up by multiplicity (to check if the kink is non-linear)
+* [x] 1. Investigate the performance of a random forest on full data broken up by multiplicity (to check if the kink is non-linear)
 * [x] 2. Weight masses directly on full data broken up by multiplicity
 
 **7/15** - The linear regression of the reduced model weighted by the squareroot of the mass and separated by multiplicity can be seen in [figures/multiplicity_figures](figures/multiplicity_figures). Even with aggressive weighting applied the largest stars still appear to be underestimated by the model. This leads me to believe that the that the poor fitting is either due to a poor ability to fit to non-linear data or a insignificant difference between the gas properties of large and massive stars. 
+
+**7/16** - The random forest model on the full data with reduced features, on both weighted and unweighted runs broken up by multiplicity, presented the same characteristic kink at the highest mass stars in which the models underestimate the mass of the highest mass stars. This along with the linear weighting not working leads me to believe that there is little differentiating the large stars from the massive stars in the pre-stellar gas properties ([figures/multiplicity_figures/rand_forest_validation_multiplicity.pdf](figures/multiplicity_figures/rand_forest-validation_multiplicity.pdf)).
+
+I also looked at the random forest with all of the gas property statistics and the same kink is exhibited with and without sample weigthing. From a physical perspective this could be due to the model being able to parse out the minimal Jeans mass that a star needs given the properties of gas and higher mass stars far exceed this minimum. It could also be a result of how the largest stars from according to the competitive accretion model.
 
 ### 0.5 Parsec Patch Investigation
 
@@ -382,6 +386,8 @@ The LASSO-CV model was trained on all of the internal gas feature statistics inc
 ### Temperature Mass Connection
 
 **7/15** - The Jeans Mass of a star being proportional to temperature to the 3/2 and rho to the -1/2, $M_J \propto T^{3/2} \rho^{-1/2}$, may be the reason we see correlations between the temperature and density of the pre-stellar gas clouds of stars. If a clould of gas is hot and going to turn into a star, it must be massive enough to still collapse under its own gravity. Additionally, if a gas cloud has a low density and is going to turn into a star, the mass making up the cloud must be high. The univariate fit of $M_f \propto \rho_{\text{med}}^{-0.41}$ ($R^2 = 0.48$) is somewhat in line with this analysis. However, the data-driven power-law of $M_f \propto T_{\text{med}}^{0.48}$ ($R^2 = 0.08$) is not well aligned to this conception.  
+
+### 0.01 Parsec Patch All Gas Investigation
 
 
 
