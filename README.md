@@ -61,7 +61,7 @@ Python file containing code used to generate [figures/tsne_visualization.pdf](fi
 Usage:
   1. --tsne_2d or -2d flag visualizes the 2d t-SNE
   2. --tsne_3d or -3d flag visualizes the 3d t-SNE
-  3. --patch or -p flag called in tandem with --tsne_2d visualizes a 2d t-SNE using the 0.01 parsec patch data
+  3. --patch or -p flag called in tandem with --tsne_2d visualizes a 2d t-SNE using the 0.01a parsec patch data
 
 #### model_comparision.py
 Python file that creates visual comparisions of the train and validation RMSE of different complexities of models on pre-stellar gas and the consistency of their coefficients. 
@@ -213,13 +213,13 @@ For the random forest model I tuned the hyperparameters of max_features, max_dep
 
 ### Sampling influencing Standard Deviation
 
-**6/29** - The potential sampling problem with the standard deviation is being approached by replacing it with a different statistic that investigates how the star looking 0.01 parsecs around the center of mass of the star. To make sure the same sampling error isn't repeated a subset of stars may be excluded that are too small and be unreliable due to sampling issues. The 0.01 pc patch data is a lot less correlated than the data of the full pre-stellar cloud. When modelling a LASSO-CV model onto the patch data an $R^2$ of 0.38 is achieved with especially poor predictive capabilities for smaller stars. When including the magnitude of angular velocity the performance does not improve. 
+**6/29** - The potential sampling problem with the standard deviation is being approached by replacing it with a different statistic that investigates how the star looking 0.01 parsecs around the center of mass of the star (0.01a). To make sure the same sampling error isn't repeated a subset of stars may be excluded that are too small and be unreliable due to sampling issues. The 0.01a pc patch data is a lot less correlated than the data of the full pre-stellar cloud. When modelling a LASSO-CV model onto the patch data an $R^2$ of 0.38 is achieved with especially poor predictive capabilities for smaller stars. When including the magnitude of angular velocity the performance does not improve. 
 
 **6/30** - The time series heatmaps show a consistent connection between the standard deviation of features and the total mass. This maintained correlation leads me to believe there is a sampling bias or some other bias connecting the standard deviations to a trival correlation to mass. Looking the standard error ($\frac{std}{\sqrt{n}}$) as you go back in time, the statistic becomes less correlated to the total mass. This is an expected behavior in the turbulent system of the STARFORGE simulation and further supports the view that standard deviation is subject to contamination of some kind.
 
 Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 particles reduces the total number of stars by 296. This reduction did not appear to improve the performance of the LASSO-CV model even with the inclusion of angular velocities and the magnitude of mass weighted angular velocity. 
 
-**7/1** - Removing low mass stars (less than 0.1 ($M_\odot$) increases the performance of the 0.01 pc patch model to an $R^2$ of 0.59. This operation eliminates 738 total stars which is about 1/3rd of the full dataset. However, the mass of these stars are in the brown dwarf zone which could explain their divergent behavior.
+**7/1** - Removing low mass stars (less than 0.1 ($M_\odot$) increases the performance of the 0.01a pc patch model to an $R^2$ of 0.59. This operation eliminates 738 total stars which is about 1/3rd of the full dataset. However, the mass of these stars are in the brown dwarf zone which could explain their divergent behavior.
 
 
 ###### **7/2** - The ground truth for the prior analysis has been incorrectly using M_tot, the total mass instead of mf, the final mass of the star. After fixing the preprocessing to shift the target over the results appear to be qualitatively the same in the prior analysis. The old plots will be stored in [figures_bad_target](figures_bad_target) and all future figures and regenerated figures with the correct figure will be in [figures](figures).
@@ -230,12 +230,12 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 ##### Next Steps:
 * [x] 1. Look at distribution of "safe" stars to select (168 are elminated by demanding at least 10 particles and a greater max distance than 0.005 pcs of the 2249 total)
-* [x] 2. Investigate correlation strength with final mass on "safe" subset of stars for the 0.01 pc patch ([figures/heatmap_0.01_patch.pdf](figures/heatmap_0.01_patch.pdf))
-* [x] 3. Investigate resulting changes in model performance ([figures/lasso_cv_0.01_patch.pdf](figures/lasso_cv_0.01_patch.pdf))
+* [x] 2. Investigate correlation strength with final mass on "safe" subset of stars for the 0.01a pc patch ([figures/patch_figures_0.01/heatmap_0.01_patch.pdf](figures/patch_figures_0.01/heatmap_0.01_patch.pdf))
+* [x] 3. Investigate resulting changes in model performance ([figures/patch_figures_0.01/lasso_cv_0.01_patch.pdf](figures/patch_figures_0.01/lasso_cv_0.01_patch.pdf))
 * [x] 4. Investigate the performace of random forest on the 0.01 pc patch data
-* [x] 5. Investigate the performance of angular velocity on 0.01 pc patch data ([figures/internal_gas_0.01_patch.pdf](figures/internal_gas_0.01_patch.pdf)* updated)
+* [x] 5. Investigate the performance of angular velocity on 0.01 pc patch data ([figures/patch_figures_0.01/internal_gas_0.01_patch.pdf](figures/patch_figures_0.01/internal_gas_0.01_patch.pdf)* updated)
 * [x] 6. Investigate the connection between the global potential energy at the pre-sink snapshot and final mass
-* [x] 7. Investigate the performace of validation partitions of 0.01 pc patch data ([figures/patch_figures/lasso_cv_patch_validation.pdf](figures/patch_figures/lasso_cv_patch_validation.pdf))
+* [x] 7. Investigate the performace of validation partitions of 0.01 pc patch data ([figures/patch_figures_0.01/lasso_cv_patch_validation.pdf](figures/patch_figures_0.01/lasso_cv_patch_validation.pdf))
 ## Week 6 Notes
 
 ### Monte Carlo Resampling
@@ -269,7 +269,7 @@ Increasing the minimum 'max_dist_peak' to 0.009 and requiring a minimum of 10 pa
 
 For the second approch, I am considering sampling a set number of stars from each of the five compartments used in the generation of the Monte Carlo resampling and running a model on that subset as a type of weighting.
 
-**7/8** - The direct weighting approach weighting by the squareroot of the true mass of the stars and log of the mass of the stars (shifted for numerical reasons) both yielded similarly poor results for predicting the stellar mass using the properties in the 0.01 patch data. ([figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso))
+**7/8** - The direct weighting approach weighting by the squareroot of the true mass of the stars and log of the mass of the stars (shifted for numerical reasons) both yielded similarly poor results for predicting the stellar mass using the properties in the 0.01 patch data. ([figures/patch_figures_0.01/weighted_lasso](figures/patch_figures_0.01/weighted_lasso))
 
 
 ### $R_{\text{eff}}$, $M_{\text{f}}$, and $\rho$ relationship
@@ -291,7 +291,7 @@ These power-law relationships represent a massive drop off in density and an eff
 
 ### Validation Set of Patch
 
-**7/7** - Applying the same data reduction in the 0.01 parsec patch data of requiring the mass to be greater than 0.1 $M_\odot$ and the count of particles to be greater than 10 reduces the validation set from 1966 stars to 1508. Looking at both the results of the [LASSO-CV](figures/patch_figures/lasso_cv_patch_validation.pdf) and [random forest](figures/patch_figures/random_forest_patch_validation.pdf) model results, the signal separating large stars from smaller stars using all the gas properties appears to be poor with validation $R^2$ values of 0.29 and 0.27 respectively.
+**7/7** - Applying the same data reduction in the 0.01 parsec patch data of requiring the mass to be greater than 0.1 $M_\odot$ and the count of particles to be greater than 10 reduces the validation set from 1966 stars to 1508. Looking at both the results of the [LASSO-CV](figures/patch_figures_0.01/lasso_cv_patch_validation.pdf) and [random forest](figures/patch_figures_0.01/random_forest_patch_validation.pdf) model results, the signal separating large stars from smaller stars using all the gas properties appears to be poor with validation $R^2$ values of 0.29 and 0.27 respectively.
 
 ### Mean and Median Full Data
 
@@ -316,15 +316,15 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 
 ### Multiplicity Investigation
 
-**7/9** - In the [visualization of multiplicity](figures/lasso_cv_multiplicity.pdf) on the LASSO-CV model, for the full data there does not appear to be a clear separation of stars based on multiplicity besides the tendency of the largest stars to have a high multiplicity (4+). The model appears to be biased in underestimating the mass of these stars which could also be a product of the low count of these stars. In the patch data colored by multiplicity ([figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso)) the trend appears to be an overestimating of low multiplicity and an underestimation of high multiplicity stars.
+**7/9** - In the [visualization of multiplicity](figures/lasso_cv_multiplicity.pdf) on the LASSO-CV model, for the full data there does not appear to be a clear separation of stars based on multiplicity besides the tendency of the largest stars to have a high multiplicity (4+). The model appears to be biased in underestimating the mass of these stars which could also be a product of the low count of these stars. In the patch data colored by multiplicity ([figures/patch_figures/weighted_lasso](figures/patch_figures_0.01/weighted_lasso)) the trend appears to be an overestimating of low multiplicity and an underestimation of high multiplicity stars.
 
 ###### I added a t-sne with the masses colored for the patch data in [figures/patch_figures/patch_tsne_visualization.pdf](figures/patch_data_patch_tsne_visualization.pdf)
 
 ## Week 7 Notes
 
-### Weighting 0.01 Parsec Patch Data
+### Weighting 0.01a Parsec Patch Data
 
-**7/13** - The performance of weighted models is similarly poor for both the LASSO and random forest (seen in [figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso) and [figures/patch_figures/weighted_random_forest](figures/patch_figures/weighted_random_forest) respectively). The weighted and standard $R^2$ values track much more closely in the random forest model for both the training and validation sets when compared to the LASSO results. Through each application of weights the case for the features in the 0.01 parsec patch around the peak density in the pre-stellar snap being poor predictors of the final mass is further supported.
+**7/13** - The performance of weighted models is similarly poor for both the LASSO and random forest (seen in [figures/patch_figures/weighted_lasso](figures/patch_figures/weighted_lasso) and [figures/patch_figures/weighted_random_forest](figures/patch_figures/weighted_random_forest) respectively). The weighted and standard $R^2$ values track much more closely in the random forest model for both the training and validation sets when compared to the LASSO results. Through each application of weights the case for the features in the 0.01a parsec patch around the peak density in the pre-stellar snap being poor predictors of the final mass is further supported.
 
 ##### Next Steps:
 * [x] 1. Investigate weighted $R^2$ to weighted LASSO-CV patch for training and validation
@@ -336,13 +336,13 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 
 ##### Next Steps:
 * [x] 1. Examine results of different multiplicities separately for the reduced model on the full data
-* [x] 2. Examine results of different multiplicities for the 0.01 patch data
+* [x] 2. Examine results of different multiplicities for the 0.01a patch data
 * [ ] 3. Investigate the use of a vector target using both mass and multiplicity
 * [x] 4. Investigate t-SNE coloring by multiplicity
 
 **7/14** - Coloring t-SNE on gas properties by multiplity for the full data reveals separaration in proportion of higher multiplicity stars in different regions but there is not a clear separation dividing low and high multiplicity stars ([figures/multiplicity_figures/multiplicity_tsne_visualization.pdf](figures/multiplicity_figures/multiplicity_tsne_visualization.pdf)). Investigating the full data linear regression model with the features of $\rho_{\text{med}}$, $T_{\text{med}}$, and $B_{\text{med}}$, stars with different multiplicities don't appear to perform differently from each other in either the training or validation set (seen in [figures/multiplicity_figures](figures/multiplicity_figures)). 
 
-**7/15** - Examining the 0.01 pc patch broken up by multiplicity for the training and validation datasets, the $R^2$ values of stars with multiplicities of 1 and 2 are 0.12 and 0.13, respectively. The multiplicity 3 and 4 stars have $R^2$ values of 0.26 and 0.28, respectively. The validation set shows similar performace for each multiplicity besides the multiplicity 1 set which has a negative $R^2$ value ([figures/multiplicity_figures](figures/multiplicity_figures)). 
+**7/15** - Examining the 0.01a pc patch broken up by multiplicity for the training and validation datasets, the $R^2$ values of stars with multiplicities of 1 and 2 are 0.12 and 0.13, respectively. The multiplicity 3 and 4 stars have $R^2$ values of 0.26 and 0.28, respectively. The validation set shows similar performace for each multiplicity besides the multiplicity 1 set which has a negative $R^2$ value ([figures/multiplicity_figures](figures/multiplicity_figures)). 
 
 Looking at the reduced linear model performance broken up by multiplicity, there is a clear underprediction of the highest mass stars with a multiplicity of four ([figures/multiplicity_figures/lin_reg_train_multiplicity.pdf](figures/multiplicity_figures/lin_reg_train_multiplicity.pdf)). I believe this could either be due to a non-linear (in log-log space so power-law) behavior, A underweighting of more massive stars due to their rarity, or little distinguishing the large mass stars are massive stars in the gas properties.
 
@@ -358,7 +358,7 @@ I also looked at the random forest with all of the gas property statistics and t
 
 ### 0.5 Parsec Patch Investigation
 
-**7/13** - I am running the 0.5 parsec pre-stellar sink snapshot patch data through the pipeline that I have from analyzing the other two data sets to see how it performs at predicting the mass. Looking at the correlation heatmap, the features appear to have even worse correlation to the final mass then the 0.01 patch data. This includes the direct correlation between final mass and num_stars which is the number of stars within the 0.5 parsec sphere at the time the snapshot was taken. This weak correlation could mean that the size of a forming star depends very weakly on the number of stars that are in its neighborhood at the time of formation or that the 0.5 parsec sphere encapsulates a definition of neighborhood too large or too small to detect the connection.
+**7/13** - I am running the 0.5 parsec pre-stellar sink snapshot patch data through the pipeline that I have from analyzing the other two data sets to see how it performs at predicting the mass. Looking at the correlation heatmap, the features appear to have even worse correlation to the final mass then the 0.01a patch data. This includes the direct correlation between final mass and num_stars which is the number of stars within the 0.5 parsec sphere at the time the snapshot was taken. This weak correlation could mean that the size of a forming star depends very weakly on the number of stars that are in its neighborhood at the time of formation or that the 0.5 parsec sphere encapsulates a definition of neighborhood too large or too small to detect the connection.
 
 The t-SNE plot displayed the same story of uncorrelated data when coloring by the mass of the stars on the 0.5 pre-stellar snapshot patch data.
 
@@ -384,17 +384,18 @@ The LASSO-CV model was trained on all of the internal gas feature statistics inc
 
 **7/15** - The Jeans Mass of a star being proportional to temperature to the 3/2 and rho to the -1/2, $M_J \propto T^{3/2} \rho^{-1/2}$, may be the reason we see correlations between the temperature and density of the pre-stellar gas clouds of stars. If a clould of gas is hot and going to turn into a star, it must be massive enough to still collapse under its own gravity. Additionally, if a gas cloud has a low density and is going to turn into a star, the mass making up the cloud must be high. The univariate fit of $M_f \propto \rho_{\text{med}}^{-0.41}$ ($R^2 = 0.48$) is somewhat in line with this analysis. However, the data-driven power-law of $M_f \propto T_{\text{med}}^{0.48}$ ($R^2 = 0.08$) is not well aligned to this conception.  
 
-**7/16** - I looked at the 3D plot of $\rho_{\text{med}}$ vs. $T_{\text{med}}$ vs. $M_f$ in log-space for all components and plotted the plane $M_f =1.5 T_{\text{med}} - 0.5 \rho_{\text{med}}$ (the Jeans mass relation $M_J \propto T^{3/2} \rho^{-1/2}$ in log-space) and the plane visually looks like a floor function for the mass. An intercept in log-space needs to be added to account for the scaling in linear space but I am not sure what that value should be. Regardless, this may be a physical explaination of the success of the reduced model and also explain the kink in the higher mass star prediction as the model being given information about the floor of the mass from the gas properties but not the ceiling (code is in **residual_analysis.py**).
+**7/16** - I looked at the 3D plot of $\rho_{\text{med}}$ vs. $T_{\text{med}}$ vs. $M_f$ in log-space for all components and plotted the plane $M_f =1.5 T_{\text{med}} - 0.5 \rho_{\text{med}}$ (the Jeans mass relation $M_J \propto T^{3/2} \rho^{-1/2}$ in log-space) and the plane visually looks like a floor function for the mass. An intercept in log-space needs to be added to account for the scaling in linear space but I am not sure what that value should be. Regardless, this may be a physical explaination of the success of the reduced model and also explain the kink in the higher mass star prediction if the model is being given information about the floor of the mass from the gas properties but not the ceiling or true value (code is in **residual_analysis.py**).
 
 The nature of the data describing the floor of the mass could also explain why the power-laws do not appear to fall in line with the Jeans Mass assumption directly. The time dependency of this relationship could be investigated to see if the trend survives time steps that are older than the pre-stellar snapshot.
 
 ##### Next Steps:
 * [ ] 1. Look at older snapshots for the Jeans Mass 3D analysis
+* [ ] 2. Figure out intercept for Jeans Mass plane (coefficient in linear-space)
 
 
 ### 0.01 Parsec Patch All Gas Investigation
 
-**7/16** - Investigating the 0.01 parsec patch around the peak density of the pre-stellar snapshot (0.01b patch) with the same sampling limitations as applied to the 0.01a parsec patch ($M_f > 0.1 M_\odot$ and $N_{\text{inc}} \geq 10$) the $R^2$ value of the LASSO-CV model 0.25 with a similar shape to the original 0.01a parsec patch cut (which had a greater $R^2$ of 0.35). When comparing the 0.01b parsec patch to the 0.1 and 0.5 parsec patchs, the 0.01b (without sampling limitations) LASSO-CV model yields an $R^2$ of 0.27 compared to the 0.1 and 0.5's, 0.18 and 0.12, respectively. There appears to be a trend of increasing performance as the radius is shrunk. It is possible that the optimal radius has been overshot as from the 0.1 parsec patch to the 0.01 parsec patch the sampled volume has been reduced by a factor of 1,000 (or the sampled volume may still be too large). (figures in [figures/patch_figures_0.01b](figures/patch_figures/0.01b))
+**7/16** - Investigating the 0.01 parsec patch around the peak density of the pre-stellar snapshot (0.01b patch) with the same sampling limitations as applied to the 0.01a parsec patch ($M_f > 0.1 M_\odot$ and $N_{\text{inc}} \geq 10$) the $R^2$ value of the LASSO-CV model 0.25 with a similar shape to the original 0.01a parsec patch cut (which had a greater $R^2$ of 0.35). When comparing the 0.01b parsec patch to the 0.1 and 0.5 parsec patchs, the 0.01b (without sampling limitations) LASSO-CV model yields an $R^2$ of 0.27 compared to the 0.1 and 0.5's, 0.18 and 0.12, respectively. There appears to be a trend of increasing performance as the radius is shrunk. It is possible that the optimal radius has been overshot as from the 0.1 parsec patch to the 0.01 parsec patch the sampled volume has been reduced by a factor of 1,000 (or the sampled volume may still larger than the optimal). (figures in [figures/patch_figures_0.01b](figures/patch_figures/0.01b))
 
 ##### Next Steps:
 * [ ] 1. Investigate at sample weighted version of the 0.01b patch
