@@ -80,7 +80,10 @@ def separate_model(
         model = LinearRegression().fit(X=X_train, y=y_train, sample_weight=sample_weight)
     
     elif model_type == 'random forest':
-        model = RandomForestRegressor().fit(X=X_train, y=y_train, sample_weight=sample_weight)
+
+        best_params = {'max_depth': 20, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 5} 
+
+        model = RandomForestRegressor(**best_params).fit(X=X_train, y=y_train, sample_weight=sample_weight)
     
     plt.figure(figsize=(15, 15))
 
@@ -110,12 +113,12 @@ def separate_model(
         plt.suptitle(model_type + r' on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity ' + weight_str + '(Training Data)')
         #plt.suptitle(r'Linear Regression on 0.01 Parsec Patch Separated by Multiplicity (Training Data)')
         plt.tight_layout(pad=1.5)
-        #plt.savefig('figures/multiplicity_figures/rand_forest_train_multiplicity_weighted.pdf', dpi=300)
+        #plt.savefig('figures/multiplicity_figures/rand_forest_train_multiplicity.pdf', dpi=300)
     else:
         plt.suptitle(model_type + r' on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity ' + weight_str + '(Validation Data)')
         #plt.suptitle(r'Linear Regression on 0.01 Parsec Patch Separated by Multiplicity (Validation Data)')
         plt.tight_layout(pad=1.5)
-        #plt.savefig('figures/multiplicity_figures/rand_forest_validation_multiplicity_weighted.pdf', dpi=300)
+        #plt.savefig('figures/multiplicity_figures/rand_forest_validation_multiplicity.pdf', dpi=300)
 
     plt.show()
 
@@ -129,5 +132,5 @@ def separate_model(
 #separate_linear_model(df=df_cut, df_val=df_cut_val, val=True, features=features)
 
 # plots training and validation for full data separated by multiplicity random forest
-separate_model(df=df, features=features_reduced, model_type='random forest', weighting=True)
-separate_model(df=df, val=True, features=features_reduced, model_type='random forest', weighting=True)
+separate_model(df=df, features=features_reduced, model_type='random forest', weighting=False)
+separate_model(df=df, val=True, features=features_reduced, model_type='random forest', weighting=False)
