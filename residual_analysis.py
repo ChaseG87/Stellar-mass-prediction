@@ -2,16 +2,18 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
+from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 from seaborn import heatmap
 from data_analysis_v2 import linear_fit, piecewise_fit, polynomial_fit, log_normal_power_law
-from process_data import merge_snap_table, add_standard_error
+from process_data import merge_snap_table, add_standard_error, merge_max_mults
 
 
 # Load pre-stellar gas data
 df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq').reset_index()
 df = df.drop(columns=['M_tot'])
 df = merge_snap_table(df)
+df = merge_max_mults(df)
 df = add_standard_error(df)
 
 df['sp_kin'] = df['E_kin'] / df['mf']
@@ -174,30 +176,72 @@ def residual_heatmap(df, model):
     plt.title('Correlation Heatmap of Residuals, Mass, and Intrinsic Properties, model = ' + model)
     plt.savefig('figures/residual_correlation_heatmaps/' + model + '_heatmap.pdf', dpi=300, bbox_inches='tight')
     plt.show()
+
+
+def rho_T_residual_coef():
+
+    y = np.log10(df['mf'].values)
+
+    rho_model = LinearRegression().fit(np.log10(df['rho_med'].values.reshape(-1, 1)), np.log10(df['mf'].values))
+    residuals = rho_model.predict(np.log10(df['rho_med'].values.reshape(-1, 1))) - y
+
+    T_model = LinearRegression().fit(np.log10(df['T_med'].values.reshape(-1, 1)), residuals)
+    r2 = T_model.score(np.log10(df['T_med'].values.reshape(-1, 1)), residuals)
+
+    print(f'T_med residual coefficient: {T_model.coef_[0]}\nT_med R^2 = {r2}')
+
+
+#rho_T_residual_coef()
+
+def rho_T_3d():
     
+    x = np.log(df['rho_med'].values)
+    y = np.log(df['T_med'].values)
+    z = np.log(df['mf'].values)
+
+    X = np.linspace(min(x), max(x), 20)
+    Y = np.linspace(min(y), max(y), 20)
+    X, Y = np.meshgrid(X, Y)
+
+    Z = -0.5 * X + 1.5 * Y
+
+    fig = plt.figure(figsize=(20, 20))
+    ax = fig.add_subplot(111, projection='3d')
+
+    plane = ax.plot_surface(X, Y, Z, alpha=0.2, label='Jeans Mass Plane')
+
+    sc = ax.scatter(x, y, z, s=3, c=np.log10(df['mf']), cmap='rainbow', alpha=0.5)
+    plt.colorbar(sc, label=r'Total Mass ($M_\odot$) [log scale]')
+    ax.set_xlabel(r'$\rho_{med}$')
+    ax.set_ylabel(r'$T_{med}$')
+    ax.set_zlabel(r'$M_f$')
+    plt.title(r'$\rho_{med}$ and $T_{med}$ Scatter vs $M_f$')
+    plt.show()
+
+rho_T_3d()
 
 
-def rho_coefficients():
+def coefficients(root='rho'):
 
 
 
-    model_rho = LinearRegression().fit(np.log10(df['rho'].values.reshape(-1, 1)), np.log10(df['mf'].values))
-    model_rho_med = LinearRegression().fit(np.log10(df['rho_med'].values.reshape(-1, 1)), np.log10(df['mf'].values))
-    model_rho_16 = LinearRegression().fit(np.log10(df['rho_16'].values.reshape(-1, 1)), np.log10(df['mf'].values))
-    model_rho_84 = LinearRegression().fit(np.log10(df['rho_84'].values.reshape(-1, 1)), np.log10(df['mf'].values))
-    model_r_eff = LinearRegression().fit(np.log10(df['R_eff'].values.reshape(-1, 1)), np.log10(df['mf'].values))
-    rho_geometry = df['mf'] / (df['R_eff']**3)
-    model_rho_geo = LinearRegression().fit(np.log10(rho_geometry.values.reshape(-1, 1)), np.log10(df['mf'].values))
+    model_rho = LinearRegression().fit(np.log10(df[root].values.reshape(-1, 1)), np.log10(df['mf'].values))
+    model_rho_med = LinearRegression().fit(np.log10(df[root + '_med'].values.reshape(-1, 1)), np.log10(df['mf'].values))
+    model_rho_16 = LinearRegression().fit(np.log10(df[root + '_16'].values.reshape(-1, 1)), np.log10(df['mf'].values))
+    model_rho_84 = LinearRegression().fit(np.log10(df[root + '_84'].values.reshape(-1, 1)), np.log10(df['mf'].values))
+    #model_r_eff = LinearRegression().fit(np.log10(df['R_eff'].values.reshape(-1, 1)), np.log10(df['mf'].values))
+    #rho_geometry = df['mf'] / (df['R_eff']**3)
+    #model_rho_geo = LinearRegression().fit(np.log10(rho_geometry.values.reshape(-1, 1)), np.log10(df['mf'].values))
 
 
-    print(f'Rho Coefficient: {model_rho.coef_[0]:.4f}, R²: {model_rho.score(np.log10(df["rho"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
-    print(f'Rho Median Coefficient: {model_rho_med.coef_[0]:.4f}, R²: {model_rho_med.score(np.log10(df["rho_med"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
-    print(f'Rho 16th Percentile Coefficient: {model_rho_16.coef_[0]:.4f}, R²: {model_rho_16.score(np.log10(df["rho_16"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
-    print(f'Rho 84th Percentile Coefficient: {model_rho_84.coef_[0]:.4f}, R²: {model_rho_84.score(np.log10(df["rho_84"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
-    print(f'R_eff Coefficient: {model_r_eff.coef_[0]:.4f}, R²: {model_r_eff.score(np.log10(df["R_eff"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
-    print(f'Rho Geometry Coefficient: {model_rho_geo.coef_[0]:.4f}, R²: {model_rho_geo.score(np.log10(rho_geometry.values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
+    print(root + f' Mean Coefficient: {model_rho.coef_[0]:.4f}, R²: {model_rho.score(np.log10(df[root].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
+    print(root + f' Median Coefficient: {model_rho_med.coef_[0]:.4f}, R²: {model_rho_med.score(np.log10(df[root + "_med"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
+    print(root + f' 16th Percentile Coefficient: {model_rho_16.coef_[0]:.4f}, R²: {model_rho_16.score(np.log10(df[root + "_16"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
+    print(root + f' 84th Percentile Coefficient: {model_rho_84.coef_[0]:.4f}, R²: {model_rho_84.score(np.log10(df[root + "_84"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
+    #print(f'R_eff Coefficient: {model_r_eff.coef_[0]:.4f}, R²: {model_r_eff.score(np.log10(df["R_eff"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
+    #print(f'Rho Geometry Coefficient: {model_rho_geo.coef_[0]:.4f}, R²: {model_rho_geo.score(np.log10(rho_geometry.values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
     
-#rho_coefficients()
+#coefficients('rho')
 
 
 
@@ -206,8 +250,8 @@ def rho_coefficients():
 #plot_residuals(df, 'sp_kin')
 
 # Pairplot of the statistics of each internal property in log space
-#cross_correlation_scatter(df, ['B', 'B_med', 'B_16', 'B_84'])
-#cross_correlation_scatter(df, ['T', 'T_med', 'T_16', 'T_84'])
+#cross_correlation_scatter(df, ['mf', 'B', 'B_med', 'B_16', 'B_84'])
+#cross_correlation_scatter(df, ['mf', 'T', 'T_med', 'B', 'B_med'])
 #cross_correlation_scatter(df, ['Ne', 'Ne_med', 'Ne_16', 'Ne_84'])
 #cross_correlation_scatter(df, ['mf','true_bulk_density', 'rho_med', 'rho_16', 'rho_84', 'R_eff'])
 #df = df.reset_index()
@@ -219,8 +263,9 @@ def rho_coefficients():
 #cross_correlation_scatter(df, ['mf', 'T_med', 'Ne_std', 'rho_med'])
 #cross_correlation_scatter(df, ['mf', 'T_std', 'rho_std', 'B_std', 'Ne_std'])
 
-cross_correlation_scatter(df, ['mf', 'T_std_er', 'B_std_er', 'Ne_std_er', 'rho_std_er'])
+#cross_correlation_scatter(df, ['mf', 'T_std_er', 'B_std_er', 'Ne_std_er', 'rho_std_er'])
 
+#cross_correlation_scatter(df, ['mf', 'max_mult'])
 
 #, 'rho', 'Ne_std', 'rho_std'
 #plot_residual_correlation(df, 'sp_mag', 'mf')
