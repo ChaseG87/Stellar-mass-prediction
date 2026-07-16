@@ -6,7 +6,7 @@ import numpy as np
 import sys
 import argparse
 from sklearn.linear_model import LinearRegression, LassoCV, ElasticNetCV, RidgeCV
-from process_data import n_snaps_extract, log_data
+from process_data import log_data
 from internal_gas_model import GreedyModelConstructor, LassoAidedModelConstructor
 
 # tasks:
@@ -15,6 +15,8 @@ from internal_gas_model import GreedyModelConstructor, LassoAidedModelConstructo
 
 features = ['T', 'T_med', 'T_16', 'T_84', 'T_std_er', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std_er',
             'B', 'B_med', 'B_16', 'B_84', 'B_std_er', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std_er', 'snap'] 
+
+features = ['T_med', 'B_med', 'rho_med']
 
 # load clean train and validation data
 df_train, df_val = log_data(features=features, train_val=True, normalize=True)
@@ -91,7 +93,7 @@ def rmse_comparison(train, val, preds):
     train_rmse_pca_greedy, val_rmse_pca_greedy, train_rmse_pca_lasso, val_rmse_pca_lasso = [], [], [], []    
     
     # Perform PCA
-    pca = PCA(n_components=21)
+    pca = PCA(n_components=len(features))
     transformed_train_data = pca.fit_transform(train[features])
 
     # get PCA validation data in the normalized space defined by the training data
@@ -352,7 +354,7 @@ def coefficient_comparision(train, preds, las=False, las_cv=False):
     plt.legend()
     plt.xticks(xs, tick_features)
     plt.tight_layout()
-    #plt.savefig('figures/lasso_coefficient_comp.pdf', dpi=300)
+    plt.savefig('figures/lasso_reduced_coefficient_comp.pdf', dpi=300)
     plt.show()
 
 
@@ -366,7 +368,7 @@ def main():
     args = parser.parse_args()
     
     if args.rmse:
-        rmse_comparison(train=df_train, val=df_val, preds=21)
+        rmse_comparison(train=df_train, val=df_val, preds=len(features))
 
     if args.greedy_coefs:
         coefficient_comparision(train=df_train, preds=args.greedy_coefs, las=False)
