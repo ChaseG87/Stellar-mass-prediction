@@ -4,6 +4,7 @@ from process_data import log_data
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LassoCV, LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score
 
 
@@ -54,12 +55,32 @@ def multiplicity_tsne(features):
 #multiplicity_tsne(features=features)
 
 
-def separate_linear_model(df=df, df_val=df_val, features=features_reduced, val=False):
+def separate_model(
+    df=df,
+    df_val=df_val,
+    features=features_reduced,
+    val=False,
+    model_type='linear',
+    weighting=False
+        ):
     
+    # format data for sklearn models
     X_train = df[features].values.reshape(-1, len(features))
     y_train = df['mf'].values
 
-    model = LinearRegression().fit(X=X_train, y=y_train, sample_weight=np.sqrt(10**(y_train)))
+    if weighting:
+        sample_weight = np.sqrt(10**(y_train))
+        weight_str = r'Weighted by $\sqrt{M_f}$ '
+    else:
+        sample_weight = None
+        weight_str = ''
+
+
+    if model_type == 'linear':
+        model = LinearRegression().fit(X=X_train, y=y_train, sample_weight=sample_weight)
+    
+    elif model_type == 'random forest':
+        model = RandomForestRegressor().fit(X=X_train, y=y_train, sample_weight=sample_weight)
     
     plt.figure(figsize=(15, 15))
 
@@ -86,23 +107,27 @@ def separate_linear_model(df=df, df_val=df_val, features=features_reduced, val=F
         ax.set_ylabel(r'Predicted Mass ($\log_{10}M_\odot$)')
 
     if not val:
-        plt.suptitle(r'Linear Regression on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity Weighted by $\sqrt{M_f}$ (Training Data)')
+        plt.suptitle(model_type + r' on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity ' + weight_str + '(Training Data)')
         #plt.suptitle(r'Linear Regression on 0.01 Parsec Patch Separated by Multiplicity (Training Data)')
         plt.tight_layout(pad=1.5)
-        #plt.savefig('figures/multiplicity_figures/lin_reg_train_multiplicity_weighted.pdf', dpi=300)
+        #plt.savefig('figures/multiplicity_figures/rand_forest_train_multiplicity_weighted.pdf', dpi=300)
     else:
-        plt.suptitle(r'Linear Regression on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity Weighted by $\sqrt{M_f}$ (Validation Data)')
+        plt.suptitle(model_type + r' on $\rho_{med}$, $T_{med}$, and $B_{med}$ Separated by Multiplicity ' + weight_str + '(Validation Data)')
         #plt.suptitle(r'Linear Regression on 0.01 Parsec Patch Separated by Multiplicity (Validation Data)')
         plt.tight_layout(pad=1.5)
-        #plt.savefig('figures/multiplicity_figures/lin_reg_validation_multiplicity_weighted.pdf', dpi=300)
+        #plt.savefig('figures/multiplicity_figures/rand_forest_validation_multiplicity_weighted.pdf', dpi=300)
 
     plt.show()
 
 
-# plots training and validation for full data separated by multiplicity
-separate_linear_model(df=df, features=features_reduced)
-separate_linear_model(df=df, val=True, features=features_reduced)
+# plots training and validation for full data separated by multiplicity linear
+#separate_model(df=df, features=features_reduced, model_type='linear')
+#separate_model(df=df, val=True, features=features_reduced, model_type='linear')
 
 # plots training and validation for patch data separated by multiplicity
 #separate_linear_model(df=df_cut, features=features)
 #separate_linear_model(df=df_cut, df_val=df_cut_val, val=True, features=features)
+
+# plots training and validation for full data separated by multiplicity random forest
+separate_model(df=df, features=features_reduced, model_type='random forest', weighting=True)
+separate_model(df=df, val=True, features=features_reduced, model_type='random forest', weighting=True)
