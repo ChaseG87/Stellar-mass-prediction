@@ -6,7 +6,7 @@ from seaborn import heatmap
 import numpy as np
 import sys
 import argparse
-from process_data import merge_snap_table
+from process_data import merge_snap_table, merge_max_mults
 
 """
 Investigation of the properties of the accreted gas at the snapshot before star formation.
@@ -24,6 +24,7 @@ Namespace Dependencies:
 # Read the pre stellar parquet file into a DataFrame
 df = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar.pq').reset_index()
 df = merge_snap_table(df)
+df = merge_max_mults(df)
 
 
 # add distance from center metric to the DataFrame
@@ -62,14 +63,14 @@ def plot_intrinsic_gas_heatmap(df):
         
 
     chosen_columns = ['mf', 'T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
-                     'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'snap'] 
+                     'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'snap', 'PE_global'] 
 
     correlation_matrix = np.log10(df[chosen_columns]).corr()
     plt.figure(figsize=(12, 10))
-    heatmap(correlation_matrix, annot=False, cmap='coolwarm', fmt='.2f')
+    heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
     plt.title('Correlation Heatmap of Intrinsic Gas Properties')
     plt.tight_layout()
-    #plt.savefig('figures/intrinsic_prop_correlation_heatmap.pdf', dpi=300, bbox_inches='tight')
+    #plt.savefig('figures/heatmap_0.01_patch.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -141,11 +142,11 @@ def plot_feature_vs_mass(df, feature):
     '''
     Plots the relationship between the electron density of the accreted gas and its total mass.
     '''
-    plt.scatter(df[feature], df['mf'], alpha=0.5)
+    plt.scatter(df[feature], df['mf'], alpha=0.5, s=10)
     plt.xlabel(feature)
     plt.ylabel('Total Mass (M_sun)')
-    plt.title('Electron Density vs Total Mass of Accreted Gas')
-    plt.xscale('log')
+    plt.title(args.feature + ' vs Total Mass of Accreted Gas')
+    #plt.xscale('log')
     plt.yscale('log')
     plt.show()
 
@@ -389,7 +390,7 @@ if __name__ == "__main__":
     parser.add_argument('--magnetic_energy', "-me", action='store_true', help='Plot magnetic energy vs mass')
     parser.add_argument('--position', "-pos", action='store_true', help='Plot position vs mass')
     parser.add_argument('--dispersion', "-disp", action='store_true', help='Plot velocity dispersion vs mass')
-    parser.add_argument('--electron_density', "-ne", action='store_true', help='Plot electron density vs mass')
+    parser.add_argument('--feature', "-f", type=str, default='', help='Plot electron density vs mass')
     parser.add_argument('--star_locations', "-sl", action='store_true', help='Plot 3D positions of accreted gas particles colored by total mass')
     parser.add_argument('--temperature_vs_ne', "-temp", action='store_true', help='Plot temperature vs electron density')
     parser.add_argument('--specific_energies', "-se", action='store_true', help='Plot specific energies vs mass')
@@ -411,8 +412,8 @@ if __name__ == "__main__":
         plot_position_vs_mass(df)
     if args.dispersion:
         plot_dispersion_vs_mass(df)
-    if args.electron_density:
-        plot_feature_vs_mass(df)
+    if args.feature:
+        plot_feature_vs_mass(df, args.feature)
     if args.star_locations:
         plot_star_locations(df)
     if args.temperature_vs_ne:
