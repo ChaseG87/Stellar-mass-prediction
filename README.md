@@ -402,7 +402,7 @@ The nature of the data describing the floor of the mass could also explain why t
 * [ ] 5. Plot Jeans Mass slope with fitted intercept
 * [ ] 6. Calculate Jeans Mass intercept from astropy
 
-**7/17** - Comparing the linear regression coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ on to $M_f$ in log-space to the theoretical values predicted by the Jeans Mass equation, $\rho_{\text{med}}$ almost precisely aligns with the theoretical value of $-1/2$ with a value of $-0.51$. However, $T_{\text{med}}$ does not produce the same clean results, compared to the theoretical $3/2$, the coefficient for $T_{\text{med}}$ is 0.95. Though this is closer to the theoretical value than the univariate $T_{\text{med}}$ of 0.48. Regardless, the cosine similarity between the two planes is 0.98 meaning that their normal directions are highly aligned ([image of the 3D plot](figures/jeans_mass_3d.png) with prediction plane in orange and jeans mass plane in blue).
+**7/17** - Comparing the linear regression coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ on to $M_f$ in log-space to the theoretical values predicted by the Jeans Mass equation, $\rho_{\text{med}}$ almost precisely aligns with the theoretical value of -0.5 with a value of -0.51. However, $T_{\text{med}}$ does not produce the same clean results, compared to the theoretical 1.5, the coefficient for $T_{\text{med}}$ is 0.95. Though this is closer to the theoretical value than the univariate $T_{\text{med}}$ of 0.48. Regardless, the cosine similarity between the two planes is 0.98 meaning that their normal directions are highly aligned ([image of the 3D plot](figures/jeans_mass_3d.png) with prediction plane in orange and jeans mass plane in blue).
 
 
 ### 0.01 Parsec Patch All Gas Investigation
