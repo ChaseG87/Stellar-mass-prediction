@@ -409,4 +409,19 @@ The nature of the data describing the floor of the mass could also explain why t
 
 **7/16** - The 0.01b patch singles had a LASSO-CV $R^2$ score of 0.36 and unlike other patch models, the CV $\alpha$ weighing the $L_1$ regularization selected only 12 of the 23 features. This performance is very similar to the 0.01a performance with an $R^2$ of 0.35 potentially supporting the "partnered star effect" blurrying the data in patches.
 
+### 7/17 Meeting
+1. 0.01b results (improvement from 0.1 and 0.5, still worse than 0.01a, selecting just singles boosts performance - "partner star effect") [figures/patch_figures_0.01b](figures/patch_figures_0.01b) 
+2. Kink investigation
+
+   (i) [Random Forest Validation](figures/multiplicity_figures/rand_forest-validation_multiplicity.pdf) (non-linear check)
+   
+   (ii) [Random Forest Validation Weighted](figures/multiplicity_figures/rand_forest-validation_multiplicity_weighted.pdf) (weighting check)
+   
+   (iii) If it's not a non-linear feature and not fixed by weighting, it could be that large and massive stars have little distinguishing them.
+  
+4. Median Value success rationale in log-normal space (median = $\log(\mu)$ in the log-space $\mu$ when $\log(X)$ ~ $N$($\mu$, $\sigma^2$))
+5. Jeans Mass explaination of reduced model success ($M_J \propto T^{3/2} \rho^{-1/2}$) - what should the coefficient/intercept be? (**residual_analysis.py**)
+6. Multi-target random forest [training](figures/multiplicity_figures/multi_target_rf_train.pdf) - [validation](figures/multiplicity_figures/multi_target_rf_validation.pdf)
+
+
 
