@@ -205,10 +205,25 @@ def rho_T_3d():
 
     Z = -0.5 * X + 1.5 * Y
 
+    model = LinearRegression().fit(np.log(df[['rho_med', 'T_med']].values.reshape(-1, 2)), z)
+    Z_pred = model.coef_[0] * X + model.coef_[1] * Y + model.intercept_
+
+    print('rho_med coef: ', model.coef_[0],  '\nT_med coef:', model.coef_[1])
+    print(model.score(np.log(df[['rho_med', 'T_med']].values.reshape(-1, 2)), z))
+
+    dot_product = np.dot(model.coef_, np.array([-0.5, 1.5]))
+    norm_v1 = np.linalg.norm(model.coef_)
+    norm_v2 = np.linalg.norm(np.array([-0.5, 1.5]))
+
+    similarity = dot_product / (norm_v1 * norm_v2)
+    print(f'cosine similarity between jeans and prediction planes: {similarity}')
+
+
     fig = plt.figure(figsize=(20, 20))
     ax = fig.add_subplot(111, projection='3d')
 
     plane = ax.plot_surface(X, Y, Z, alpha=0.2, label='Jeans Mass Plane')
+    pred_plane = ax.plot_surface(X, Y, Z_pred, alpha=0.2, label='Linear Regression Plane')
 
     sc = ax.scatter(x, y, z, s=3, c=np.log10(df['mf']), cmap='rainbow', alpha=0.5)
     plt.colorbar(sc, label=r'Total Mass ($M_\odot$) [log scale]')
@@ -241,7 +256,7 @@ def coefficients(root='rho'):
     #print(f'R_eff Coefficient: {model_r_eff.coef_[0]:.4f}, R²: {model_r_eff.score(np.log10(df["R_eff"].values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
     #print(f'Rho Geometry Coefficient: {model_rho_geo.coef_[0]:.4f}, R²: {model_rho_geo.score(np.log10(rho_geometry.values.reshape(-1, 1)), np.log10(df["mf"].values)):.4f}')
     
-#coefficients('rho')
+#coefficients('T')
 
 
 
