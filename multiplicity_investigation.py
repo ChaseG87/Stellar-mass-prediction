@@ -14,7 +14,7 @@ features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_
 features_reduced = ['rho_med', 'T_med', 'B_med']
 
 # extract full data
-df, df_val = log_data(features=features_reduced, train_val=True, multiplicity=True)
+df, df_val = log_data(features=features, train_val=True, multiplicity=True)
 
 # extract and clean patch data
 df_cut = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_cut.pq')
@@ -48,7 +48,7 @@ def multiplicity_tsne(features):
     plt.title(r't-SNE of Pre-Stellar Gas Property Distributions (features: $n_e$, T, B, $\rho$)')
     plt.xlabel('t-SNE 1')
     plt.ylabel('t-SNE 2')
-    plt.savefig('figures/multiplicity_tsne_visualization.pdf', dpi=300, bbox_inches='tight')
+    #plt.savefig('figures/multiplicity_tsne_visualization.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -123,6 +123,62 @@ def separate_model(
     plt.show()
 
 
+def multi_target_model(df, features, df_val=df_val, val=False):
+    
+    X_train = df[features].values.reshape(-1, len(features))
+    y_train = df[['mf', 'max_mult']].values.reshape(-1, 2)
+
+    params = {'max_depth': 10, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2}
+
+    model = RandomForestRegressor(**params).fit(X_train, y_train)
+
+    if not val:
+        pred = model.predict(X=X_train)
+        y = y_train
+
+    else:
+        X_val = df_val[features].values.reshape(-1, len(features))
+        y = df_val[['mf', 'max_mult']].values.reshape(-1, 2)
+        pred = model.predict(X_val)
+
+
+    r2_mf = r2_score(y.T[0], pred.T[0])
+    r2_mult = r2_score(y.T[1], pred.T[1])
+
+
+    fig = plt.figure(figsize=(17, 8))
+    ax1 = fig.add_subplot(121)
+    ax2 = fig.add_subplot(122)
+
+    # plot mass
+    ax1.scatter(y.T[0], pred.T[0], s=10, alpha=0.5)
+    ax1.plot(y.T[0], y.T[0], c='r')
+    ax1.set_title(f'Ground Truth vs. Predicted Mass - $R^2 =$ {r2_mf:.2f}')
+    ax1.set_xlabel(r'Ground Truth Mass ($\log_{10}M_\odot$)')
+    ax1.set_ylabel(r'Predicted Mass ($\log_{10}M_\odot$)')
+
+    # plot multiplicity
+    ax2.scatter(y.T[1], pred.T[1], s=10, alpha=0.5)
+    ax2.plot(y.T[1], y.T[1], c='r')
+    ax2.set_title(f'Ground Truth vs. Predicted Max Multiplicity - $R^2 =$ {r2_mult:.2f}')
+    ax2.set_xlabel('Groud Truth Multiplicity')
+    ax2.set_ylabel('Predicted Multiplicity')
+
+    if not val:
+        plt.suptitle('Multi-target Random Forest Model (Training Data)')
+        plt.tight_layout()
+        plt.savefig('figures/multiplicity_figures/multi_target_rf_train.pdf', dpi=300)
+    else:
+        plt.suptitle('Multi-target Random Forest Model (Validation Data)')
+        plt.tight_layout()
+        plt.savefig('figures/multiplicity_figures/multi_target_rf_validation.pdf', dpi=300)
+
+    plt.show()
+
+multi_target_model(df=df, features=features, val=True)
+
+
+
 # plots training and validation for full data separated by multiplicity linear
 #separate_model(df=df, features=features_reduced, model_type='linear')
 #separate_model(df=df, val=True, features=features_reduced, model_type='linear')
@@ -132,5 +188,5 @@ def separate_model(
 #separate_linear_model(df=df_cut, df_val=df_cut_val, val=True, features=features)
 
 # plots training and validation for full data separated by multiplicity random forest
-separate_model(df=df, features=features_reduced, model_type='random forest', weighting=False)
-separate_model(df=df, val=True, features=features_reduced, model_type='random forest', weighting=False)
+#separate_model(df=df, features=features, model_type='random forest', weighting=False)
+#separate_model(df=df, val=True, features=features, model_type='random forest', weighting=False)
