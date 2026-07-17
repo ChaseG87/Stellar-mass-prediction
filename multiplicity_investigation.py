@@ -165,17 +165,17 @@ def multi_target_model(df, features, df_val=df_val, val=False):
     ax2.set_ylabel('Predicted Multiplicity')
 
     if not val:
-        plt.suptitle('Multi-target Random Forest Model (Training Data)')
+        plt.suptitle(r'Multi-target Random Forest Model on $\rho_{med}$, $T_{med}$, and $B_{med}$ (Training Data)')
         plt.tight_layout()
         plt.savefig('figures/multiplicity_figures/multi_target_rf_train.pdf', dpi=300)
     else:
-        plt.suptitle('Multi-target Random Forest Model (Validation Data)')
+        plt.suptitle(r'Multi-target Random Forest Model on $\rho_{med}$, $T_{med}$, and $B_{med}$ (Validation Data)')
         plt.tight_layout()
         plt.savefig('figures/multiplicity_figures/multi_target_rf_validation.pdf', dpi=300)
 
     plt.show()
 
-multi_target_model(df=df, features=features, val=True)
+multi_target_model(df=df, features=features_reduced, val=False)
 
 
 
