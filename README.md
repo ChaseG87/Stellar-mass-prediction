@@ -397,6 +397,12 @@ The nature of the data describing the floor of the mass could also explain why t
 ##### Next Steps:
 * [ ] 1. Look at older snapshots for the Jeans Mass 3D analysis
 * [ ] 2. Figure out intercept for Jeans Mass plane (coefficient in linear-space)
+* [x] 3. Plot linear regression fit plane on $\rho_{\text{med}$ and $T_{\text{med}}$
+* [x] 4. Investigate coefficents of the two variable linear regression
+* [ ] 5. Plot Jeans Mass slope with fitted intercept
+* [ ] 6. Calculate Jeans Mass intercept from astropy
+
+**7/17** - Comparing the linear regression coefficients of $\rho_{\text{med}$ and $T_{\text{med}}$ on to $M_f$ in log-space to the theoretical values predicted by the Jeans Mass equation, $\rho_{\text{med}$ almost precisely aligns with the theoretical value of $-1/2$ with a value of $-0.51$. However, $T_{\text{med}}$ does not produce the same clean results, compared to the theoretical $3/2$, the coefficient for $T_{\text{med}}$ is 0.95. Though this is closer to the theoretical value than the univariate $T_{\text{med}}$ of 0.48. Regardless, the cosine similarity between the two planes is 0.98 meaning that their normal directions are highly aligned ([image of the 3D plot](figures/jeans_mass_3d.png) with prediction plane in orange and jeans mass plane in blue).
 
 
 ### 0.01 Parsec Patch All Gas Investigation
@@ -419,9 +425,12 @@ The nature of the data describing the floor of the mass could also explain why t
    
    (iii) If it's not a non-linear feature and not fixed by weighting, it could be that large and massive stars have little distinguishing them.
   
-4. Median Value success rationale in log-normal space (median = $\log(\mu)$ in the log-space $\mu$ when $\log(X)$ ~ $N$($\mu$, $\sigma^2$))
-5. Jeans Mass explaination of reduced model success ($M_J \propto T^{3/2} \rho^{-1/2}$) - what should the coefficient/intercept be? (**residual_analysis.py**)
-6. Multi-target random forest [training](figures/multiplicity_figures/multi_target_rf_train.pdf) - [validation](figures/multiplicity_figures/multi_target_rf_validation.pdf)
+3. Median Value success rationale in log-normal space (median = $\log(\mu)$ in the log-space $\mu$ when $\log(X)$ ~ $N$($\mu$, $\sigma^2$))
+4. Jeans Mass explaination of reduced model success ($M_J \propto T^{3/2} \rho^{-1/2}$) - what should the coefficient/intercept be? (**residual_analysis.py**)
+5. Multi-target random forest [training](figures/multiplicity_figures/multi_target_rf_train.pdf) - [validation](figures/multiplicity_figures/multi_target_rf_validation.pdf)
+
+
+
 
 
 
