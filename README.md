@@ -404,6 +404,8 @@ The nature of the data describing the floor of the mass could also explain why t
 
 **7/17** - Comparing the linear regression coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ on to $M_f$ in log-space to the theoretical values predicted by the Jeans Mass equation, $\rho_{\text{med}}$ almost precisely aligns with the theoretical value of -0.5 with a value of -0.51. However, $T_{\text{med}}$ does not produce the same clean results, compared to the theoretical 1.5, the coefficient for $T_{\text{med}}$ is 0.95. Though this is closer to the theoretical value than the univariate $T_{\text{med}}$ of 0.48. Regardless, the cosine similarity between the two planes is 0.98 meaning that their normal directions are highly aligned ([image of the 3D plot](figures/jeans_mass_3d.png) with prediction plane in orange and jeans mass plane in blue).
 
+A theoretical reason that could explain the difference in temperature power-law besides the lower bound not being a good predictor of the mean, is a difference in mean molecular weight, $\mu$, of the stars as $M_J \propto \left(\dfrac{T}{\mu}\right)^{1.5}$. So if there is a correlation between $\mu$ and $M_f$ the data-driven power-law for temperature would be affected. 
+
 
 ### 0.01 Parsec Patch All Gas Investigation
 
