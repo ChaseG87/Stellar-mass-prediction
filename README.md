@@ -339,7 +339,7 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 ##### Next Steps:
 * [x] 1. Examine results of different multiplicities separately for the reduced model on the full data
 * [x] 2. Examine results of different multiplicities for the 0.01a patch data
-* [ ] 3. Investigate the use of a vector target using both mass and multiplicity
+* [x] 3. Investigate the use of a vector target using both mass and multiplicity
 * [x] 4. Investigate t-SNE coloring by multiplicity
 
 **7/14** - Coloring t-SNE on gas properties by multiplity for the full data reveals separaration in proportion of higher multiplicity stars in different regions but there is not a clear separation dividing low and high multiplicity stars ([figures/multiplicity_figures/multiplicity_tsne_visualization.pdf](figures/multiplicity_figures/multiplicity_tsne_visualization.pdf)). Investigating the full data linear regression model with the features of $\rho_{\text{med}}$, $T_{\text{med}}$, and $B_{\text{med}}$, stars with different multiplicities don't appear to perform differently from each other in either the training or validation set (seen in [figures/multiplicity_figures](figures/multiplicity_figures)). 
@@ -347,6 +347,8 @@ Investigating the coefficients of the LASSO-CV model and Post-LASSO models with 
 **7/15** - Examining the 0.01a pc patch broken up by multiplicity for the training and validation datasets, the $R^2$ values of stars with multiplicities of 1 and 2 are 0.12 and 0.13, respectively. The multiplicity 3 and 4 stars have $R^2$ values of 0.26 and 0.28, respectively. The validation set shows similar performace for each multiplicity besides the multiplicity 1 set which has a negative $R^2$ value ([figures/multiplicity_figures](figures/multiplicity_figures)). 
 
 Looking at the reduced linear model performance broken up by multiplicity, there is a clear underprediction of the highest mass stars with a multiplicity of four ([figures/multiplicity_figures/lin_reg_train_multiplicity.pdf](figures/multiplicity_figures/lin_reg_train_multiplicity.pdf)). I believe this could either be due to a non-linear (in log-log space so power-law) behavior, A underweighting of more massive stars due to their rarity, or little distinguishing the large mass stars are massive stars in the gas properties.
+
+**7/17** - Implementing a multi-target random forest does not appear to be advantageous in predicting mass in the reduced model. Additionally, the multi-target performs very poorly in predicting the max multiplicity in the validation set ($R^2 = 0.09$). This poor performance in the multiplicity could be a model selection issue as the max multiplicity behave as classes of integers not a continuous domain ([training](figures/multiplicity_figures/multi_target_rf_train.pdf) - [validation](figures/multiplicity_figures/multi_target_rf_validation.pdf)).
 
 ##### Next Steps:
 * [x] 1. Investigate the performance of a random forest on full data broken up by multiplicity (to check if the kink is non-linear)
