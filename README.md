@@ -395,12 +395,8 @@ The nature of the data describing the floor of the mass could also explain why t
 ###### Another idea is that if the temperature and density are showing us the floor of the mass, if we subtract this value out what explain the rest of the variance in how much more massive a star will be than its fundamental mass?
 
 ##### Next Steps:
-* [ ] 1. Look at older snapshots for the Jeans Mass 3D analysis
-* [ ] 2. Figure out intercept for Jeans Mass plane (coefficient in linear-space)
-* [x] 3. Plot linear regression fit plane on $\rho_{\text{med}}$ and $T_{\text{med}}$
-* [x] 4. Investigate coefficents of the two variable linear regression
-* [ ] 5. Plot Jeans Mass slope with fitted intercept
-* [ ] 6. Calculate Jeans Mass intercept from astropy
+* [x] 1. Plot linear regression fit plane on $\rho_{\text{med}}$ and $T_{\text{med}}$
+* [x] 2. Investigate coefficents of the two variable linear regression
 
 **7/17** - Comparing the linear regression coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ on to $M_f$ in log-space to the theoretical values predicted by the Jeans Mass equation, $\rho_{\text{med}}$ almost precisely aligns with the theoretical value of -0.5 with a value of -0.51. However, $T_{\text{med}}$ does not produce the same clean results, compared to the theoretical 1.5, the coefficient for $T_{\text{med}}$ is 0.95. Though this is closer to the theoretical value than the univariate $T_{\text{med}}$ of 0.48. Regardless, the cosine similarity between the two planes is 0.98 meaning that their normal directions are highly aligned ([image of the 3D plot](figures/jeans_mass_3d.png) with prediction plane in orange and jeans mass plane in blue).
 
@@ -412,8 +408,7 @@ A theoretical reason that could explain the difference in temperature power-law 
 **7/16** - Investigating the 0.01 parsec patch around the peak density of the pre-stellar snapshot (0.01b patch) with the same sampling limitations as applied to the 0.01a parsec patch ($M_f > 0.1 M_\odot$ and $N_{\text{inc}} \geq 10$) the $R^2$ value of the LASSO-CV model 0.25 with a similar shape to the original 0.01a parsec patch cut (which had a greater $R^2$ of 0.35). When comparing the 0.01b parsec patch to the 0.1 and 0.5 parsec patchs, the 0.01b (without sampling limitations) LASSO-CV model yields an $R^2$ of 0.27 compared to the 0.1 and 0.5's, 0.18 and 0.12, respectively. There appears to be a trend of increasing performance as the radius is shrunk. It is possible that the optimal radius has been overshot as from the 0.1 parsec patch to the 0.01 parsec patch the sampled volume has been reduced by a factor of 1,000 (or the sampled volume may still larger than the optimal). (figures in [figures/patch_figures_0.01b](figures/patch_figures_0.01b))
 
 ##### Next Steps:
-* [ ] 1. Investigate at sample weighted version of the 0.01b patch
-* [x] 2. Investigate the performance of the 0.01b patch on singles alone [figures/patch_figures_0.01b/lasso_cv_0.01b_patch_singles.pdf](figures/patch_figures_0.01b/lasso_cv_0.01b_patch_singles.pdf)
+* [x] 1. Investigate the performance of the 0.01b patch on singles alone [figures/patch_figures_0.01b/lasso_cv_0.01b_patch_singles.pdf](figures/patch_figures_0.01b/lasso_cv_0.01b_patch_singles.pdf)
 
 **7/16** - The 0.01b patch singles had a LASSO-CV $R^2$ score of 0.36 and unlike other patch models, the CV $\alpha$ weighing the $L_1$ regularization selected only 12 of the 23 features. This performance is very similar to the 0.01a performance with an $R^2$ of 0.35 potentially supporting the "partnered star effect" blurrying the data in patches.
 
@@ -432,7 +427,25 @@ A theoretical reason that could explain the difference in temperature power-law 
 5. Multi-target random forest [training](figures/multiplicity_figures/multi_target_rf_train.pdf) - [validation](figures/multiplicity_figures/multi_target_rf_validation.pdf)
 
 
+# Week 8 Notes
 
+### Jean Mass Analysis Continued
+
+**7/20** - Bootstrapping the full data set to get sample error data on coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$, $\rho_{\text{med}}$ yielded a 95% confidence interval of (-0.541, -0.496) and a mean of -0.513 falling closely in line with the theoretical -0.5 from the Jean's Mass equation. $T_{\text{med}}$ yielded a 95% confidence interval of (0.905, 0.991) and a mean value of 0.947, leaving the theoretical value of 1.5 far outside of the confidence interval. 
+
+There are many possible explanations as to why the theoretical power-law and data-driven power-law of $T_{med}$ are in disagreement; due to the Jeans Mass being a model of the smallest mass a star needs to form, the mass greater than this floor could be dependent on mass the median could be a poor metric of determining the bulk behavior of the gas, and the mean molecular mass could be a function of mass. Assuming that the discrepancy is a result of a power-law relationship between the mean molecular mass, $\mu$, and $M_f$, we find
+
+$$
+M_f \propto \left( \dfrac{T}{\mu} \right)^{1.5} \propto T^{0.95} \rightarrow T^{1.5-0.95} \propto \mu^{1.5} \rightarrow M_f \propto \mu^{2.6}.
+$$
+
+##### Next Steps (Misc):
+* [ ] 1. Investigate the snap vs. relationship in primary stars
+* [ ] 2. Investigate patch data on primary stars only  
+* [ ] 3. Investigate multi-target model for patch datasets on primaries
+* [ ] 4. Investigate at sample weighted version of the 0.01b patch
+* [ ] 5. Look at older snapshots for the Jeans Mass 3D analysis
+* [ ] 6. Calculate Jeans Mass intercept from astropy
 
 
 
