@@ -435,7 +435,7 @@ A theoretical reason that could explain the difference in temperature power-law 
 
 The possible explanations as to why the theoretical power-law and data-driven power-law of $T_{\text{med}}$ are in disagreement; the median could be a poor metric of determining the bulk behavior of the gas and due to the Jeans Mass being a model of the smallest mass a star needs to form, the mass greater than this floor could be dependent on mass. 
 
-Forcing the coefficients of $\rho_{text{med}}$ and $T_{\text{med}}$ to be -0.5 and 1.5, respectively, and fitting an intercept to the data yields and $R^2$ value of 0.65. This means that 65% of the variance in stellar mass can be explained by the relation.
+Forcing the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ to be -0.5 and 1.5, respectively, and fitting an intercept to the data yields and $R^2$ value of 0.65. This means that 65% of the variance in stellar mass can be explained by the relation.
 
 ##### Next Steps (Misc):
 * [x] 1. Investigate the snap vs. relationship in primary stars
