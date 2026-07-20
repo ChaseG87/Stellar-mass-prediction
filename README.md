@@ -433,7 +433,7 @@ A theoretical reason that could explain the difference in temperature power-law 
 
 **7/20** - Bootstrapping the full data set to get sample error data on coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$, $\rho_{\text{med}}$ yielded a 95% confidence interval of (-0.541, -0.496) and a mean of -0.513 falling closely in line with the theoretical -0.5 from the Jean's Mass equation. $T_{\text{med}}$ yielded a 95% confidence interval of (0.905, 0.991) and a mean value of 0.947, leaving the theoretical value of 1.5 far outside of the confidence interval. 
 
-The possible explanations as to why the theoretical power-law and data-driven power-law of $T_{med}$ are in disagreement; the median could be a poor metric of determining the bulk behavior of the gas and due to the Jeans Mass being a model of the smallest mass a star needs to form, the mass greater than this floor could be dependent on mass. 
+The possible explanations as to why the theoretical power-law and data-driven power-law of $T_{\text{med}}$ are in disagreement; the median could be a poor metric of determining the bulk behavior of the gas and due to the Jeans Mass being a model of the smallest mass a star needs to form, the mass greater than this floor could be dependent on mass. 
 
 ##### Next Steps (Misc):
 * [ ] 1. Investigate the snap vs. relationship in primary stars
