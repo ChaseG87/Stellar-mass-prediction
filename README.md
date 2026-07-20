@@ -436,12 +436,14 @@ A theoretical reason that could explain the difference in temperature power-law 
 The possible explanations as to why the theoretical power-law and data-driven power-law of $T_{\text{med}}$ are in disagreement; the median could be a poor metric of determining the bulk behavior of the gas and due to the Jeans Mass being a model of the smallest mass a star needs to form, the mass greater than this floor could be dependent on mass. 
 
 ##### Next Steps (Misc):
-* [ ] 1. Investigate the snap vs. relationship in primary stars
+* [x] 1. Investigate the snap vs. relationship in primary stars
 * [ ] 2. Investigate patch data on primary stars only  
 * [ ] 3. Investigate multi-target model for patch datasets on primaries
 * [ ] 4. Investigate at sample weighted version of the 0.01b patch
 * [ ] 5. Look at older snapshots for the Jeans Mass 3D analysis
 * [ ] 6. Calculate Jeans Mass intercept from astropy
+
+**7/20** - Looking at the connection between snapshot number of sink point formation and final mass in primary stars, there appears to be a very minor bump in the mean mass of stars formed in the middle third of th 500 snapshot period. The spread away from this mean is very large. The code visualizing the relation is in **residual_analysis.py**.
 
 
 
