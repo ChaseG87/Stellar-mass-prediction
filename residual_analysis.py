@@ -6,7 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 from seaborn import heatmap
 from data_analysis_v2 import linear_fit, piecewise_fit, polynomial_fit, log_normal_power_law
-from process_data import merge_snap_table, add_standard_error, merge_max_mults
+from process_data import merge_snap_table, add_standard_error, merge_max_mults, add_primaries
 
 
 # Load pre-stellar gas data
@@ -15,10 +15,14 @@ df = df.drop(columns=['M_tot'])
 df = merge_snap_table(df)
 df = merge_max_mults(df)
 df = add_standard_error(df)
+df = add_primaries(df)
+
 
 df['sp_kin'] = df['E_kin'] / df['mf']
 df['sp_mag'] = df['E_mag'] / df['mf']
 df['sp_int'] = df['E_int'] / df['mf']
+
+
 
 
 def get_residuals(df, feature, model):
@@ -193,48 +197,31 @@ def rho_T_residual_coef():
 
 #rho_T_residual_coef()
 
-def rho_T_3d():
+def snap_of_primaries():
     
-    x = np.log(df['rho_med'].values)
-    y = np.log(df['T_med'].values)
-    z = np.log(df['mf'].values)
-
-    X = np.linspace(min(x), max(x), 20)
-    Y = np.linspace(min(y), max(y), 20)
-    X, Y = np.meshgrid(X, Y)
-
-    Z = -0.5 * X + 1.5 * Y
-
-    model = LinearRegression().fit(np.log(df[['rho_med', 'T_med']].values.reshape(-1, 2)), z)
-    Z_pred = model.coef_[0] * X + model.coef_[1] * Y + model.intercept_
-
-    print('rho_med coef: ', model.coef_[0],  '\nT_med coef:', model.coef_[1])
-    print(model.score(np.log(df[['rho_med', 'T_med']].values.reshape(-1, 2)), z))
-
-    dot_product = np.dot(model.coef_, np.array([-0.5, 1.5]))
-    norm_v1 = np.linalg.norm(model.coef_)
-    norm_v2 = np.linalg.norm(np.array([-0.5, 1.5]))
-
-    similarity = dot_product / (norm_v1 * norm_v2)
-    print(f'cosine similarity between jeans and prediction planes: {similarity}')
+    df_prim = df[df['primary'] == 1]
 
 
-    fig = plt.figure(figsize=(20, 20))
-    ax = fig.add_subplot(111, projection='3d')
+    means = []
 
-    plane = ax.plot_surface(X, Y, Z, alpha=0.2, label='Jeans Mass Plane')
-    pred_plane = ax.plot_surface(X, Y, Z_pred, alpha=0.2, label='Linear Regression Plane')
+    for i in range(1, 10):
+        lower_bound = i*50
+        upper_bound = (i+1)*50
 
-    sc = ax.scatter(x, y, z, s=3, c=np.log10(df['mf']), cmap='rainbow', alpha=0.5)
-    plt.colorbar(sc, label=r'Total Mass ($M_\odot$) [log scale]')
-    ax.set_xlabel(r'$\rho_{med}$')
-    ax.set_ylabel(r'$T_{med}$')
-    ax.set_zlabel(r'$M_f$')
-    plt.title(r'$\rho_{med}$ and $T_{med}$ Scatter vs $M_f$')
+        df_sub = df_prim[(df_prim['snap'] >= lower_bound) & (df_prim['snap'] < upper_bound)]
+        mean = np.log10(df_sub['mf']).values.mean()
+        means.append(mean)
+    
+    plt.figure(figsize=(10, 8))
+    plt.scatter(df_prim['snap'].values, np.log10(df_prim['mf']).values, s=10, alpha=0.5)
+    plt.plot(np.arange(50, 500, 50) + 25, means, c='r', label='Rolling-Average Mean Mass')
+    plt.title('Snapshot vs. Final Mass (Primaries Only)')
+    plt.xlabel('Snapshot')
+    plt.ylabel(r'Final Mass (\log_{10}M_{\odot})')
+    plt.legend()
     plt.show()
 
-rho_T_3d()
-
+snap_of_primaries()
 
 def coefficients(root='rho'):
 
