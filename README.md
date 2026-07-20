@@ -435,15 +435,21 @@ A theoretical reason that could explain the difference in temperature power-law 
 
 The possible explanations as to why the theoretical power-law and data-driven power-law of $T_{\text{med}}$ are in disagreement; the median could be a poor metric of determining the bulk behavior of the gas and due to the Jeans Mass being a model of the smallest mass a star needs to form, the mass greater than this floor could be dependent on mass. 
 
+Forcing the coefficients of $\rho_{text{med}}$ and $T_{\text{med}}$ to be -0.5 and 1.5, respectively, and fitting an intercept to the data yields and $R^2$ value of 0.65. This means that 65% of the variance in stellar mass can be explained by the relation.
+
 ##### Next Steps (Misc):
 * [x] 1. Investigate the snap vs. relationship in primary stars
-* [ ] 2. Investigate patch data on primary stars only  
+* [x] 2. Investigate patch data on primary stars only  
 * [ ] 3. Investigate multi-target model for patch datasets on primaries
 * [ ] 4. Investigate at sample weighted version of the 0.01b patch
 * [ ] 5. Look at older snapshots for the Jeans Mass 3D analysis
 * [ ] 6. Calculate Jeans Mass intercept from astropy
 
 **7/20** - Looking at the connection between snapshot number of sink point formation and final mass in primary stars, there appears to be a very minor bump in the mean mass of stars formed in the middle third of th 500 snapshot period. The spread away from this mean is very large. The code visualizing the relation is in **residual_analysis.py**.
+
+### Primary Stars Analysis
+
+**7/20** - Looking at the Performance of all stars versus only primary stars in the 0.01b, 0.1, and 0.5 parsec patches, there is little difference between the performance with effectively identical $R^2$ values and individual correlation coefficients. In all cases the more restrictive singles only cut of the dataset performs better though this cut removes the majority of stars and all of the largest stars which the primaries cut preserves. These figures can be found in their respective patch folders with directory names starting with 'figures/patch_figures_xxxx'.
 
 
 
