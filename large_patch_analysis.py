@@ -8,14 +8,15 @@ from seaborn import heatmap
 from sklearn.manifold import TSNE
 import sys
 import argparse
+from process_data import add_primaries
 
 # define features
 features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
         'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'PE_global', 'snap', 'num_stars'] 
 
-#df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.5_patch.pq').reset_index()
+df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.5_patch.pq').reset_index()
 #df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.1.pq').reset_index()
-df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.01b.pq').reset_index()
+#df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.01b.pq').reset_index()
 
 #df_patch = df_patch[df_patch['N_inc'] >= 10]
 
@@ -28,11 +29,16 @@ df_patch['num_stars'] += 1
 # log and normalize data
 df_patch_log = log_data(features=features, train=df_patch, train_val=False, normalize=True, multiplicity=True)
 
+# primary only filter
+df_patch_log = add_primaries(df_patch_log)
+df_primary = df_patch_log[df_patch_log['primary'] == 1].set_index('sink_id')
+
 #df_patch_log = df_patch_log[10**df_patch_log['mf'] >= 0.1]
 
 
-# define  asubset of the data with only stars that are single
+# define a subset of the data with only stars that are single
 df_single = df_patch_log[df_patch_log['max_mult'] == 1]
+
 
 
 def plot_correlation_heatmap(df):
@@ -40,11 +46,11 @@ def plot_correlation_heatmap(df):
     correlation_matrix = df.corr()
     plt.figure(figsize=(15, 12))
     heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-    plt.title('Correlation Heatmap of Accreted Gas Properties (all log, singles only)')
+    plt.title('Correlation Heatmap of Accreted Gas Properties (all log, primaries only)')
 
     plt.tight_layout()
 
-    #plt.savefig('figures/patch_figures_0.01b/correlation_heatmap_0.01b_patch_singles.pdf', dpi=300, bbox_inches='tight')
+    plt.savefig('figures/patch_figures_0.5/correlation_heatmap_0.5_patch_primaries.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -65,10 +71,10 @@ def plot_tsne(df):
     plt.figure(figsize=(10, 8))
     scatter = plt.scatter(df_tsne['t-SNE 1'], df_tsne['t-SNE 2'], s=10, c=df['mf'], cmap='viridis', alpha=0.5)
     plt.colorbar(scatter, label=r'Final Mass ($M_\odot$) [log scale]')
-    plt.title(r't-SNE of 0.01 Pcs Patch Singles Properties (features: $n_e$, T, B, $\rho$, $PE_{global}$, snap, num_stars)')
+    plt.title(r't-SNE of 0.5 Pcs Patch Primaries Properties (features: $n_e$, T, B, $\rho$, $PE_{global}$, snap, num_stars)')
     plt.xlabel('t-SNE 1')
     plt.ylabel('t-SNE 2')
-    #plt.savefig('figures/patch_figures_0.01b/tsne_visualization_0.01b_patch_singles.pdf', dpi=300, bbox_inches='tight')
+    plt.savefig('figures/patch_figures_0.5/tsne_visualization_0.5_patch_primaries.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -88,8 +94,8 @@ def plot_lasso_cv(X_train, y_train):
     plt.plot(y_train, y_train, c='r')
     plt.xlabel(r'Ground Truth Mass [$\log_{10}M_\odot$]')
     plt.ylabel(r'Predicted Mass [$\log_{10}M_\odot$]')
-    plt.title(f'LASSO-CV model of 0.01 parsec patch singles - $R^2 =$ {r2:.2f} - features = {len(chosen_features)}')
-    #plt.savefig('figures/patch_figures_0.01b/lasso_cv_0.01b_patch_singles.pdf', dpi=300)
+    plt.title(f'LASSO-CV model of 0.5 parsec patch primaries - $R^2 =$ {r2:.2f} - features = {len(chosen_features)}')
+    plt.savefig('figures/patch_figures_0.5/lasso_cv_0.5_patch_primaries.pdf', dpi=300)
 
     plt.show()
 
@@ -100,12 +106,16 @@ def main():
     parser.add_argument('--tsne', action='store_true', help='plots a t-SNE of the 0.5 patch features colored with final mass')
     parser.add_argument('--lasso_cv', '-l', action='store_true', help='plots a LASSO-CV model predicting the final mass of the 0.5 patch data')
     parser.add_argument('--single', '-s', action='store_true', help='uses only singular data to plot figures')
+    parser.add_argument('--primary', '-p', action='store_true', help='uses only primary data to plot figures')
     args = parser.parse_args()
 
     if args.single:
         df = df_single
+    elif args.primary:
+        df = df_primary
     else:
         df = df_patch_log
+    
 
     if args.heatmap:
         plot_correlation_heatmap(df=df)
