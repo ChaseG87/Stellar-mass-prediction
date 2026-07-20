@@ -443,11 +443,22 @@ Forcing the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ to be -0.5 
 * [ ] 3. Investigate multi-target model for patch datasets on primaries
 * [ ] 4. Investigate at sample weighted version of the 0.01b patch
 * [ ] 5. Look at older snapshots for the Jeans Mass 3D analysis
-* [ ] 6. Calculate Jeans Mass intercept from astropy
+* [x] 6. Calculate the theoretical Jeans Mass intercept
 * [x] 7. Investigate performance of coefficient forced linear regression using Jeans mass framework
 * [ ] 8. Figure out large $T_{\text{med}}$ outlier classification
 
 **7/20** - Looking at the connection between snapshot number of sink point formation and final mass in primary stars, there appears to be a very minor bump in the mean mass of stars formed in the middle third of th 500 snapshot period. The spread away from this mean is very large. The code visualizing the relation is in **residual_analysis.py**.
+
+To calculate the theoretical coefficient of $T^{1.5}$ and $\rho^{0.5}$ Jeans mass using the units of the simulation (the intercept in log-space), kilograms must be converted to solar masses ($M_\odot$) and meters must be converted to parsecs because the code units of $\rho$ are $M_\odot \text{ pc}^{-3}$. Hence,
+
+$$M_{\text{J}} = \left[ \frac{5 \cdot k_{\text{B}})}{G \cdot \mu \cdot m_{\text{H}})} \right]^{3/2} \cdot \left( \frac{3}{4\pi} \right)^{1/2} T^{3/2} \rho^{-1/2}$$
+
+$$M_{\text{J}} = M_{\text{C}} T^{3/2} \rho^{-1/2}$$
+
+$$M_{\text{C}} = \left[ \frac{5 \cdot (1.3806 \times 10^{-23}\text{ kg m}^{2} \text{ s}^{-2} \text{ K}^{-1}) \cdot (3.0857 \times 10^{16}\text{ m pc}^{-1})}{(6.6743 \times 10^{-11}\text{ m}^3\text{ kg}^{-1}\text{ s}^{-2}) \cdot 2.4 \cdot (1.6605 \times 10^{-27}\text{ kg}) \cdot (1.9884 \times 10^{30}\text{ kg M}_{\odot}^{-1})} \right]^{3/2} \cdot \left( \frac{3}{4\pi} \right)^{1/2} = 3.94915 \text{ } M_\odot^{3/2} \text{  K}^{-3/2} \text{  pc}^{-3/2}.$$
+
+
+For the intercept of the log-space linear model, the coefficient is $\log_{10}(M_{\text{C}}) \approx 0.5969$. 
 
 ### Primary Stars Analysis
 
