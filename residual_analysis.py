@@ -208,11 +208,11 @@ def snap_of_primaries():
         upper_bound = (i+1)*50
 
         df_sub = df_prim[(df_prim['snap'] >= lower_bound) & (df_prim['snap'] < upper_bound)]
-        mean = np.log10(df_sub['rho_med']).values.mean()
+        mean = np.log10(df_sub['mf']).values.mean()
         means.append(mean)
     
     plt.figure(figsize=(10, 8))
-    plt.scatter(df_prim['snap'].values, np.log10(df_prim['rho_med']).values, s=10, alpha=0.5)
+    plt.scatter(df_prim['snap'].values, np.log10(df_prim['mf']).values, s=10, alpha=0.5)
     plt.plot(np.arange(50, 500, 50) + 25, means, c='r', label=r'Rolling-Average Mass')
     plt.title(r'Snapshot vs. Final Mass (Primaries Only)')
     plt.xlabel('Snapshot')
