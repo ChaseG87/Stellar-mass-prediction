@@ -70,7 +70,7 @@ def plot_lasso_cv(X_train, y_train, weighted=False):
         r2_w = r2_score(y_train, y_pred, sample_weight=weights)
 
         plt.figure(figsize=(10, 8))
-        plt.title(f'LASSO-CV model of 0.01 parsec patch primaries weighted - $R_w^2 =$ {r2_w:.2f} - $R^2 =$ {r2:.2f} - features = {len(chosen_features)}')
+        plt.title(f'LASSO-CV model of 0.5 parsec patch primaries weighted - $R_w^2 =$ {r2_w:.2f} - $R^2 =$ {r2:.2f} - features = {len(chosen_features)}')
     else:
         r2 = r2_score(y_train, y_pred)
 
@@ -83,7 +83,7 @@ def plot_lasso_cv(X_train, y_train, weighted=False):
     plt.plot(y_train, y_train, c='r')
     plt.xlabel(r'Ground Truth Mass [$\log_{10}M_\odot$]')
     plt.ylabel(r'Predicted Mass [$\log_{10}M_\odot$]')
-    #plt.savefig('figures/patch_figures_0.5/lasso_cv_0.5_patch_primaries.pdf', dpi=300)
+    #plt.savefig('figures/patch_figures_0.5/lasso_cv_0.5_primaries_weighted.pdf', dpi=300)
 
     plt.show()
 
