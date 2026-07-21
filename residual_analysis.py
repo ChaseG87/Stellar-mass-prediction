@@ -216,7 +216,7 @@ def snap_of_primaries():
     plt.plot(np.arange(50, 500, 50) + 25, means, c='r', label=r'Rolling-Average Mass')
     plt.title(r'Snapshot vs. Final Mass (Primaries Only)')
     plt.xlabel('Snapshot')
-    plt.ylabel(r'Final Mass (\log_{10}M_{\odot})')
+    plt.ylabel(r'Final Mass ($\log_{10}M_{\odot}$)')
     plt.legend()
 
     #plt.savefig('figures/snapshot_vs_mass.pdf')
