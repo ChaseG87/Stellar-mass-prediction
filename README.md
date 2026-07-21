@@ -444,7 +444,7 @@ Forcing the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ to be -0.5 
 * [ ] 4. Figure out large $T_{\text{med}}$ outlier classification
 * [ ] 5. Analyze the validation set using jeans mass model
 
-**7/20** - Looking at the connection between snapshot number of sink point formation and final mass in primary stars, there appears to be a very minor bump in the mean mass of stars formed in the middle third of th 500 snapshot period. The spread away from this mean is very large. The code visualizing the relation is in **residual_analysis.py**.
+**7/20** - Looking at the connection between snapshot number of sink point formation and final mass in primary stars, there appears to be a very minor bump in the mean mass of stars formed in the middle third of the 500 snapshot period. The spread away from this mean is very large. The code visualizing the relation is in **residual_analysis.py**.
 
 To calculate the theoretical coefficient of $T^{1.5}$ and $\rho^{0.5}$ Jeans mass using the units of the simulation (the intercept in log-space), kilograms must be converted to solar masses ($M_\odot$) and meters must be converted to parsecs because the code units of $\rho$ are $M_\odot \text{ pc}^{-3}$. Hence,
 
