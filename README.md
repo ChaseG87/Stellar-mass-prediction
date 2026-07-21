@@ -448,7 +448,7 @@ Forcing the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ to be -0.5 
 
 To calculate the theoretical coefficient of $T^{1.5}$ and $\rho^{0.5}$ Jeans mass using the units of the simulation (the intercept in log-space), kilograms must be converted to solar masses ($M_\odot$) and meters must be converted to parsecs because the code units of $\rho$ are $M_\odot \text{ pc}^{-3}$. Hence,
 
-$$M_{\text{J}} = \left[ \frac{5 \cdot k_{\text{B}})}{G \cdot \mu \cdot m_{\text{H}})} \right]^{3/2} \cdot \left( \frac{3}{4\pi} \right)^{1/2} T^{3/2} \rho^{-1/2}$$
+$$M_{\text{J}} = \left[ \frac{5 \cdot k_{\text{B}}}{G \cdot \mu \cdot m_{\text{H}}} \right]^{3/2} \cdot \left( \frac{3}{4\pi} \right)^{1/2} T^{3/2} \rho^{-1/2}$$
 
 $$M_{\text{J}} = M_{\text{C}} T^{3/2} \rho^{-1/2}$$
 
