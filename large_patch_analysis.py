@@ -14,32 +14,6 @@ from process_data import add_primaries
 features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
         'B', 'B_med', 'B_16', 'B_84', 'B_std', 'rho', 'rho_med', 'rho_16', 'rho_84', 'rho_std', 'PE_global', 'snap', 'num_stars'] 
 
-df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.5_patch.pq').reset_index()
-#df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.1.pq').reset_index()
-#df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.01b.pq').reset_index()
-
-#df_patch = df_patch[df_patch['N_inc'] >= 10]
-
-# flip sign of potential energy to be strictly positive
-df_patch ['PE_global'] *= -1
-
-# add 1 so 0 star regions don't throw log errors (count the forming star)
-df_patch['num_stars'] += 1 
-
-# log and normalize data
-df_patch_log = log_data(features=features, train=df_patch, train_val=False, normalize=True, multiplicity=True)
-
-# primary only filter
-df_patch_log = add_primaries(df_patch_log)
-df_primary = df_patch_log[df_patch_log['primary'] == 1].set_index('sink_id')
-
-#df_patch_log = df_patch_log[10**df_patch_log['mf'] >= 0.1]
-
-
-# define a subset of the data with only stars that are single
-df_single = df_patch_log[df_patch_log['max_mult'] == 1]
-
-
 
 def plot_correlation_heatmap(df):
 
@@ -50,7 +24,7 @@ def plot_correlation_heatmap(df):
 
     plt.tight_layout()
 
-    plt.savefig('figures/patch_figures_0.5/correlation_heatmap_0.5_patch_primaries.pdf', dpi=300, bbox_inches='tight')
+    #plt.savefig('figures/patch_figures_0.5/correlation_heatmap_0.5_patch_primaries.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -74,7 +48,7 @@ def plot_tsne(df):
     plt.title(r't-SNE of 0.5 Pcs Patch Primaries Properties (features: $n_e$, T, B, $\rho$, $PE_{global}$, snap, num_stars)')
     plt.xlabel('t-SNE 1')
     plt.ylabel('t-SNE 2')
-    plt.savefig('figures/patch_figures_0.5/tsne_visualization_0.5_patch_primaries.pdf', dpi=300, bbox_inches='tight')
+    #plt.savefig('figures/patch_figures_0.5/tsne_visualization_0.5_patch_primaries.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -95,7 +69,7 @@ def plot_lasso_cv(X_train, y_train):
     plt.xlabel(r'Ground Truth Mass [$\log_{10}M_\odot$]')
     plt.ylabel(r'Predicted Mass [$\log_{10}M_\odot$]')
     plt.title(f'LASSO-CV model of 0.5 parsec patch primaries - $R^2 =$ {r2:.2f} - features = {len(chosen_features)}')
-    plt.savefig('figures/patch_figures_0.5/lasso_cv_0.5_patch_primaries.pdf', dpi=300)
+    #plt.savefig('figures/patch_figures_0.5/lasso_cv_0.5_patch_primaries.pdf', dpi=300)
 
     plt.show()
 
@@ -107,16 +81,58 @@ def main():
     parser.add_argument('--lasso_cv', '-l', action='store_true', help='plots a LASSO-CV model predicting the final mass of the 0.5 patch data')
     parser.add_argument('--single', '-s', action='store_true', help='uses only singular data to plot figures')
     parser.add_argument('--primary', '-p', action='store_true', help='uses only primary data to plot figures')
+    parser.add_argument('--p01', action='store_true', help='chooses 0.1 parsec patch')
+    parser.add_argument('--p001', action='store_true', help='chooses 0.01 parsec patch')
+    parser.add_argument('--p05', action='store_true', help='chooses 0.5 parsec patch')
     args = parser.parse_args()
+
+    if args.p001:
+        df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.01b.pq').reset_index()
+
+    elif args.p01:
+        df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.1.pq').reset_index()
+    
+    elif args.p05:
+        df_patch = pd.read_parquet('star_data/accreted_gas_properties_pre_stellar_0.5_patch.pq').reset_index()
+    
+    else:
+        raise ValueError('Need to define patch, call either --p001, --p01, or --p05')
+    
+
+    # flip sign of potential energy to be strictly positive
+    df_patch ['PE_global'] *= -1
+
+    # add 1 so 0 star regions don't throw log errors (count the forming star)
+    df_patch['num_stars'] += 1 
+
+    # log and normalize data
+    df_patch_log = log_data(features=features, train=df_patch, train_val=False, normalize=True, multiplicity=True)
+    
+
+    df_patch_log = add_primaries(df_patch_log).set_index('sink_id')
+    df_primary = df_patch_log[df_patch_log['primary'] == 1]
+    df_patch_log = df_patch_log.drop(columns='primary')
+
+    
+    # define a subset of the data with only stars that are single
+    df_single = df_patch_log[df_patch_log['max_mult'] == 1]
+
+    # filtering out smallest stars
+    #df_patch_log = df_patch_log[10**df_patch_log['mf'] >= 0.1]
+
+    # uncomment to have reduced cut
+    #df_patch = df_patch[df_patch['N_inc'] >= 10]
 
     if args.single:
         df = df_single
+
     elif args.primary:
         df = df_primary
+
     else:
         df = df_patch_log
-    
 
+    
     if args.heatmap:
         plot_correlation_heatmap(df=df)
 
@@ -128,7 +144,6 @@ def main():
         y = df['mf'].values
 
         plot_lasso_cv(X_train=X, y_train=y)
-
 
 
 if __name__ == '__main__':
