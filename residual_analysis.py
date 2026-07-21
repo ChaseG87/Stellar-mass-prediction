@@ -201,7 +201,6 @@ def snap_of_primaries():
     
     df_prim = df[df['primary'] == 1]
 
-
     means = []
 
     for i in range(1, 10):
@@ -209,16 +208,18 @@ def snap_of_primaries():
         upper_bound = (i+1)*50
 
         df_sub = df_prim[(df_prim['snap'] >= lower_bound) & (df_prim['snap'] < upper_bound)]
-        mean = np.log10(df_sub['mf']).values.mean()
+        mean = np.log10(df_sub['rho_med']).values.mean()
         means.append(mean)
     
     plt.figure(figsize=(10, 8))
-    plt.scatter(df_prim['snap'].values, np.log10(df_prim['mf']).values, s=10, alpha=0.5)
-    plt.plot(np.arange(50, 500, 50) + 25, means, c='r', label='Rolling-Average Mean Mass')
-    plt.title('Snapshot vs. Final Mass (Primaries Only)')
+    plt.scatter(df_prim['snap'].values, np.log10(df_prim['rho_med']).values, s=10, alpha=0.5)
+    plt.plot(np.arange(50, 500, 50) + 25, means, c='r', label=r'Rolling-Average Mass')
+    plt.title(r'Snapshot vs. Final Mass (Primaries Only)')
     plt.xlabel('Snapshot')
     plt.ylabel(r'Final Mass (\log_{10}M_{\odot})')
     plt.legend()
+
+    #plt.savefig('figures/snapshot_vs_mass.pdf')
     plt.show()
 
 snap_of_primaries()
@@ -253,7 +254,7 @@ def coefficients(root='rho'):
 
 # Pairplot of the statistics of each internal property in log space
 #cross_correlation_scatter(df, ['mf', 'B', 'B_med', 'B_16', 'B_84'])
-#cross_correlation_scatter(df, ['mf', 'T', 'T_med', 'B', 'B_med'])
+#cross_correlation_scatter(df, ['mf', 'T_med', 'snap'])
 #cross_correlation_scatter(df, ['Ne', 'Ne_med', 'Ne_16', 'Ne_84'])
 #cross_correlation_scatter(df, ['mf','true_bulk_density', 'rho_med', 'rho_16', 'rho_84', 'R_eff'])
 #df = df.reset_index()
