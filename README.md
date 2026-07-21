@@ -468,6 +468,7 @@ For the intercept of the log-space linear model, the coefficient is $\log_{10}(M
 * [x] 2. Investigate patch data on primary stars only  
 * [ ] 3. Investigate multi-target model for patch datasets on primaries
 * [x] 4. Investigate at sample weighted version of the 0.01b, 0.1 and 0.5 patches
+* [ ] 5. Investigate XGBoost model (need validation for hyperparameter tuning, CV?)
 
 ### 7/22 Meeting
 1. Jeans Mass coefficients **jeans_mass_analysis.py**
