@@ -219,7 +219,7 @@ def snap_of_primaries():
     plt.ylabel(r'Final Mass ($\log_{10}M_{\odot}$)')
     plt.legend()
 
-    #plt.savefig('figures/snapshot_vs_mass.pdf')
+    plt.savefig('figures/snapshot_vs_mass.pdf')
     plt.show()
 
 snap_of_primaries()
