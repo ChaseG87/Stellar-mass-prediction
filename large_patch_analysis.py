@@ -52,23 +52,37 @@ def plot_tsne(df):
     plt.show()
 
 
-def plot_lasso_cv(X_train, y_train):
+def plot_lasso_cv(X_train, y_train, weighted=False):
 
-    model = LassoCV(cv=5, max_iter=10000).fit(X_train, y_train)
+    if weighted:
+        weights = np.sqrt(10**y_train)
+    else:
+        weights = None
+
+    model = LassoCV(cv=5, max_iter=10000).fit(X_train, y_train, sample_weight=weights)
     coefs = model.coef_
     chosen_features = [features[i] for i in range(len(features)) if coefs[i]]
 
     y_pred = model.predict(X_train)
-    r2 = r2_score(y_train, y_pred)
+
+    if weighted:
+        r2 = r2_score(y_train, y_pred)
+        r2_w = r2_score(y_train, y_pred, sample_weight=weights)
+
+        plt.figure(figsize=(10, 8))
+        plt.title(f'LASSO-CV model of 0.01 parsec patch primaries weighted - $R_w^2 =$ {r2_w:.2f} - $R^2 =$ {r2:.2f} - features = {len(chosen_features)}')
+    else:
+        r2 = r2_score(y_train, y_pred)
+
+        plt.figure(figsize=(10, 8))
+        plt.title(f'LASSO-CV model of 0.5 parsec patch primaries - $R^2 =$ {r2:.2f} - features = {len(chosen_features)}')
 
     print(chosen_features)
 
-    plt.figure(figsize=(10, 8))
     plt.scatter(y_train, y_pred, s=10, alpha=0.5)
     plt.plot(y_train, y_train, c='r')
     plt.xlabel(r'Ground Truth Mass [$\log_{10}M_\odot$]')
     plt.ylabel(r'Predicted Mass [$\log_{10}M_\odot$]')
-    plt.title(f'LASSO-CV model of 0.5 parsec patch primaries - $R^2 =$ {r2:.2f} - features = {len(chosen_features)}')
     #plt.savefig('figures/patch_figures_0.5/lasso_cv_0.5_patch_primaries.pdf', dpi=300)
 
     plt.show()
@@ -84,6 +98,7 @@ def main():
     parser.add_argument('--p01', action='store_true', help='chooses 0.1 parsec patch')
     parser.add_argument('--p001', action='store_true', help='chooses 0.01 parsec patch')
     parser.add_argument('--p05', action='store_true', help='chooses 0.5 parsec patch')
+    parser.add_argument('--weighted', '-w', action='store_true', help='turns on square root of mass weights for lasso cv when called')
     args = parser.parse_args()
 
     if args.p001:
@@ -143,7 +158,7 @@ def main():
         X = df[features].values.reshape(-1, len(features))
         y = df['mf'].values
 
-        plot_lasso_cv(X_train=X, y_train=y)
+        plot_lasso_cv(X_train=X, y_train=y, weighted=args.weighted)
 
 
 if __name__ == '__main__':
