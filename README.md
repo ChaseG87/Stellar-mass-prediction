@@ -441,7 +441,7 @@ Forcing the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ to be -0.5 
 * [ ] 1. Look at older snapshots for the Jeans Mass 3D analysis
 * [x] 2. Calculate the theoretical Jeans Mass intercept
 * [x] 3. Investigate performance of coefficient forced linear regression using Jeans mass framework
-* [ ] 4. Figure out large $T_{\text{med}}$ outlier classification
+* [ ] 4. Figure out large $T_{\text{med}}$ outlier classification (understand why these)
 * [ ] 5. Analyze the validation set using jeans mass model
 
 **7/20** - Looking at the connection between snapshot number of sink point formation and final mass in primary stars, there appears to be a very minor bump in the mean mass of stars formed in the middle third of the 500 snapshot period. The spread away from this mean is very large. The code visualizing the relation is in **residual_analysis.py**.
@@ -456,6 +456,10 @@ $$M_{\text{C}} = \left[ \frac{5 \cdot (1.3806 \times 10^{-23}\text{ kg m}^{2} \t
 
 
 For the intercept of the log-space linear model, the coefficient is $\log_{10}(M_{\text{C}}) \approx 0.5969$. Using this value for the intercept of the plane, 503 stars, or approximately 22% have masses less than the minimum mass needed for a star to form predicted by the Jeans mass. When the high temperature subset is excluded this falls to 19%. This overestimation of the minimum mass needed for a star to form could be a result of a couple of factors: the median is not good enough as a representative statistic, the feedback gas cells can account for the mass difference, and/or the model doesn't account for the change in gas properties from the pre-sink snapshot to the formation of the sink point. 
+
+**7/21** - The low dynamic range of temperature from just 2 - 70 K with most stars having $T_{\text{med}}$ values between 2 - 20 K could mean that the fit power-law relation is very sensitive to minor changes in the data. This same issue does not exist for $\rho{\teext{med}}$ which could be why the value appears to be so stable upon resampling. Additionally, other correlations between the masses of stars and temperature can influence the power-law relationship.
+
+Looking at the snapshot vs $T_{\text{med}}$ of a star when it is born there is a major hump in the middle of the simulation ([figures/snapshot_vs_t_med.pdf](figures/snapshot_vs_t_med.pdf)).
 
 ### Primary Stars Analysis
 
@@ -482,8 +486,9 @@ For the intercept of the log-space linear model, the coefficient is $\log_{10}(M
      (iv) Outliers in $T_{\text{med}}$ and performance of linear model and fitted jeans mass model
    
 2. Primary star performance of [0.01b](figures/patch_figures_0.01b), [0.1](figures/patch_figures_0.1), and [0.5](figures/patch_figures_0.5) patches (weighted and unweighted)
-3. Snapshot versus final mass figure **residual_analysis.py**
-4. Figure with mass density from simulation for poster
+3. Snapshot versus final mass [figure](figures/snapshot_vs_mass.pdf) 
+4. Snapshot versus $T_{\text{med}}$ [figure](figures/snapshot_vs_t_med.pdf)
+5. Figure with mass density from simulation for poster
 
 
 
