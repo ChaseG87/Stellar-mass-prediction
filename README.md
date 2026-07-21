@@ -437,15 +437,12 @@ The possible explanations as to why the theoretical power-law and data-driven po
 
 Forcing the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ to be -0.5 and 1.5, respectively, and fitting an intercept to the data yields and $R^2$ value of 0.65. This means that 65% of the variance in stellar mass can be explained by the relation. When outlier stars with large $T_{\text{med}}$ values are excluded ($>25^{\circ} \text{ K}$, 4.7% of the stars), the $R^2$ of the forced coefficient model improves to 0.72 which is similar to the normal linear regression model with an $R^2$ of 0.76. Additionally, the similarity between the planes increased to a cosine similarity of 0.99 ($7.6^{\circ}$). I classified the region of stars as outliers visually and drew an arbitrary line. I need to figure out a justification for this removal of "outlier" stars. 
 
-##### Next Steps (Misc):
-* [x] 1. Investigate the snap vs. relationship in primary stars
-* [x] 2. Investigate patch data on primary stars only  
-* [ ] 3. Investigate multi-target model for patch datasets on primaries
-* [x] 4. Investigate at sample weighted version of the 0.01b, 0.1 and 0.5 patches
-* [ ] 5. Look at older snapshots for the Jeans Mass 3D analysis
-* [x] 6. Calculate the theoretical Jeans Mass intercept
-* [x] 7. Investigate performance of coefficient forced linear regression using Jeans mass framework
-* [ ] 8. Figure out large $T_{\text{med}}$ outlier classification
+##### Next Steps:
+* [ ] 1. Look at older snapshots for the Jeans Mass 3D analysis
+* [x] 2. Calculate the theoretical Jeans Mass intercept
+* [x] 3. Investigate performance of coefficient forced linear regression using Jeans mass framework
+* [ ] 4. Figure out large $T_{\text{med}}$ outlier classification
+* [ ] 5. Analyze the validation set using jeans mass model
 
 **7/20** - Looking at the connection between snapshot number of sink point formation and final mass in primary stars, there appears to be a very minor bump in the mean mass of stars formed in the middle third of th 500 snapshot period. The spread away from this mean is very large. The code visualizing the relation is in **residual_analysis.py**.
 
@@ -460,11 +457,32 @@ $$M_{\text{C}} = \left[ \frac{5 \cdot (1.3806 \times 10^{-23}\text{ kg m}^{2} \t
 
 For the intercept of the log-space linear model, the coefficient is $\log_{10}(M_{\text{C}}) \approx 0.5969$. Using this value for the intercept of the plane, 503 stars, or approximately 22% have masses less than the minimum mass needed for a star to form predicted by the Jeans mass. When the high temperature subset is excluded this falls to 19%. This overestimation of the minimum mass needed for a star to form could be a result of a couple of factors: the median is not good enough as a representative statistic, the feedback gas cells can account for the mass difference, and/or the model doesn't account for the change in gas properties from the pre-sink snapshot to the formation of the sink point. 
 
-**7/21** - Applying a sample weight of $\sqrt{M_f}$ to the 0.01b, 0.1, and 0.5 parsec patches on primary stars results in worse performace than unweighted LASSO-CV for both the 0.1 and 0.5 patches in both $R_w^2$ and $R^2$. For the 0.01b patch, the $R_w^2$ is 0.36 and appears to perform better for larger stars. However, the unweighted $R^2$ value is -0.08 meaning guessing the mean mass of the dataset would yield a better description of the variance that the model (the figures can be seen in [0.01b](figures/patch_figures_0.01b/lasso_cv_0.01_primaries_weighted.pdf), [0.1](figures/patch_figures_0.1/lasso_cv_0.1_primaries_weighted.pdf), and [0.5](figures/patch_figures_0.5/lasso_cv_0.5_primaries_weighted.pdf)). 
-
 ### Primary Stars Analysis
 
 **7/20** - Looking at the Performance of all stars versus only primary stars in the 0.01b, 0.1, and 0.5 parsec patches, there is little difference between the performance with effectively identical $R^2$ values and individual correlation coefficients. In all cases the more restrictive singles only cut of the dataset performs better though this cut removes the majority of stars and all of the largest stars which the primaries cut preserves. These figures can be found in their respective patch folders with directory names starting with 'figures/patch_figures_xxxx'.
+
+**7/21** - Applying a sample weight of $\sqrt{M_f}$ to the 0.01b, 0.1, and 0.5 parsec patches on primary stars results in worse performace than unweighted LASSO-CV for the 0.5 patches in both $R_w^2$ and $R^2$. For the 0.1 patch, $R_w^2$ is marginally higher than the unweighted LASSO-CV and has very poor pure $R^2$ of -0.30. For the 0.01b patch, the $R_w^2$ is 0.36 and appears to perform better for larger stars. However, the unweighted $R^2$ value is -0.08 meaning guessing the mean mass of the dataset would yield a better description of the variance that the model (the figures can be seen in [0.01b](figures/patch_figures_0.01b/lasso_cv_0.01_primaries_weighted.pdf), [0.1](figures/patch_figures_0.1/lasso_cv_0.1_primaries_weighted.pdf), and [0.5](figures/patch_figures_0.5/lasso_cv_0.5_primaries_weighted.pdf)). 
+
+##### Next Steps:
+* [x] 1. Investigate the snap vs. relationship in primary stars
+* [x] 2. Investigate patch data on primary stars only  
+* [ ] 3. Investigate multi-target model for patch datasets on primaries
+* [x] 4. Investigate at sample weighted version of the 0.01b, 0.1 and 0.5 patches
+
+### 7/22 Meeting
+1. Jeans Mass coefficients **jeans_mass_analysis.py**
+
+     (i) Analytical coefficient (number of stars below the plane)
+   
+     (ii) Emperical coefficient
+
+     (iii) Confidence Interval of $\rho_{\text{med}}$ and $T_{\text{med}}$
+
+     (iv) Outliers in $T_{\text{med}}$ and performance of linear model and fitted jeans mass model
+   
+2. Primary star performance of [0.01b](figures/patch_figures_0.01b), [0.1](figures/patch_figures_0.1), and [0.5](figures/patch_figures_0.5) patches (weighted and unweighted)
+3. Snapshot versus final mass figure **residual_analysis.py**
+4. Figure with mass density from simulation for poster
 
 
 
