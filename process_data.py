@@ -27,6 +27,9 @@ df_mult = pd.read_parquet('star_data/max_mults.pq')
 # load val multipliticy data
 df_mult_val = pd.read_parquet('star_data/test_max_mults.pq')
 
+# load primaries data
+primaries = pd.read_csv('star_data/primary_filt')
+
 
 def merge_snap_table(df, snap_table=snap_table_df):
     '''
@@ -93,7 +96,7 @@ def add_standard_error(df):
     '''
     Takes DataFrames and adds the standard error using the standard deviation and number of included particles
     inputs:
-        -dfs: DataFrames to be updated
+        -df: DataFrames to be updated
     returns:
         df: DataFrames with standard error statistics
     '''
@@ -108,7 +111,21 @@ def add_standard_error(df):
     return df
 
 
-def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, normalize=False, multiplicity=False):
+def add_primaries(df):
+    '''
+    Takes an input dataframe and returns the same data frame with primary data
+    inputs:
+        -df: DataFrame including 'sink_id' or indexed by 'sink_id'
+    returns:
+        -df: DataFrame indexed by 'sink_id'
+    '''
+
+    df = pd.merge(df.reset_index(), primaries, left_on='sink_id', right_on='sink_ids', how='outer').drop(columns='sink_ids')
+
+    return df
+
+
+def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, normalize=False, multiplicity=False, primaries=False):
     '''
     inputs:
         - train: DataFrame of the raw training data
@@ -123,6 +140,8 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
     # order data by sink index
     if 'mf' not in train.columns:
         train = merge_snap_table(train.reset_index())
+    if primaries:
+        train = add_primaries(train)
     train = train.set_index('sink_id').sort_index()
 
     # add standard error
@@ -134,7 +153,7 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
 
     if multiplicity:
         df_train = merge_max_mults(df=df_train.reset_index(), mults=df_mult).set_index('sink_id').sort_index()
-        df_train.drop(columns='pid')
+        df_train = df_train.drop(columns='pid')
 
     # pre-process taking the log of the mass (target)
     df_train['mf'] = np.log10(train['mf'])
@@ -150,7 +169,7 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
         
         if multiplicity:
             df_val = merge_max_mults(df=df_val.reset_index(), mults=df_mult_val).set_index('sink_id').sort_index()
-            df_val.drop(columns='pid')
+            df_val = df_val.drop(columns='pid')
 
         if normalize:
 
