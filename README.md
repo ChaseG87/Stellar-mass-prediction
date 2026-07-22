@@ -441,7 +441,7 @@ Forcing the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ to be -0.5 
 * [ ] 1. Look at older snapshots for the Jeans Mass 3D analysis
 * [x] 2. Calculate the theoretical Jeans Mass intercept
 * [x] 3. Investigate performance of coefficient forced linear regression using Jeans mass framework
-* [ ] 4. Figure out large $T_{\text{med}}$ outlier classification (understand why these)
+* [ ] 4. Figure out large $T_{\text{med}}$ outlier classification (understand why, temp heating?)
 * [ ] 5. Analyze the validation set using jeans mass model
 
 **7/20** - Looking at the connection between snapshot number of sink point formation and final mass in primary stars, there appears to be a very minor bump in the mean mass of stars formed in the middle third of the 500 snapshot period. The spread away from this mean is very large. The code visualizing the relation is in **residual_analysis.py**.
@@ -453,6 +453,8 @@ $$M_{\text{J}} = \left[ \frac{5 \cdot k_{\text{B}}}{G \cdot \mu \cdot m_{\text{H
 $$M_{\text{J}} = M_{\text{C}} T^{3/2} \rho^{-1/2}$$
 
 $$M_{\text{C}} = \left[ \frac{5 \cdot (1.3806 \times 10^{-23}\text{ kg m}^{2} \text{ s}^{-2} \text{ K}^{-1}) \cdot (3.0857 \times 10^{16}\text{ m pc}^{-1})}{(6.6743 \times 10^{-11}\text{ m}^3\text{ kg}^{-1}\text{ s}^{-2}) \cdot 2.4 \cdot (1.6605 \times 10^{-27}\text{ kg}) \cdot (1.9884 \times 10^{30}\text{ kg M}_{\odot}^{-1})} \right]^{3/2} \cdot \left( \frac{3}{4\pi} \right)^{1/2} = 3.94915 \text{ } M_\odot^{3/2} \text{  K}^{-3/2} \text{  pc}^{-3/2}.$$
+
+$$M_{\text{J}} = 0.394915 \left( \frac{T}{10 \text{ K}} \right)^{1.5} \left( \frac{\rho}{100,000 M_\odot \text{ pc}^{-3}} \right)^{-0.5}$$
 
 
 For the intercept of the log-space linear model, the coefficient is $\log_{10}(M_{\text{C}}) \approx 0.5969$. Using this value for the intercept of the plane, 503 stars, or approximately 22% have masses less than the minimum mass needed for a star to form predicted by the Jeans mass. When the high temperature subset is excluded this falls to 19%. This overestimation of the minimum mass needed for a star to form could be a result of a couple of factors: the median is not good enough as a representative statistic, the feedback gas cells can account for the mass difference, and/or the model doesn't account for the change in gas properties from the pre-sink snapshot to the formation of the sink point. 
@@ -468,6 +470,9 @@ A simple model of this assuming cooling rate is proportional to density and an a
 $$T_{\text{eff}} = T_{\text{eq}} + (T_{\text{med}} - T_{\text{eq}})\exp(\alpha \Delta t \rho_{\text{med}})$$
 
 $$M_{\text{J}} = M_{\text{C}} \cdot -\rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}}^{1.5}$$
+
+##### Next Steps: 
+* [ ] 1. 
 
 ### Primary Stars Analysis
 
