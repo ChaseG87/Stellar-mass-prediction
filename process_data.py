@@ -30,6 +30,8 @@ df_mult_val = pd.read_parquet('star_data/test_max_mults.pq')
 # load primaries data
 primaries = pd.read_csv('star_data/primary_filt')
 
+primaries_acc = pd.read_csv('star_data/primary_filter_acc')
+
 
 def merge_snap_table(df, snap_table=snap_table_df):
     '''
@@ -120,7 +122,7 @@ def add_primaries(df):
         -df: DataFrame indexed by 'sink_id'
     '''
 
-    df = pd.merge(df.reset_index(), primaries, left_on='sink_id', right_on='sink_ids', how='outer').drop(columns='sink_ids')
+    df = pd.merge(df.reset_index(), primaries_acc, left_on='sink_id', right_on='sink_ids', how='outer').drop(columns='sink_ids')
 
     return df
 

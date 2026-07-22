@@ -7,15 +7,18 @@ from sklearn.metrics import r2_score
 from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 from seaborn import heatmap
-from process_data import merge_snap_table, add_standard_error, merge_max_mults, log_data
+from process_data import log_data, n_snaps_extract
 
 
 # Load pre-stellar gas data
-df = log_data(features=['rho_med', 'T_med'])
-print(len(df))
+df = log_data(features=['rho_med', 'T_med', 'snap'])
+#df = log_data(train=n_snaps_extract(n_snaps=1), features=['rho_med', 'T_med', 'snap'])
+
 #df = df[10**df['mf'] > 0.1] # get rid of small stars 
-#df = df[df['T_med'] < 1.4] # remove really hot outliers
-print(len(df))
+#df = df[df['T_med'] < 1.3] # remove really hot outliers
+
+# define theory jeans mass constant
+theory_jeans_cf = 0.5969
 
 
 def emperical_jeans_intercept():
@@ -37,6 +40,8 @@ def emperical_jeans_intercept():
     return intercept
 
 
+
+
 def rho_T_3d():
     
     x = df['rho_med'].values
@@ -47,13 +52,16 @@ def rho_T_3d():
     Y = np.linspace(min(y), max(y), 20)
     X, Y = np.meshgrid(X, Y)
 
-    theory_jeans_cf = 0.5969
     emperical_jean_cf = emperical_jeans_intercept()
 
     df_under_jeans = df[-0.5 * df['rho_med'] + 1.5 * df['T_med'] + theory_jeans_cf > df['mf']]
     print('under jeans theory', len(df_under_jeans))
 
+    # analytical plane
     Z = -0.5 * X + 1.5 * Y + theory_jeans_cf
+
+    # emperical plane
+    #Z = -0.5 * X + 1.5 * Y + emperical_jean_cf
 
     # fit linear regression model
     model = LinearRegression().fit(df[['rho_med', 'T_med']].values.reshape(-1, 2), z)
@@ -127,6 +135,36 @@ def coefficient_bootstrap(df):
         print("-" * 30)
 
 
-coefficient_bootstrap(df=df)
+def mass_vs_residual(df):
+    '''
+    Plots the final mass vs the residual from the jeans mass prediction.
+    '''
 
-rho_T_3d()
+    rho = df['rho_med'].values
+    T = df['T_med'].values
+    mf = df['mf'].values
+
+    pred_floor = 1.5 * T - 0.5 * rho + theory_jeans_cf
+
+    plt.figure(figsize=(10, 8))
+    sc = plt.scatter(mf, mf - pred_floor, s=10, alpha=0.5, c=df['T_med'], cmap='viridis')
+    plt.colorbar(sc, label=r'$T_{med}$ (K) [log scale]')
+    plt.xlabel(r'Final Mass ($\log_{10}M_\odot$)')
+    plt.ylabel(r'Excess Mass above $M_J$ ($M_f - M_J$)')
+    plt.title('Mass versus Mass in Excess of Analytical Jeans Mass Prediction')
+    #plt.savefig('figures/mass_vs_jeans_mass_residual.png', dpi=300)
+    plt.show()
+
+
+mass_vs_residual(df)
+
+def temp_time_series():
+
+
+
+    pass
+
+
+#coefficient_bootstrap(df=df)
+
+#rho_T_3d()

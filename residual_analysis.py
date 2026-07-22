@@ -199,6 +199,7 @@ def rho_T_residual_coef():
 
 def snap_of_primaries():
     
+
     df_prim = df[df['primary'] == 1]
 
     means = []
@@ -254,7 +255,7 @@ def coefficients(root='rho'):
 
 # Pairplot of the statistics of each internal property in log space
 #cross_correlation_scatter(df, ['mf', 'B', 'B_med', 'B_16', 'B_84'])
-#cross_correlation_scatter(df, ['mf', 'T_med', 'snap'])
+cross_correlation_scatter(df, ['mf', 'T_med', 'rho_med'])
 #cross_correlation_scatter(df, ['Ne', 'Ne_med', 'Ne_16', 'Ne_84'])
 #cross_correlation_scatter(df, ['mf','true_bulk_density', 'rho_med', 'rho_16', 'rho_84', 'R_eff'])
 #df = df.reset_index()
