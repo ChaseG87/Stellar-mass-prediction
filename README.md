@@ -467,7 +467,7 @@ A simple model of this assuming cooling rate is proportional to density and an a
 
 $$T_{\text{eff}} = T_{\text{eq}} + (T_{\text{med}} - T_{\text{eq}})\exp(\alpha \Delta t \rho_{\text{med}})$$
 
-$$M_{\text{J}} = M_{\text{C}} \cdot -\rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}}^{1.5}$$
+$$M_{\text{J}} = M_{\text{C}} \cdot \rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}}^{1.5}$$
 
 ##### Next Steps: 
 * [ ] 1. Look at time series of $T_{\text{med}}$ to see how gas heats/cools
