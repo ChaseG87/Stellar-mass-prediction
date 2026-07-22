@@ -492,11 +492,13 @@ $$M_{\text{J}} = M_{\text{C}} \cdot -\rho_{\text{med}}^{-0.5} \cdot T_{\text{eff
      (iii) Confidence Interval of $\rho_{\text{med}}$ and $T_{\text{med}}$
 
      (iv) Outliers in $T_{\text{med}}$ and performance of linear model and fitted jeans mass model
+
+     (v) Residuals behavior of jeans model/linear model
    
-2. Primary star performance of [0.01b](figures/patch_figures_0.01b), [0.1](figures/patch_figures_0.1), and [0.5](figures/patch_figures_0.5) patches (weighted and unweighted)
-3. Snapshot versus final mass [figure](figures/snapshot_vs_mass.pdf) 
-4. Snapshot versus $T_{\text{med}}$ [figure](figures/snapshot_vs_t_med.pdf)
-5. Figure with mass density from simulation for poster
+3. Primary star performance of [0.01b](figures/patch_figures_0.01b), [0.1](figures/patch_figures_0.1), and [0.5](figures/patch_figures_0.5) patches (weighted and unweighted)
+4. Snapshot versus final mass [figure](figures/snapshot_vs_mass.pdf) 
+5. Snapshot versus $T_{\text{med}}$ [figure](figures/snapshot_vs_t_med.pdf)
+6. Figure with mass density from simulation for poster
 
 
 
