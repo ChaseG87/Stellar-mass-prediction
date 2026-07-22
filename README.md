@@ -441,8 +441,6 @@ Forcing the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ to be -0.5 
 * [ ] 1. Look at older snapshots for the Jeans Mass 3D analysis
 * [x] 2. Calculate the theoretical Jeans Mass intercept
 * [x] 3. Investigate performance of coefficient forced linear regression using Jeans mass framework
-* [ ] 4. Figure out large $T_{\text{med}}$ outlier classification (understand why, temp heating?)
-* [ ] 5. Analyze the validation set using jeans mass model
 
 **7/20** - Looking at the connection between snapshot number of sink point formation and final mass in primary stars, there appears to be a very minor bump in the mean mass of stars formed in the middle third of the 500 snapshot period. The spread away from this mean is very large. The code visualizing the relation is in **residual_analysis.py**.
 
@@ -472,7 +470,9 @@ $$T_{\text{eff}} = T_{\text{eq}} + (T_{\text{med}} - T_{\text{eq}})\exp(\alpha \
 $$M_{\text{J}} = M_{\text{C}} \cdot -\rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}}^{1.5}$$
 
 ##### Next Steps: 
-* [ ] 1. 
+* [ ] 1. Look at time series of $T_{\tex{med}}$ to see how gas heats/cools
+* [ ] 2. Plot the final mass vs residual mass from the jeans model to see the size of stars which minimum masses are poorly predicted
+* [ ] 3. Investigate primaries during accretion slice (need data)
 
 ### Primary Stars Analysis
 
