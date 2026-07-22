@@ -463,6 +463,12 @@ Looking at the snapshot vs $T_{\text{med}}$ of a star when it is born there is a
 
 **7/22** - Looking at the residuals between the analytical jeans mass model and the true final mass of stars, it appears that stars with higher $T{\text{med}}$ values are tending to be the ones that trend below the theoretical minimum mass of the star. My current hypothesis for this seeming defiance of the virial theorem is that $T{\text{med}}$ is not being representative in these cases where the median temperature is higher. I wonder also if there could be some cooling in the period between the pre-sink snapshot and the formation of the star so theoretically the star doesn't form until the gas actually gets cooler and the virial theorem isn't violated. Could this be modeled by some thermodynamic decay to the ambient temperature?
 
+A simple model of this assuming cooling rate is proportional to density and an ambient background temperature $T_{\text{eq}}$:
+
+$$T_{\text{eff}} = T_{\text{eq}} + (T_{\text{med}} - T_{\text{eq}})\exp(\alpha \Delta t \rho_{\text{med}})$$
+
+$$M_{\text{J}} = M_{\text{C}} \cdot -\rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}}^{1.5}$$
+
 ### Primary Stars Analysis
 
 **7/20** - Looking at the Performance of all stars versus only primary stars in the 0.01b, 0.1, and 0.5 parsec patches, there is little difference between the performance with effectively identical $R^2$ values and individual correlation coefficients. In all cases the more restrictive singles only cut of the dataset performs better though this cut removes the majority of stars and all of the largest stars which the primaries cut preserves. These figures can be found in their respective patch folders with directory names starting with 'figures/patch_figures_xxxx'.
