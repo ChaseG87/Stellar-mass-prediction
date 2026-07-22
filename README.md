@@ -441,8 +441,6 @@ Forcing the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ to be -0.5 
 * [ ] 1. Look at older snapshots for the Jeans Mass 3D analysis
 * [x] 2. Calculate the theoretical Jeans Mass intercept
 * [x] 3. Investigate performance of coefficient forced linear regression using Jeans mass framework
-* [ ] 4. Figure out large $T_{\text{med}}$ outlier classification (understand why these)
-* [ ] 5. Analyze the validation set using jeans mass model
 
 **7/20** - Looking at the connection between snapshot number of sink point formation and final mass in primary stars, there appears to be a very minor bump in the mean mass of stars formed in the middle third of the 500 snapshot period. The spread away from this mean is very large. The code visualizing the relation is in **residual_analysis.py**.
 
@@ -454,12 +452,30 @@ $$M_{\text{J}} = M_{\text{C}} T^{3/2} \rho^{-1/2}$$
 
 $$M_{\text{C}} = \left[ \frac{5 \cdot (1.3806 \times 10^{-23}\text{ kg m}^{2} \text{ s}^{-2} \text{ K}^{-1}) \cdot (3.0857 \times 10^{16}\text{ m pc}^{-1})}{(6.6743 \times 10^{-11}\text{ m}^3\text{ kg}^{-1}\text{ s}^{-2}) \cdot 2.4 \cdot (1.6605 \times 10^{-27}\text{ kg}) \cdot (1.9884 \times 10^{30}\text{ kg M}_{\odot}^{-1})} \right]^{3/2} \cdot \left( \frac{3}{4\pi} \right)^{1/2} = 3.94915 \text{ } M_\odot^{3/2} \text{  K}^{-3/2} \text{  pc}^{-3/2}.$$
 
+$$M_{\text{J}} = 0.394915 \left( \frac{T}{10 \text{ K}} \right)^{1.5} \left( \frac{\rho}{100,000 M_\odot \text{ pc}^{-3}} \right)^{-0.5}$$
+
 
 For the intercept of the log-space linear model, the coefficient is $\log_{10}(M_{\text{C}}) \approx 0.5969$. Using this value for the intercept of the plane, 503 stars, or approximately 22% have masses less than the minimum mass needed for a star to form predicted by the Jeans mass. When the high temperature subset is excluded this falls to 19%. This overestimation of the minimum mass needed for a star to form could be a result of a couple of factors: the median is not good enough as a representative statistic, the feedback gas cells can account for the mass difference, and/or the model doesn't account for the change in gas properties from the pre-sink snapshot to the formation of the sink point. 
 
-**7/21** - The low dynamic range of temperature from just 2 - 70 K with most stars having $T_{\text{med}}$ values between 2 - 20 K could mean that the fit power-law relation is very sensitive to minor changes in the data. This same issue does not exist for $\rho{\teext{med}}$ which could be why the value appears to be so stable upon resampling. Additionally, other correlations between the masses of stars and temperature can influence the power-law relationship.
+**7/21** - The low dynamic range of temperature from just 2 - 70 K with most stars having $T_{\text{med}}$ values between 2 - 20 K could mean that the fit power-law relation is very sensitive to minor changes in the data. This same issue does not exist for $\rho{\text{med}}$ which could be why the value appears to be so stable upon resampling. Additionally, other correlations between the masses of stars and temperature can influence the power-law relationship.
 
 Looking at the snapshot vs $T_{\text{med}}$ of a star when it is born there is a major hump in the middle of the simulation ([figures/snapshot_vs_t_med.pdf](figures/snapshot_vs_t_med.pdf)).
+
+**7/22** - Looking at the residuals between the analytical jeans mass model and the true final mass of stars, it appears that stars with higher $T{\text{med}}$ values are tending to be the ones that trend below the theoretical minimum mass of the star. My current hypothesis for this seeming defiance of the virial theorem is that $T{\text{med}}$ is not being representative in these cases where the median temperature is higher. I wonder also if there could be some cooling in the period between the pre-sink snapshot and the formation of the star so theoretically the star doesn't form until the gas actually gets cooler and the virial theorem isn't violated. Could this be modeled by some thermodynamic decay to the ambient temperature?
+
+A simple model of this assuming cooling rate is proportional to density and an ambient background temperature $T_{\text{eq}}$:
+
+$$T_{\text{eff}} = T_{\text{eq}} + (T_{\text{med}} - T_{\text{eq}})\exp(\alpha \Delta t \rho_{\text{med}})$$
+
+$$M_{\text{J}} = M_{\text{C}} \cdot \rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}}^{1.5}$$
+
+##### Next Steps: 
+* [x] 1. Plot the final mass vs residual mass from the jeans model to see the size of stars which minimum masses are poorly predicted
+* [ ] 2. Look at time series of $T_{\text{med}}$ to see how gas heats/cools
+* [ ] 3. Investigate primaries during accretion slice (need data)
+
+**7/22** - The final mass vs residual Jeans Mass (that is, the final mass minus the residual Jeans mass to investigate the mass in excess of the predicted minumum mass) plot ([here](figures/mass_vs_jeans_mass_residual.png)) shows that most of the stars that have negative residuals are warmer and therefore could cool rapidly before the star collapses decreasing the Jeans mass. Time series data of these outlier stars need to be investigated to better understand the heating/cooling behavior. 
+
 
 ### Primary Stars Analysis
 
@@ -470,9 +486,8 @@ Looking at the snapshot vs $T_{\text{med}}$ of a star when it is born there is a
 ##### Next Steps:
 * [x] 1. Investigate the snap vs. relationship in primary stars
 * [x] 2. Investigate patch data on primary stars only  
-* [ ] 3. Investigate multi-target model for patch datasets on primaries
-* [x] 4. Investigate at sample weighted version of the 0.01b, 0.1 and 0.5 patches
-* [ ] 5. Investigate XGBoost model (need validation for hyperparameter tuning, CV?)
+* [x] 3. Investigate at sample weighted version of the 0.01b, 0.1 and 0.5 patches
+* [ ] 4. Investigate XGBoost model (need validation for hyperparameter tuning, CV?)
 
 ### 7/22 Meeting
 1. Jeans Mass coefficients **jeans_mass_analysis.py**
@@ -484,11 +499,13 @@ Looking at the snapshot vs $T_{\text{med}}$ of a star when it is born there is a
      (iii) Confidence Interval of $\rho_{\text{med}}$ and $T_{\text{med}}$
 
      (iv) Outliers in $T_{\text{med}}$ and performance of linear model and fitted jeans mass model
+
+     (v) Residuals behavior of jeans model/linear model
    
-2. Primary star performance of [0.01b](figures/patch_figures_0.01b), [0.1](figures/patch_figures_0.1), and [0.5](figures/patch_figures_0.5) patches (weighted and unweighted)
-3. Snapshot versus final mass [figure](figures/snapshot_vs_mass.pdf) 
-4. Snapshot versus $T_{\text{med}}$ [figure](figures/snapshot_vs_t_med.pdf)
-5. Figure with mass density from simulation for poster
+3. Primary star performance of [0.01b](figures/patch_figures_0.01b), [0.1](figures/patch_figures_0.1), and [0.5](figures/patch_figures_0.5) patches (weighted and unweighted)
+4. Snapshot versus final mass [figure](figures/snapshot_vs_mass.pdf) 
+5. Snapshot versus $T_{\text{med}}$ [figure](figures/snapshot_vs_t_med.pdf)
+6. Figure with mass density from simulation for poster (use ananya's figure - cite)
 
 
 
