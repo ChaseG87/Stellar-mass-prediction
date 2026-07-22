@@ -483,9 +483,8 @@ $$M_{\text{J}} = M_{\text{C}} \cdot \rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}
 ##### Next Steps:
 * [x] 1. Investigate the snap vs. relationship in primary stars
 * [x] 2. Investigate patch data on primary stars only  
-* [ ] 3. Investigate multi-target model for patch datasets on primaries
-* [x] 4. Investigate at sample weighted version of the 0.01b, 0.1 and 0.5 patches
-* [ ] 5. Investigate XGBoost model (need validation for hyperparameter tuning, CV?)
+* [x] 3. Investigate at sample weighted version of the 0.01b, 0.1 and 0.5 patches
+* [ ] 4. Investigate XGBoost model (need validation for hyperparameter tuning, CV?)
 
 ### 7/22 Meeting
 1. Jeans Mass coefficients **jeans_mass_analysis.py**
@@ -503,7 +502,7 @@ $$M_{\text{J}} = M_{\text{C}} \cdot \rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}
 3. Primary star performance of [0.01b](figures/patch_figures_0.01b), [0.1](figures/patch_figures_0.1), and [0.5](figures/patch_figures_0.5) patches (weighted and unweighted)
 4. Snapshot versus final mass [figure](figures/snapshot_vs_mass.pdf) 
 5. Snapshot versus $T_{\text{med}}$ [figure](figures/snapshot_vs_t_med.pdf)
-6. Figure with mass density from simulation for poster
+6. Figure with mass density from simulation for poster (use ananya's figure - cite)
 
 
 
