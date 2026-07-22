@@ -470,7 +470,7 @@ $$T_{\text{eff}} = T_{\text{eq}} + (T_{\text{med}} - T_{\text{eq}})\exp(\alpha \
 $$M_{\text{J}} = M_{\text{C}} \cdot -\rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}}^{1.5}$$
 
 ##### Next Steps: 
-* [ ] 1. Look at time series of $T_{\tex{med}}$ to see how gas heats/cools
+* [ ] 1. Look at time series of $T_{\text{med}}$ to see how gas heats/cools
 * [ ] 2. Plot the final mass vs residual mass from the jeans model to see the size of stars which minimum masses are poorly predicted
 * [ ] 3. Investigate primaries during accretion slice (need data)
 
