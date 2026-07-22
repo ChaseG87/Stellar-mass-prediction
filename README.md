@@ -470,9 +470,12 @@ $$T_{\text{eff}} = T_{\text{eq}} + (T_{\text{med}} - T_{\text{eq}})\exp(\alpha \
 $$M_{\text{J}} = M_{\text{C}} \cdot \rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}}^{1.5}$$
 
 ##### Next Steps: 
-* [ ] 1. Look at time series of $T_{\text{med}}$ to see how gas heats/cools
-* [ ] 2. Plot the final mass vs residual mass from the jeans model to see the size of stars which minimum masses are poorly predicted
+* [x] 1. Plot the final mass vs residual mass from the jeans model to see the size of stars which minimum masses are poorly predicted
+* [ ] 2. Look at time series of $T_{\text{med}}$ to see how gas heats/cools
 * [ ] 3. Investigate primaries during accretion slice (need data)
+
+**7/22** - The final mass vs residual Jeans Mass (that is, the final mass minus the residual Jeans mass to investigate the mass in excess of the predicted minumum mass) plot ([here](figures/mass_vs_jeans_mass_residual.png)) shows that most of the stars that have negative residuals are warmer and therefore could cool rapidly before the star collapses decreasing the Jeans mass. Time series data of these outlier stars need to be investigated to better understand the heating/cooling behavior. 
+
 
 ### Primary Stars Analysis
 
