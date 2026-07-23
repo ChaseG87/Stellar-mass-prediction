@@ -83,7 +83,7 @@ def random_forest_grid_search(features, df_train):
 
 
     X_train = df_train[features].values.reshape(-1, len(features))
-    y_train = df_train['mf'].values
+    y_train = df_train[['mf', 'max_mult']].values.reshape(-1, 2)
 
     # Define the cross-validation strategy
     folds = KFold(n_splits=5, shuffle=True, random_state=42)
@@ -119,7 +119,7 @@ def main():
     if args.random_forest:
         regression_information_decay(features=features, snaps=42, model='random_forest')
     if args.rf_grid_search:
-        random_forest_grid_search(features=features, df_train=log_data(features=features, train_val=False, normalize=True))
+        random_forest_grid_search(features=features, df_train=log_data(features=features, train_val=False, normalize=True, multiplicity=True))
 
 
 if __name__ == '__main__':
