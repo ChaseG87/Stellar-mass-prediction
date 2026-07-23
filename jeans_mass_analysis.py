@@ -8,6 +8,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 from seaborn import heatmap
 from process_data import log_data, n_snaps_extract
+import argparse
+import sys
 
 
 # Load pre-stellar gas data
@@ -42,7 +44,10 @@ def emperical_jeans_intercept():
 
 
 
-def rho_T_3d():
+def rho_T_3d(emp_plane=False, ana_plane=False, lr_plane=False):
+    '''
+    generates a 3d plot of rho_med vs T_med vs mf. 
+    '''
     
     x = df['rho_med'].values
     y = df['T_med'].values
@@ -58,10 +63,12 @@ def rho_T_3d():
     print('under jeans theory', len(df_under_jeans))
 
     # analytical plane
-    Z = -0.5 * X + 1.5 * Y + theory_jeans_cf
+    if ana_plane:
+        a_Z = -0.5 * X + 1.5 * Y + theory_jeans_cf
 
     # emperical plane
-    #Z = -0.5 * X + 1.5 * Y + emperical_jean_cf
+    if emp_plane:
+        e_Z = -0.5 * X + 1.5 * Y + emperical_jean_cf
 
     # fit linear regression model
     model = LinearRegression().fit(df[['rho_med', 'T_med']].values.reshape(-1, 2), z)
@@ -84,8 +91,14 @@ def rho_T_3d():
     fig = plt.figure(figsize=(20, 20))
     ax = fig.add_subplot(111, projection='3d')
 
-    plane = ax.plot_surface(X, Y, Z, alpha=0.2, label='Jeans Mass Plane')
-    pred_plane = ax.plot_surface(X, Y, Z_pred, alpha=0.2, label='Linear Regression Plane')
+    if ana_plane:
+        a_plane = ax.plot_surface(X, Y, a_Z, alpha=0.2, label='Jeans Mass Plane (Analytical)')
+
+    if emp_plane:
+        e_plane = ax.plot_surface(X, Y, e_Z, alpha=0.2, label='Jeans Mass Plane (Emperical)')
+
+    if lr_plane:
+        pred_plane = ax.plot_surface(X, Y, Z_pred, alpha=0.2, label='Linear Regression Plane')
 
     sc = ax.scatter(x, y, z, s=3, c=df['mf'], cmap='rainbow', alpha=0.5)
     plt.colorbar(sc, label=r'Total Mass ($M_\odot$) [log scale]')
@@ -97,6 +110,10 @@ def rho_T_3d():
 
 
 def coefficient_bootstrap(df):
+    '''
+    Runs a bootstrap of the given DataFrame's T_med and rho_med linear regression coefficients
+    to generate a confidence interval.
+    '''
 
     n_iterations = 2000  # Number of bootstrap samples
     bootstrapped_coefs = []
@@ -144,6 +161,7 @@ def mass_vs_residual(df):
     T = df['T_med'].values
     mf = df['mf'].values
 
+    # define the theoretical jeans mass using the pre-stellar snapshot
     pred_floor = 1.5 * T - 0.5 * rho + theory_jeans_cf
 
     plt.figure(figsize=(10, 8))
@@ -153,19 +171,36 @@ def mass_vs_residual(df):
     plt.ylabel(r'Excess Mass above $M_J$ ($M_f - M_J$)')
     plt.plot(np.linspace(mf.min(), mf.max(), 20), np.zeros(20), linestyle=':', c='r', alpha=0.5)
     plt.title('Mass versus Mass in Excess of Analytical Jeans Mass Prediction')
-    plt.savefig('figures/mass_vs_jeans_mass_residual.png', dpi=300)
+    #plt.savefig('figures/mass_vs_jeans_mass_residual.png', dpi=300)
     plt.show()
 
-
-mass_vs_residual(df)
-
 def temp_time_series():
-
-
-
     pass
 
 
-#coefficient_bootstrap(df=df)
 
-#rho_T_3d()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--plot_3d', '-p3d', action='store_true', help='displays a 3d plot of rho vs T vs mass')
+    parser.add_argument('--linear', '-l', action='store_true', help='displays the linear model plane in the 3D plot')
+    parser.add_argument('--emperical_jeans', '-ej', action='store_true', help='displays the emperical linear regression jeans plane')
+    parser.add_argument('--analytical_jeans', '-aj', action='store_true', help='displays the analytical linear regression jeans plane')
+    parser.add_argument('--resample', '-rs', action='store_true', help='runs a bootstrap resample of the linear regression coefficients')
+    parser.add_argument('--mass_vs_residuals', '-mr', action='store_true', help='plots the masses vs the residual mass compared to the analytical jeans mass')
+    args = parser.parse_args()
+
+    if args.plot_3d:
+        rho_T_3d(emp_plane=args.emperical_jeans, ana_plane=args.analytical_jeans, lr_plane=args.linear)
+
+    if args.mass_vs_residuals:
+        mass_vs_residual(df=df)
+
+    if args.resample:
+        coefficient_bootstrap(df=df)
+
+    if len(sys.argv) == 1:
+        raise ValueError('No Flag Called')
+
+
+if __name__ == '__main__':
+    main()
