@@ -18,7 +18,7 @@ df = log_data(features=['rho_med', 'T_med', 'snap'])
 #df = df[df['T_med'] < 1.3] # remove really hot outliers
 
 # define theory jeans mass constant
-theory_jeans_cf = 0.5969
+theory_jeans_cf = 0.5917
 
 
 def emperical_jeans_intercept():
@@ -151,8 +151,9 @@ def mass_vs_residual(df):
     plt.colorbar(sc, label=r'$T_{med}$ (K) [log scale]')
     plt.xlabel(r'Final Mass ($\log_{10}M_\odot$)')
     plt.ylabel(r'Excess Mass above $M_J$ ($M_f - M_J$)')
+    plt.plot(np.linspace(mf.min(), mf.max(), 20), np.zeros(20), linestyle=':', c='r', alpha=0.5)
     plt.title('Mass versus Mass in Excess of Analytical Jeans Mass Prediction')
-    #plt.savefig('figures/mass_vs_jeans_mass_residual.png', dpi=300)
+    plt.savefig('figures/mass_vs_jeans_mass_residual.png', dpi=300)
     plt.show()
 
 
