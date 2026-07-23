@@ -488,6 +488,10 @@ $$M_{\text{J}} = M_{\text{C}} \cdot \rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}
 * [x] 2. Investigate patch data on primary stars only  
 * [x] 3. Investigate at sample weighted version of the 0.01b, 0.1 and 0.5 patches
 * [ ] 4. Investigate XGBoost model (need validation for hyperparameter tuning, CV?)
+* [x] 5. Investigate accreted primaries classification
+
+**7/23** - Looking at the accreted primaries partition of stars for the different patch data slices, the $R^2$ of all of them sit between the performance on the primary at the end of their life and the performace on singles alone. This improvement further supports the hypothesis that there is problem with cross contamination between stars bringing down predictive performance.
+
 
 ### 7/22 Meeting
 1. Jeans Mass coefficients **jeans_mass_analysis.py**
