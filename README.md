@@ -444,7 +444,7 @@ Forcing the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ to be -0.5 
 
 **7/20** - Looking at the connection between snapshot number of sink point formation and final mass in primary stars, there appears to be a very minor bump in the mean mass of stars formed in the middle third of the 500 snapshot period. The spread away from this mean is very large. The code visualizing the relation is in **residual_analysis.py**.
 
-To calculate the theoretical coefficient of $T^{1.5}$ and $\rho^{0.5}$ Jeans mass using the units of the simulation (the intercept in log-space), kilograms must be converted to solar masses ($M_\odot$) and meters must be converted to parsecs because the code units of $\rho$ are $M_\odot \text{ pc}^{-3}$. Hence,
+To calculate the theoretical coefficient of $T^{1.5}$ and $\rho^{-0.5}$ Jeans mass using the units of the simulation (the intercept in log-space), kilograms must be converted to solar masses ($M_\odot$) and meters must be converted to parsecs because the code units of $\rho$ are $M_\odot \text{ pc}^{-3}$. Hence,
 
 $$M_{\text{J}} = \left[ \frac{5 \cdot k_{\text{B}}}{G \cdot \mu \cdot m_{\text{H}}} \right]^{3/2} \cdot \left( \frac{3}{4\pi} \right)^{1/2} T^{3/2} \rho^{-1/2}$$
 
