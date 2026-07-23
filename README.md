@@ -507,5 +507,9 @@ $$M_{\text{J}} = M_{\text{C}} \cdot \rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}
 5. Snapshot versus $T_{\text{med}}$ [figure](figures/snapshot_vs_t_med.pdf)
 6. Figure with mass density from simulation for poster (use ananya's figure - cite)
 
+### Linear Regression Information Decay
+
+**7/23** - I noticed that when just looking at $\rho{\text{med}}$ and $T_{\text{med}}$, the linear regression information decay with time stops decaying exponentially around the 26th snapshot prior to the pre-stellar snapshot ([figures/information_decay_linear_regression_no_B.pdf](figures/information_decay_linear_regression_no_B.pdf)) instead of continuing through to the beginning of the simulation ([figures/information_decay_linear_regression.pdf](figures/information_decay_linear_regression.pdf)). This appears to communicate that the median magnetic field strength has farther reaching predictive capabilities in time compared to $\rho{\text{med}}$ and $T_{\text{med}}$ alone. I currently do not have a hypothesis for the explanation of this behavior.
+
 
 
