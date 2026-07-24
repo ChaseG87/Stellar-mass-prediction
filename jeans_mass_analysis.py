@@ -196,7 +196,7 @@ def temp_time_series():
     df = log_data(train=n_snaps_extract(n_snaps=0), features=['rho_med', 'T_med', 'snap'])
     ids = df[(df['T_med'] > 1.3) & (10**df['mf'] > 0.1)].reset_index()['sink_id']
 
-    df_idx = set(n_snaps_extract(n_snaps=-1).set_index('sink_id').index)
+    df_idx = set(n_snaps_extract(n_snaps=-2).set_index('sink_id').index)
 
     ids = [id for id in ids if id in df_idx]
     id_dict = {id:[] for id in ids}
@@ -205,7 +205,7 @@ def temp_time_series():
     plt.figure(figsize=(10, 8))
 
 
-    for snap in range (-1, 5):
+    for snap in range (-2, 5):
         # going 2 snapshots forward in time stars start to have 0 accreting particles
         snap_df = log_data(train=n_snaps_extract(n_snaps=snap), features=['rho_med', 'T_med', 'snap'])
 
@@ -217,8 +217,8 @@ def temp_time_series():
     cmap = plt.get_cmap('viridis')
     
     for id in ids:
-        plt.plot(range(-4 , 2), id_dict[id][::-1], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
-        plt.scatter(range(-4, 2), id_dict[id][::-1], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
+        plt.plot(range(-4 , 3), id_dict[id][::-1], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
+        plt.scatter(range(-4, 3), id_dict[id][::-1], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
 
     plt.title(r'Outlier Hot Stars $T_{med}$ vs. Snapshots')
     plt.xlabel('Snapshots Relative to Pre-sink Snapshot')
