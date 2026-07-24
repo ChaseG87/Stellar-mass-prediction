@@ -529,7 +529,7 @@ Bootstrapping the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ movin
 ### 7/24 Meeting
 
 1. Older Snapshots Jeans mass performance/analysis
-2. Temperature vs Time (Not Cooling)
+2. [Temperature vs Time](figures/outliers_temp_time_series.png) (Not Cooling - need to add mass data)
 3. Thoughts on information decay?
 4. Starforge QR code on poster
 5. Presenting the Jeans mass analysis (pressure formation? Emperical understanding that differs from jeans mass?)
