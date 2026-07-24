@@ -438,7 +438,7 @@ The possible explanations as to why the theoretical power-law and data-driven po
 Forcing the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ to be -0.5 and 1.5, respectively, and fitting an intercept to the data yields and $R^2$ value of 0.65. This means that 65% of the variance in stellar mass can be explained by the relation. When outlier stars with large $T_{\text{med}}$ values are excluded ($>25^{\circ} \text{ K}$, 4.7% of the stars), the $R^2$ of the forced coefficient model improves to 0.72 which is similar to the normal linear regression model with an $R^2$ of 0.76. Additionally, the similarity between the planes increased to a cosine similarity of 0.99 ($7.6^{\circ}$). I classified the region of stars as outliers visually and drew an arbitrary line. I need to figure out a justification for this removal of "outlier" stars. 
 
 ##### Next Steps:
-* [ ] 1. Look at older snapshots for the Jeans Mass 3D analysis
+* [x] 1. Look at older snapshots for the Jeans Mass 3D analysis
 * [x] 2. Calculate the theoretical Jeans Mass intercept
 * [x] 3. Investigate performance of coefficient forced linear regression using Jeans mass framework
 
@@ -471,13 +471,20 @@ $$M_{\text{J}} = M_{\text{C}} \cdot \rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}
 
 ##### Next Steps: 
 * [x] 1. Plot the final mass vs residual mass from the jeans model to see the size of stars which minimum masses are poorly predicted
-* [ ] 2. Look at time series of $T_{\text{med}}$ to see how gas heats/cools
-* [ ] 3. Investigate primaries during accretion slice (need data)
-* [ ] 4. Investigate the addition of feedback particles to the mass
+* [x] 2. Look at time series of $T_{\text{med}}$ to see how gas heats/cools
+* [x] 3. Investigate primaries during accretion slice (need data)
+* [x] 4. Investigate the addition of feedback particles to the mass
 
 **7/22** - The final mass vs residual Jeans Mass (that is, the final mass minus the residual Jeans mass to investigate the mass in excess of the predicted minumum mass) plot ([here](figures/mass_vs_jeans_mass_residual.png)) shows that most of the stars that have negative residuals are warmer and therefore could cool rapidly before the star collapses decreasing the Jeans mass. Time series data of these outlier stars need to be investigated to better understand the heating/cooling behavior. 
 
 **7/24** - After initial investigation of the the median temperature over time of the hottest stars that appeared to not have enough mass to satisfy the Jeans Mass condition to collapse, my hypothesis of cooling appears to to false as the stars get even hotter in the first time step with a sink point (it is possible they are cooling in the window and deuterium burning heats up when they are observed again but there is no way to validate this). Two other physical factors that explain the disagreement with the Jeans mass is the assumption of a "calm" environment and pressure waves being capable of promoting consolidation of pre-stellar objects and the exclusion of feedback particles from the mass. 
+
+
+The primaries during accretion slice performs incredibily similarly to the full dataset with 22% of the stars falling below the theoretical Jeans mass plane and a similar coefficient ranges result from the bootstrap.
+
+The addition of feedback particles (assuming each particle mass is 0.001 $M_\odot$) to the mass changed nothing qualitatively about the number of stars that fall under the analytical Jeans mass.
+
+Bootstrapping the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ moving further back in time from the pre-sink snapshot, moving one snapshot back the coefficient of $\rho_{\text{med}}$ jumps to -0.70 and hovers around that range for the next 4 snapshots back. The coefficient of $T_{\text{med}}$ stays in the range of 0.95 to 0.85 through the first 5 snapshots. The $R^2$ values through these snapshots follows an exponential decay, going from an initial $R^2$ of 0.75 in the pre-stellar snapshot, to an $R^2$ of 0.52, 5 snapshots (or 123,515 years) earlier.
 
 ### Primary Stars Analysis
 
