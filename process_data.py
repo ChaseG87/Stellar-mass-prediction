@@ -160,6 +160,10 @@ def log_data(features, train=raw_df_train, val=raw_df_val, train_val=False, norm
     # pre-process taking the log of the mass (target)
     df_train['mf'] = np.log10(train['mf'])
 
+    # add primaries to data
+    if primaries:
+        df_train['primary'] = train['primary']
+
     if train_val:
         # apply the same process for validation data if train_val is called
         if 'mf' not in val.columns:
@@ -289,3 +293,5 @@ def artificial_data():
     df[inputs] = input_points.T
 
     return df
+
+

@@ -8,16 +8,21 @@ from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 from seaborn import heatmap
 from process_data import log_data, n_snaps_extract
+import pickle
 import argparse
 import sys
 
 
 # Load pre-stellar gas data
-df = log_data(features=['rho_med', 'T_med', 'snap'])
-#df = log_data(train=n_snaps_extract(n_snaps=1), features=['rho_med', 'T_med', 'snap'])
+df = log_data(features=['rho_med', 'T_med', 'snap', 'N_fb'], primaries=True)
+#df = log_data(train=n_snaps_extract(n_snaps=5), features=['rho_med', 'T_med', 'snap', 'N_fb'])
+#df = df.dropna()
+
 
 #df = df[10**df['mf'] > 0.1] # get rid of small stars 
 #df = df[df['T_med'] < 1.3] # remove really hot outliers
+#df = df[df['primary'] == 1] # look only at primaries in accretion
+
 
 # define theory jeans mass constant
 theory_jeans_cf = 0.5917
@@ -52,6 +57,7 @@ def rho_T_3d(emp_plane=False, ana_plane=False, lr_plane=False):
     x = df['rho_med'].values
     y = df['T_med'].values
     z = df['mf'].values
+    #z = np.log10(df['mf'].values + 10**(df['N_fb']*10e3))
 
     X = np.linspace(min(x), max(x), 20)
     Y = np.linspace(min(y), max(y), 20)
@@ -59,7 +65,7 @@ def rho_T_3d(emp_plane=False, ana_plane=False, lr_plane=False):
 
     emperical_jean_cf = emperical_jeans_intercept()
 
-    df_under_jeans = df[-0.5 * df['rho_med'] + 1.5 * df['T_med'] + theory_jeans_cf > df['mf']]
+    df_under_jeans = df[-0.5 * df['rho_med'] + 1.5 * df['T_med'] + theory_jeans_cf > z]
     print('under jeans theory', len(df_under_jeans))
 
     # analytical plane
@@ -174,10 +180,54 @@ def mass_vs_residual(df):
     #plt.savefig('figures/mass_vs_jeans_mass_residual.png', dpi=300)
     plt.show()
 
+def mass_time_series():
+
+    with open("star_data/path_lookup.p", "rb") as ff:
+
+        path_lookup = pickle.load(ff)
+
+        plt.plot(path_lookup["29233"][:,0], path_lookup["29233"][:,9])
+
+    plt.show()
+
 def temp_time_series():
-    pass
+
+    df = log_data(train=n_snaps_extract(n_snaps=0), features=['rho_med', 'T_med', 'snap'])
+    ids = df[(df['T_med'] > 1.3) & (df['mf'] > 0)].reset_index()['sink_id']
 
 
+    id = ids[0]
+
+    temps = []
+
+    for snap in range (-1, 5):
+
+        # going 2 snapshots forward in time stars start to have 0 accreting particles
+
+        snap_df = log_data(train=n_snaps_extract(n_snaps=snap), features=['rho_med', 'T_med', 'snap'])
+
+        print(snap_df.isna().sum())
+
+        temps.append(snap_df.loc[id]['T_med'])
+
+        print(temps)
+
+    fig, ax = plt.subplots()
+    ax.plot(range(-1, 5), temps)
+    ax.xaxis.set_inverted(True)
+    plt.show()
+
+
+    # iterate through snaps
+    # store data in 2d array (stars, T_med values at snap n) (get the transpose?)
+    # plot T_med
+    for id in ids:
+        pass
+
+    #print(len(snap_df))
+
+#temp_time_series()
+#mass_time_series()
 
 def main():
     parser = argparse.ArgumentParser()
