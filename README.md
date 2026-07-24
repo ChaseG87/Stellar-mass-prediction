@@ -473,9 +473,11 @@ $$M_{\text{J}} = M_{\text{C}} \cdot \rho_{\text{med}}^{-0.5} \cdot T_{\text{eff}
 * [x] 1. Plot the final mass vs residual mass from the jeans model to see the size of stars which minimum masses are poorly predicted
 * [ ] 2. Look at time series of $T_{\text{med}}$ to see how gas heats/cools
 * [ ] 3. Investigate primaries during accretion slice (need data)
+* [ ] 4. Investigate the addition of feedback particles to the mass
 
 **7/22** - The final mass vs residual Jeans Mass (that is, the final mass minus the residual Jeans mass to investigate the mass in excess of the predicted minumum mass) plot ([here](figures/mass_vs_jeans_mass_residual.png)) shows that most of the stars that have negative residuals are warmer and therefore could cool rapidly before the star collapses decreasing the Jeans mass. Time series data of these outlier stars need to be investigated to better understand the heating/cooling behavior. 
 
+**7/24** - After initial investigation of the the median temperature over time of the hottest stars that appeared to not have enough mass to satisfy the Jeans Mass condition to collapse, my hypothesis of cooling appears to to false as the stars get even hotter in the first time step with a sink point (it is possible they are cooling in the window and deuterium burning heats up when they are observed again but there is no way to validate this). Two other physical factors that explain the disagreement with the Jeans mass is the assumption of a "calm" environment and pressure waves being capable of promoting consolidation of pre-stellar objects and the exclusion of feedback particles from the mass. 
 
 ### Primary Stars Analysis
 
