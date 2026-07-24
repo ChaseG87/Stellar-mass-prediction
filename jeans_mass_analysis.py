@@ -16,13 +16,13 @@ import sys
 
 # Load pre-stellar gas data
 df = log_data(features=['rho_med', 'T_med', 'snap', 'N_fb'], primaries=True)
-df = log_data(train=n_snaps_extract(n_snaps=2), features=['rho_med', 'T_med', 'snap', 'N_fb'])
+#df = log_data(train=n_snaps_extract(n_snaps=2), features=['rho_med', 'T_med', 'snap', 'N_fb'])
 #df = df.dropna()
 
 
 #df = df[10**df['mf'] > 0.1] # get rid of small stars 
 #df = df[df['T_med'] < 1.3] # remove really hot outliers
-#df = df[df['primary'] == 1] # look only at primaries in accretion
+df = df[df['primary'] == 1] # look only at primaries in accretion
 
 
 # define theory jeans mass constant
@@ -205,20 +205,21 @@ def temp_time_series():
     plt.figure(figsize=(10, 8))
 
 
-    for snap in range (-2, 5):
+    for snap in range (-10, 5):
         # going 2 snapshots forward in time stars start to have 0 accreting particles
         snap_df = log_data(train=n_snaps_extract(n_snaps=snap), features=['rho_med', 'T_med', 'snap'])
 
         for id in ids:
-            id_dict[id].append(snap_df.loc[id]['T_med'])
+            if id in snap_df.index:
+                id_dict[id].append(snap_df.loc[id]['T_med'])
 
     vmin, vmax = -1, 1
     norm = mcolors.Normalize(vmin=vmin, vmax=vmax)
     cmap = plt.get_cmap('viridis')
     
     for id in ids:
-        plt.plot(range(-4 , 3), id_dict[id][::-1], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
-        plt.scatter(range(-4, 3), id_dict[id][::-1], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
+        plt.plot(range(-4 , 11)[:len(id_dict[id])], id_dict[id][::-1], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
+        plt.scatter(range(-4, 11)[:len(id_dict[id])], id_dict[id][::-1], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
 
     plt.title(r'Outlier Hot Stars $T_{med}$ vs. Snapshots')
     plt.xlabel('Snapshots Relative to Pre-sink Snapshot')
