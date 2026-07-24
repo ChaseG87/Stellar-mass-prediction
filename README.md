@@ -524,5 +524,13 @@ Bootstrapping the coefficients of $\rho_{\text{med}}$ and $T_{\text{med}}$ movin
 
 **7/23** - I noticed that when just looking at $\rho{\text{med}}$ and $T_{\text{med}}$, the linear regression information decay with time stops decaying exponentially around the 26th snapshot prior to the pre-stellar snapshot ([figures/information_decay_linear_regression_no_B.pdf](figures/information_decay_linear_regression_no_B.pdf)) instead of continuing through to the beginning of the simulation ([figures/information_decay_linear_regression.pdf](figures/information_decay_linear_regression.pdf)). This appears to communicate that the median magnetic field strength has farther reaching predictive capabilities in time compared to $\rho{\text{med}}$ and $T_{\text{med}}$ alone. I currently do not have a hypothesis for the explanation of this behavior.
 
+### 7/24 Meeting
+
+1. Older Snapshots Jeans mass performance/analysis
+2. Temperature vs Time (Not Cooling)
+3. Thoughts on information decay?
+4. Starforge QR code on poster
+5. Presenting the Jeans mass analysis (pressure formation? Emperical understanding that differs from jeans mass?)
+
 
 
