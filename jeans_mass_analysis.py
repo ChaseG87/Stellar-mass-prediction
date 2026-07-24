@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from sklearn.linear_model import LinearRegression
 from sklearn.utils import resample
 from sklearn.metrics import r2_score
@@ -15,7 +16,7 @@ import sys
 
 # Load pre-stellar gas data
 df = log_data(features=['rho_med', 'T_med', 'snap', 'N_fb'], primaries=True)
-#df = log_data(train=n_snaps_extract(n_snaps=5), features=['rho_med', 'T_med', 'snap', 'N_fb'])
+df = log_data(train=n_snaps_extract(n_snaps=2), features=['rho_med', 'T_med', 'snap', 'N_fb'])
 #df = df.dropna()
 
 
@@ -193,40 +194,41 @@ def mass_time_series():
 def temp_time_series():
 
     df = log_data(train=n_snaps_extract(n_snaps=0), features=['rho_med', 'T_med', 'snap'])
-    ids = df[(df['T_med'] > 1.3) & (df['mf'] > 0)].reset_index()['sink_id']
+    ids = df[(df['T_med'] > 1.3) & (10**df['mf'] > 0.1)].reset_index()['sink_id']
+
+    df_idx = set(n_snaps_extract(n_snaps=-1).set_index('sink_id').index)
+
+    ids = [id for id in ids if id in df_idx]
+    id_dict = {id:[] for id in ids}
 
 
-    id = ids[0]
+    plt.figure(figsize=(10, 8))
 
-    temps = []
 
     for snap in range (-1, 5):
-
         # going 2 snapshots forward in time stars start to have 0 accreting particles
-
         snap_df = log_data(train=n_snaps_extract(n_snaps=snap), features=['rho_med', 'T_med', 'snap'])
 
-        print(snap_df.isna().sum())
+        for id in ids:
+            id_dict[id].append(snap_df.loc[id]['T_med'])
 
-        temps.append(snap_df.loc[id]['T_med'])
-
-        print(temps)
-
-    fig, ax = plt.subplots()
-    ax.plot(range(-1, 5), temps)
-    ax.xaxis.set_inverted(True)
-    plt.show()
-
-
-    # iterate through snaps
-    # store data in 2d array (stars, T_med values at snap n) (get the transpose?)
-    # plot T_med
+    vmin, vmax = -1, 1
+    norm = mcolors.Normalize(vmin=vmin, vmax=vmax)
+    cmap = plt.get_cmap('viridis')
+    
     for id in ids:
-        pass
+        plt.plot(range(-1, 5), id_dict[id], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
+        plt.scatter(range(-1, 5), id_dict[id], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
+
+    plt.title(r'Outlier Hot Stars $T_{med}$ vs. Snapshots')
+    plt.xlabel('Snapshots Before Pre-sink Snapshot')
+    plt.ylabel(r'$T_{med}$')
+    plt.savefig('figures/outliers_temp_time_series.png', dpi=300)
+    plt.show()
 
     #print(len(snap_df))
 
-#temp_time_series()
+temp_time_series()
 #mass_time_series()
 
 def main():
