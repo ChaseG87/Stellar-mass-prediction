@@ -217,11 +217,11 @@ def temp_time_series():
     cmap = plt.get_cmap('viridis')
     
     for id in ids:
-        plt.plot(range(-1, 5), id_dict[id], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
-        plt.scatter(range(-1, 5), id_dict[id], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
+        plt.plot(range(-4 , 2), id_dict[id][::-1], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
+        plt.scatter(range(-4, 2), id_dict[id][::-1], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
 
     plt.title(r'Outlier Hot Stars $T_{med}$ vs. Snapshots')
-    plt.xlabel('Snapshots Before Pre-sink Snapshot')
+    plt.xlabel('Snapshots Relative to Pre-sink Snapshot')
     plt.ylabel(r'$T_{med}$')
     plt.savefig('figures/outliers_temp_time_series.png', dpi=300)
     plt.show()
