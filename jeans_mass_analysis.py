@@ -15,7 +15,7 @@ import sys
 
 
 # Load pre-stellar gas data
-df = log_data(features=['rho_med', 'T_med', 'snap', 'N_fb'], primaries=True)
+df, df_val = log_data(features=['rho_med', 'T_med', 'snap', 'N_fb'], primaries=True, train_val=True)
 #df = log_data(train=n_snaps_extract(n_snaps=2), features=['rho_med', 'T_med', 'snap', 'N_fb'])
 #df = df.dropna()
 
@@ -196,7 +196,7 @@ def temp_time_series():
     df = log_data(train=n_snaps_extract(n_snaps=0), features=['rho_med', 'T_med', 'snap'])
     ids = df[(df['T_med'] > 1.3) & (10**df['mf'] > 0.1)].reset_index()['sink_id']
 
-    df_idx = set(n_snaps_extract(n_snaps=-2).set_index('sink_id').index)
+    df_idx = set(n_snaps_extract(n_snaps=-3).set_index('sink_id').index)
 
     ids = [id for id in ids if id in df_idx]
     id_dict = {id:[] for id in ids}
@@ -213,24 +213,54 @@ def temp_time_series():
             if id in snap_df.index:
                 id_dict[id].append(snap_df.loc[id]['T_med'])
 
-    vmin, vmax = -1, 1
-    norm = mcolors.Normalize(vmin=vmin, vmax=vmax)
-    cmap = plt.get_cmap('viridis')
-    
+
+    # plot the scatters from the ids 
     for id in ids:
-        plt.plot(range(-4 , 11)[:len(id_dict[id])], id_dict[id][::-1], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
-        plt.scatter(range(-4, 11)[:len(id_dict[id])], id_dict[id][::-1], alpha=0.2, c=cmap(norm(df.loc[id]['mf'])))
+        plt.plot(range(-4 , 11)[:len(id_dict[id])], id_dict[id][::-1], alpha=0.2)
+        plt.scatter(range(-4, 11)[:len(id_dict[id])], id_dict[id][::-1], alpha=0.2)
 
     plt.title(r'Outlier Hot Stars $T_{med}$ vs. Snapshots')
     plt.xlabel('Snapshots Relative to Pre-sink Snapshot')
     plt.ylabel(r'$T_{med}$')
-    plt.savefig('figures/outliers_temp_time_series.png', dpi=300)
+    #plt.savefig('figures/outliers_temp_time_series.png', dpi=300)
     plt.show()
 
-    #print(len(snap_df))
 
-temp_time_series()
-#mass_time_series()
+def plot_jeans_pred_vs_true(model_type='lin_reg'):
+
+    X = df[['rho_med', 'T_med']].values.reshape(-1, 2)
+    y = df['mf'].values
+
+    X_val = df_val[['rho_med', 'T_med']].values.reshape(-1, 2)
+    y_val = df_val['mf'].values
+
+    if model_type == 'lin_reg':
+        model = LinearRegression().fit(X, y)
+        pred_train = model.predict(X)
+        pred_val = model.predict(X_val)
+    if model_type == 'jeans':
+        intercept = emperical_jeans_intercept() 
+        pred_train = -0.5 * df['rho_med'].values + 1.5 * df['T_med'].values + intercept
+        pred_val = -0.5 * df_val['rho_med'].values + 1.5 * df_val['T_med'].values + intercept
+
+
+    r2 = r2_score(y, pred_train)
+    r2_val = r2_score(y_val, pred_val)
+
+    print(f'r2 = {r2} \nr2 val = {r2_val}')
+
+    plt.figure(figsize=(10, 8))
+    scatter = plt.scatter(y_val, pred_val, s=10, alpha=0.3)
+    plt.plot(y_val, y_val, c='r', label=f'$R^2 = $ {r2_val:.2f}')
+    plt.xlabel(r'Final Mass [$\log_{10}(M_\odot)$]')
+    plt.ylabel(r'Predicted Mass [$\log_{10}(M_\odot)$]')
+    plt.legend()
+    plt.title(r'Jeans Mass $\rho_{med}$ and $T_{med}$ Model Predicted Mass vs Final Mass')
+
+    plt.show()
+
+#plot_jeans_pred_vs_true()
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -240,6 +270,7 @@ def main():
     parser.add_argument('--analytical_jeans', '-aj', action='store_true', help='displays the analytical linear regression jeans plane')
     parser.add_argument('--resample', '-rs', action='store_true', help='runs a bootstrap resample of the linear regression coefficients')
     parser.add_argument('--mass_vs_residuals', '-mr', action='store_true', help='plots the masses vs the residual mass compared to the analytical jeans mass')
+    parser.add_argument('--temp_time_series', '-tts', action='store_true', help='plots the temperature time series of a hot subset of stars')
     args = parser.parse_args()
 
     if args.plot_3d:
@@ -250,6 +281,9 @@ def main():
 
     if args.resample:
         coefficient_bootstrap(df=df)
+
+    if args.temp_time_series:
+        temp_time_series()
 
     if len(sys.argv) == 1:
         raise ValueError('No Flag Called')
