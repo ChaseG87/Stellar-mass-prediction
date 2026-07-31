@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from process_data import log_data
 from sklearn.linear_model import LassoCV
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
 from seaborn import heatmap
@@ -9,6 +11,8 @@ from sklearn.manifold import TSNE
 import sys
 import argparse
 from process_data import add_primaries
+from information_decay import random_forest_grid_search
+import seaborn as sns
 
 # define features
 features = ['T', 'T_med', 'T_16', 'T_84', 'T_std', 'Ne', 'Ne_med', 'Ne_16', 'Ne_84', 'Ne_std',
@@ -87,6 +91,48 @@ def plot_lasso_cv(X_train, y_train, weighted=False):
 
     plt.show()
 
+
+def plot_random_forest(df):
+
+    best_params = {'max_depth': 10, 'max_features': 0.5, 'min_samples_leaf': 2, 'min_samples_split': 2}
+
+    # run grid
+    #random_forest_grid_search(features=features, df_train=df)
+
+    sns.set_theme(style="whitegrid", font_scale=2.5)
+
+    X = df[features].values.reshape(-1, len(features))
+    y = df['mf'].values
+
+    X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+    )
+
+    model = RandomForestRegressor(**best_params).fit(X_train, y_train)
+    #model = LassoCV(cv=5).fit(X_train, y_train)
+    #print(model.coef_)
+
+    pred_val = model.predict(X_test)
+
+
+    r2 = r2_score(y_test, pred_val)
+
+
+    print(f'r2 = {r2} \nr2 val = {r2}')
+
+    plt.figure(figsize=(10, 9))
+    scatter = plt.scatter(y_test, pred_val, s=15, alpha=0.8)
+    plt.plot(y_test, y_test, c='r')
+    plt.xlabel(r'log($M_{True}$ [$M_\odot$])')
+    plt.ylabel(r'log($M_{Predicted}$ [$M_\odot$])')
+    #plt.legend()
+    plt.title(f'Random Forest Model (0.01 Parsec)')
+    plt.legend(title=f'$R^2$ = {r2:.2f}')
+
+    #plt.savefig('LASSO_CV_model_patch.png', dpi=2000, bbox_inches='tight')
+    plt.show()
+
+
     
 def main():
     parser = argparse.ArgumentParser()
@@ -99,6 +145,7 @@ def main():
     parser.add_argument('--p001', action='store_true', help='chooses 0.01 parsec patch')
     parser.add_argument('--p05', action='store_true', help='chooses 0.5 parsec patch')
     parser.add_argument('--weighted', '-w', action='store_true', help='turns on square root of mass weights for lasso cv when called')
+    parser.add_argument('--random_forest', '-rf', action='store_true', help='plot random forest of the validation set')
     args = parser.parse_args()
 
     if args.p001:
@@ -160,6 +207,10 @@ def main():
 
         plot_lasso_cv(X_train=X, y_train=y, weighted=args.weighted)
 
+    if args.random_forest:
+        plot_random_forest(df=df)
 
 if __name__ == '__main__':
     main()
+
+
