@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+from matplotlib.lines import Line2D
 from sklearn.linear_model import LinearRegression
 from sklearn.utils import resample
 from sklearn.metrics import r2_score
@@ -55,10 +56,10 @@ def rho_T_3d(emp_plane=False, ana_plane=False, lr_plane=False):
     generates a 3d plot of rho_med vs T_med vs mf. 
     '''
     
-    x = df['rho_med'].values
-    y = df['T_med'].values
-    z = df['mf'].values
-    #z = np.log10(df['mf'].values + 10**(df['N_fb']*10e3))
+    x = df_val['rho_med'].values
+    y = df_val['T_med'].values
+    z = df_val['mf'].values
+
 
     X = np.linspace(min(x), max(x), 20)
     Y = np.linspace(min(y), max(y), 20)
@@ -66,8 +67,8 @@ def rho_T_3d(emp_plane=False, ana_plane=False, lr_plane=False):
 
     emperical_jean_cf = emperical_jeans_intercept()
 
-    df_under_jeans = df[-0.5 * df['rho_med'] + 1.5 * df['T_med'] + theory_jeans_cf > z]
-    print('under jeans theory', len(df_under_jeans))
+    #df_under_jeans = df[-0.5 * df['rho_med'] + 1.5 * df['T_med'] + theory_jeans_cf > z]
+    #print('under jeans theory', len(df_under_jeans))
 
     # analytical plane
     if ana_plane:
@@ -78,13 +79,13 @@ def rho_T_3d(emp_plane=False, ana_plane=False, lr_plane=False):
         e_Z = -0.5 * X + 1.5 * Y + emperical_jean_cf
 
     # fit linear regression model
-    model = LinearRegression().fit(df[['rho_med', 'T_med']].values.reshape(-1, 2), z)
+    model = LinearRegression().fit(df[['rho_med', 'T_med']].values.reshape(-1, 2), df['mf'].values)
 
     # calculate Z plane values from linear regression
     Z_pred = model.coef_[0] * X + model.coef_[1] * Y + model.intercept_
     # print coefficients and scores of linear regression
     print('rho_med coef: ', model.coef_[0],  '\nT_med coef:', model.coef_[1])
-    print('R^2 of blind fit: ', model.score(df[['rho_med', 'T_med']].values.reshape(-1, 2), z))
+    print('R^2 of blind fit: ', model.score(df_val[['rho_med', 'T_med']].values.reshape(-1, 2), z))
 
     # calculate cosine similarity between theoretical and regression planes
     dot_product = np.dot(model.coef_, np.array([-0.5, 1.5]))
@@ -107,7 +108,7 @@ def rho_T_3d(emp_plane=False, ana_plane=False, lr_plane=False):
     if lr_plane:
         pred_plane = ax.plot_surface(X, Y, Z_pred, alpha=0.2, label='Linear Regression Plane')
 
-    sc = ax.scatter(x, y, z, s=3, c=df['mf'], cmap='rainbow', alpha=0.5)
+    sc = ax.scatter(x, y, z, s=3, c=z, cmap='rainbow', alpha=0.5)
     plt.colorbar(sc, label=r'Total Mass ($M_\odot$) [log scale]')
     ax.set_xlabel(r'$\rho_{med}$')
     ax.set_ylabel(r'$T_{med}$')
@@ -228,6 +229,9 @@ def temp_time_series():
 
 def plot_jeans_pred_vs_true(model_type='lin_reg'):
 
+    #plt.rcParams.update({'font.size':22})
+    sns.set_theme(style="whitegrid", font_scale=2.5)
+
     X = df[['rho_med', 'T_med']].values.reshape(-1, 2)
     y = df['mf'].values
 
@@ -249,17 +253,102 @@ def plot_jeans_pred_vs_true(model_type='lin_reg'):
 
     print(f'r2 = {r2} \nr2 val = {r2_val}')
 
-    plt.figure(figsize=(10, 8))
-    scatter = plt.scatter(y_val, pred_val, s=10, alpha=0.3)
-    plt.plot(y_val, y_val, c='r', label=f'$R^2 = $ {r2_val:.2f}')
+    plt.figure(figsize=(10, 9))
+    scatter = plt.scatter(10**y_val, 10**pred_val, s=15, alpha=0.3)
+    plt.plot(10**y_val, 10**y_val, c='r', label=f'$R^2 = $ {r2_val:.2f}')
     plt.xlabel(r'Final Mass [$\log_{10}(M_\odot)$]')
     plt.ylabel(r'Predicted Mass [$\log_{10}(M_\odot)$]')
-    plt.legend()
-    plt.title(r'Jeans Mass $\rho_{med}$ and $T_{med}$ Model Predicted Mass vs Final Mass')
+    plt.xscale('log')
+    plt.yscale('log')
+    #plt.legend()
+    plt.title(r'Jeans Mass Model' + f' ($R^2$ = {r2_val:.2f})')
+    #plt.savefig('jeans_model.png', dpi=2000, bbox_inches='tight')
 
     plt.show()
 
-#plot_jeans_pred_vs_true()
+#plot_jeans_pred_vs_true(model_type='jeans')
+
+
+def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=256):
+    """
+    Truncates an existing Matplotlib colormap.
+    
+    Parameters:
+        cmap: Built-in colormap object or name (e.g., 'inferno' or plt.cm.inferno)
+        minval: Start range fraction [0.0 to 1.0]
+        maxval: End range fraction [0.0 to 1.0]
+        n: Number of color samples
+    """
+    if isinstance(cmap, str):
+        cmap = plt.get_cmap(cmap)
+        
+    new_colors = cmap(np.linspace(minval, maxval, n))
+    new_cmap = mcolors.LinearSegmentedColormap.from_list(
+        f'trunc({cmap.name},{minval:.2f},{maxval:.2f})', 
+        new_colors
+    )
+    return new_cmap
+
+# 1. Create your custom truncated inferno colormap (cutting off top 15% bright yellow)
+inferno_clipped = truncate_colormap('inferno', minval=0.0, maxval=0.85)
+
+
+def plot_2d_rho_T():
+
+    sns.set_theme(style="whitegrid", font_scale=2.5)
+
+    # Create synthetic data/grid
+    x1 = np.linspace(2, 8, 100)
+    x2 = np.linspace(0.2, 2, 100)
+    X1, X2 = np.meshgrid(x1, x2)
+
+    x = df['rho_med'].values
+    y = df['T_med'].values
+    z = df['mf'].values
+
+    #jeans mass contour
+    Y1 = -0.5 * X1 + 1.5 * X2 + emperical_jeans_intercept()
+
+    #linear regression contour
+    model = LinearRegression().fit(df[['rho_med', 'T_med']].values.reshape(-1, 2), z)
+    rho_cf, t_cf = model.coef_
+    Y2 = rho_cf * X1 + t_cf * X2 + model.intercept_
+    print(model.coef_)
+
+    r2 = model.score(df[['rho_med', 'T_med']].values.reshape(-1, 2), z)
+
+    #define levels
+    levels = np.linspace(-2, 1, 7)
+
+    viridis_clipped = truncate_colormap('viridis', minval=0.0, maxval=0.9)
+    colormap = viridis_clipped
+
+    plt.figure(figsize=(12, 8))
+
+    contour1 = plt.contour(X1, X2, Y1, levels=levels, cmap=colormap, linestyles='solid', linewidths=1.8, alpha=0.8)
+    #contour2 = plt.contour(X1, X2, Y2, levels=levels, cmap=colormap, linestyles='solid', linewidths=1.8)
+
+
+
+    plt.legend(title=f'$R^2$ = {r2:.2f}', loc='upper left', frameon=True)
+
+    sc = plt.scatter(x, y, c=z, cmap=colormap, alpha=0.7, s=10)
+    plt.colorbar(sc, label=r'log($M_f$ [$M_\odot$])')
+
+
+    plt.xlabel(r'log($\rho_{median}$[$M_\odot$/pc$^{3}$])')
+    plt.ylabel(r'log($T_{median}$ [K])')
+    plt.title('Simple Model Contour')
+
+
+    plt.clabel(contour1, inline=True, fontsize=13, manual=True)
+    plt.savefig('contour_plot.png', dpi=2000, bbox_inches='tight')
+    #plt.clabel(contour2, inline=True, fontsize=12, fmt='%.1f', manual=True)
+
+    plt.show()
+
+plot_2d_rho_T()
+
 
 
 def main():
